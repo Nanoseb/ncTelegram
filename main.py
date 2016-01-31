@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import time
 import urwid
 
 #import ui_infobar
@@ -18,7 +19,7 @@ tg = Telegram(telegram="/usr/bin/telegram-cli",
               pubkey_file="/etc/telegram-cli/server.pub")
 receiver = tg.receiver
 sender = tg.sender
-
+time.sleep(2)
 
 palette = [('title', 'bold,yellow', 'dark blue'),
         ('hint', 'bold,yellow', 'dark blue'),
@@ -32,7 +33,7 @@ def exit_on_q(key):
 
 def get_dialog_list():
     dict = sender.dialog_list()
-    return  [ [name['print_name'],name['type']] for name in dict ]
+    return  [ [name['print_name'],name['type']] for name in dict ][::-1]
 
 
 # Barre de titre
