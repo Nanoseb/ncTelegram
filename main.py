@@ -33,7 +33,7 @@ def exit_on_q(key):
 
 def get_dialog_list():
     dict = sender.dialog_list()
-    return  [ [name['print_name'],name['type']] for name in dict ][::-1]
+    return  [ [name['id'], name['print_name'], name['type']] for name in dict ][::-1]
 
 
 # Barre de titre
@@ -57,7 +57,7 @@ msg_widget.updateMsgList([["flo","Eh, c'est pas mal !"],
 # Arrangements finaux
 main_columns = urwid.Columns([('weight', 1, chan_widget),
                               ('weight', 5, msg_widget)])
-main_pile = urwid.Pile([title_bar, main_columns, hint_bar])
+main_pile = urwid.Pile([(1,title_bar), main_columns, (1,hint_bar)])
 
 main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=exit_on_q)
 main_loop.screen.set_terminal_properties(colors=256)
