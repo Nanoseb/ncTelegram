@@ -28,9 +28,18 @@ class MessageWidget(urwid.ListBox):
             time.sleep(0.5)
         self.updateLocked = True
         pos = self.focus_position
-
+        
         msgDict = sender.history("nc-telegram_project")
-        msgList = [ [ field['from']['print_name'], field['text'], field['date']] for field in msgDict ][::-1]
+        #msgList = [ [ field['from']['print_name'], field['text'], field['date']] for field in msgDict ][::-1]
+        msgList = []
+        # To handle message without text (like media)
+        for field in msgDict:
+            try:
+                msgList.append([ field['from']['print_name'], field['text'], field['date']])
+            except:
+                msgList.append([ field['from']['print_name'], "No text", field['date']])
+
+        msgList = msgList[::-1]
 
         for i in msgList:
             date = time.strftime('%d-%m-%Y %H:%M:%S ', time.localtime(i[2]))
