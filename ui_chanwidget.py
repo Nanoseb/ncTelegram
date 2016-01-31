@@ -28,7 +28,7 @@ class ChanWidget(urwid.ListBox):
         self.chans = chanList
         self.updateLocked = False
 
-    def chan_chosen(button, id):
+    def chan_chosen(button, print_name):
         return ok
 
 

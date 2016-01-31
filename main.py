@@ -33,7 +33,7 @@ def exit_on_q(key):
 
 def get_dialog_list():
     dict = sender.dialog_list()
-    return  [ [name['id'], name['print_name'], name['type']] for name in dict ][::-1]
+    return  [ [name['print_name'], name['print_name'], name['type']] for name in dict ][::-1]
 
 
 # Barre de titre
@@ -50,9 +50,9 @@ chan_widget.updateChanList(get_dialog_list());
 
 # Liste des messages
 msg_widget = MessageWidget();
-msg_widget.updateMsgList([["flo","Eh, c'est pas mal !"],
-                          ["seb","Bof, pas terrible…"]])
-
+#msg_widget.updateMsgList([["flo","Eh, c'est pas mal !"],
+#                          ["seb","Bof, pas terrible…"]])
+msg_widget.getHistory(sender)
 
 # Arrangements finaux
 main_columns = urwid.Columns([('weight', 1, chan_widget),

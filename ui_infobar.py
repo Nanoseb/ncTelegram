@@ -12,7 +12,5 @@ class InfoBar(urwid.Filler):
         self.attr = urwid.AttrMap(self.text, style)
         super().__init__(self.attr, bar_align)
 
-    def rows(self, size, focus=False):
-        return 1
 
 # vim: ai ts=4 sw=4 et sts=4

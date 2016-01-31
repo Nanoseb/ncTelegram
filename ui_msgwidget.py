@@ -23,6 +23,22 @@ class MessageWidget(urwid.ListBox):
         self.msgs = msgList
         self.updateLocked = False
 
+    def getHistory(self, sender):
+        while (self.updateLocked):
+            time.sleep(0.5)
+        self.updateLocked = True
+        pos = self.focus_position
+
+        msgDict = sender.history("nc-telegram_project")
+        msgList = [ [ field['from']['print_name'], field['text'], field['date']] for field in msgDict ][::-1]
+
+        for i in msgList:
+            date = time.strftime('%d-%m-%Y %H:%M:%S ', time.localtime(i[2]))
+            self.msg_list.insert(pos + 1, urwid.Text(date + i[0] + " -> " +i[1]))
+            self.focus_position = pos + 1
+        self.msgs = msgList
+        self.updateLocked = False
+
 
 
 
