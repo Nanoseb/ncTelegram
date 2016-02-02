@@ -30,17 +30,25 @@ class MessageWidget(urwid.ListBox):
         while (self.updateLocked):
             time.sleep(0.5)
         self.updateLocked = True
+
+        # Suppression des messages précédent (=redéfinition du widget)
+        self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('msg', "Messages :"),align='left')]) 
+        super().__init__(self.msg_list)
         pos = self.focus_position
         
-        msgDict = Telegram_ui.sender.history("nc-telegram_project")
-        #msgList = [ [ field['from']['print_name'], field['text'], field['date']] for field in msgDict ][::-1]
+        msgDict = Telegram_ui.sender.history(Telegram_ui.current_chan)
         msgList = []
-        # To handle message without text (like media)
+
+
         for field in msgDict:
             try:
                 msgList.append([ field['from']['print_name'], field['text'], field['date']])
             except:
-                msgList.append([ field['from']['print_name'], "No text", field['date']])
+                # To handle message without text (like media)
+                try:
+                    msgList.append([ field['from']['print_name'], "No text", field['date']])
+                except:
+                    msgList.append([ "message", "ERROR", 123456]) #FIX ME : problem pour certain user
 
         msgList = msgList[::-1]
 

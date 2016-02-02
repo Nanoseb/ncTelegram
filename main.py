@@ -22,7 +22,7 @@ class Telegram_ui:
                    ('msg', 'white', 'dark red'),
                    ('chan', 'black', 'white')]
 
-        
+        self.current_chan = ''        
         # Barre de titre
         title_bar = InfoBar("ncTelegram v0.01", 
                              style='title', bar_align='top', text_align='center')
