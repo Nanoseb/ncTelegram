@@ -3,11 +3,14 @@ import time
 
 # Le widget utilise pour afficher la liste des messages
 class MessageWidget(urwid.ListBox):
-    def __init__(self):
+    def __init__(self, Telegram_ui):
         self.msgs = []
         self.updateLocked = False
         self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('msg', "Messages :"),align='left')]) 
+
+        
         super().__init__(self.msg_list)
+        self.getHistory(Telegram_ui)
     
     # Mettre a jour la liste des messages
     # msgList est une liste d'éléments type [auth, msg]
@@ -23,13 +26,13 @@ class MessageWidget(urwid.ListBox):
         self.msgs = msgList
         self.updateLocked = False
 
-    def getHistory(self, sender):
+    def getHistory(self, Telegram_ui):
         while (self.updateLocked):
             time.sleep(0.5)
         self.updateLocked = True
         pos = self.focus_position
         
-        msgDict = sender.history("nc-telegram_project")
+        msgDict = Telegram_ui.sender.history("nc-telegram_project")
         #msgList = [ [ field['from']['print_name'], field['text'], field['date']] for field in msgDict ][::-1]
         msgList = []
         # To handle message without text (like media)

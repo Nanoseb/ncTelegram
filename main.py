@@ -1,66 +1,78 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+
 import time
+
 import urwid
 
-#import ui_infobar
 from ui_infobar import InfoBar
-#import ui_chanwidget
 from ui_chanwidget import ChanWidget
-#import ui_msgwidget
 from ui_msgwidget import MessageWidget
 
 from pytg import Telegram
 
+
+
+class Telegram_ui:
+    def __init__(self):
+        self.start_Telegram()
+        palette = [('title', 'bold,yellow', 'dark blue'),
+                   ('hint', 'bold,yellow', 'dark blue'),
+                   ('msg', 'white', 'dark red'),
+                   ('chan', 'black', 'white')]
+
         
-# Liaison avec telegram-cli
-tg = Telegram(telegram="/usr/bin/telegram-cli",
-              pubkey_file="/etc/telegram-cli/server.pub")
-receiver = tg.receiver
-sender = tg.sender
-time.sleep(2)
+        # Barre de titre
+        title_bar = InfoBar("ncTelegram v0.01", 
+                             style='title', bar_align='top', text_align='center')
 
-palette = [('title', 'bold,yellow', 'dark blue'),
-        ('hint', 'bold,yellow', 'dark blue'),
-        ('msg', 'white', 'dark red'),
-        ('chan', 'black', 'white')]
+        # Barre de commandes
+        hint_bar = InfoBar("Quit(Q)", 
+                            style='hint', bar_align='bottom', text_align='left')
 
-def exit_on_q(key):
-    if key in('q','Q'):
-        tg.stopCLI()
+        # Liste des chans
+        self.chan_widget = ChanWidget(self);
+    
+        # Liste des messages
+        self.msg_widget = MessageWidget(self);
+
+        # Arrangements finaux
+        main_columns = urwid.Columns([('weight', 1, self.chan_widget),
+                                      ('weight', 5, self.msg_widget)])
+        main_pile = urwid.Pile([(1, title_bar), main_columns, (1, hint_bar)])
+
+        main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.exit_on_q)
+        main_loop.screen.set_terminal_properties(colors=256)
+        main_loop.run()
+
+
+    def start_Telegram(self):
+        # Liaison avec telegram-cli
+        self.tg = Telegram(telegram="/usr/bin/telegram-cli",
+                      pubkey_file="/etc/telegram-cli/server.pub")
+        self.receiver = self.tg.receiver
+        self.sender = self.tg.sender
+        self.receiver.start()
+        time.sleep(2)  # FIX ME
+
+
+    def stop_Telegram(self):
+        self.tg.stopCLI()
+
+
+    def exit(self):
+        self.stop_Telegram()
         raise urwid.ExitMainLoop
 
-def get_dialog_list():
-    dict = sender.dialog_list()
-    return  [ [name['print_name'], name['print_name'], name['type']] for name in dict ][::-1]
+
+    def exit_on_q(self, key):
+        if key in('q','Q'):
+            self.exit()
 
 
-# Barre de titre
-title_bar = InfoBar("ncTelegram v0.01", 
-                     style='title', bar_align='top', text_align='center')
 
-# Barre de commandes
-hint_bar = InfoBar("Quit(Q)", 
-                    style='hint', bar_align='bottom', text_align='left')
+Telegram_ui()
 
-# Liste des chans
-chan_widget = ChanWidget();
-chan_widget.updateChanList(get_dialog_list());
-
-# Liste des messages
-msg_widget = MessageWidget();
-#msg_widget.updateMsgList([["flo","Eh, c'est pas mal !"],
-#                          ["seb","Bof, pas terrible…"]])
-msg_widget.getHistory(sender)
-
-# Arrangements finaux
-main_columns = urwid.Columns([('weight', 1, chan_widget),
-                              ('weight', 5, msg_widget)])
-main_pile = urwid.Pile([(1,title_bar), main_columns, (1,hint_bar)])
-
-main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=exit_on_q)
-main_loop.screen.set_terminal_properties(colors=256)
-main_loop.run()
 
 # vim: ai ts=4 sw=4 et sts=4
