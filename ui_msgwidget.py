@@ -6,11 +6,12 @@ class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
         self.msgs = []
         self.updateLocked = False
-        self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('msg', "Messages :"),align='left')]) 
 
-        
-        super().__init__(self.msg_list)
-        self.getHistory(Telegram_ui)
+        self.Telegram_ui = Telegram_ui
+        #self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('msg', "Messages :"),align='left')]) 
+        #super().__init__(self.msg_list)
+
+        self.getHistory()
     
     # Mettre a jour la liste des messages
     # msgList est une liste d'éléments type [auth, msg]
@@ -26,7 +27,7 @@ class MessageWidget(urwid.ListBox):
         self.msgs = msgList
         self.updateLocked = False
 
-    def getHistory(self, Telegram_ui):
+    def getHistory(self):
         while (self.updateLocked):
             time.sleep(0.5)
         self.updateLocked = True
@@ -36,7 +37,7 @@ class MessageWidget(urwid.ListBox):
         super().__init__(self.msg_list)
         pos = self.focus_position
         
-        msgDict = Telegram_ui.sender.history(Telegram_ui.current_chan)
+        msgDict = self.Telegram_ui.sender.history(self.Telegram_ui.current_chan)
         msgList = []
 
 

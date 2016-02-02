@@ -9,6 +9,7 @@ import urwid
 from ui_infobar import InfoBar
 from ui_chanwidget import ChanWidget
 from ui_msgwidget import MessageWidget
+from ui_msgsendwidget import MessageSendWidget
 
 from pytg import Telegram
 
@@ -37,9 +38,15 @@ class Telegram_ui:
         # Liste des messages
         self.msg_widget = MessageWidget(self);
 
+        # Envoie de messages
+        self.msg_send_widget = MessageSendWidget(self);
+
+        # Panneau droit
+        right_side = urwid.Pile([self.msg_widget, (1, self.msg_send_widget)])
+
         # Arrangements finaux
         main_columns = urwid.Columns([('weight', 1, self.chan_widget),
-                                      ('weight', 5, self.msg_widget)])
+                                      ('weight', 5, right_side)])
         main_pile = urwid.Pile([(1, title_bar), main_columns, (1, hint_bar)])
 
         main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.exit_on_q)
