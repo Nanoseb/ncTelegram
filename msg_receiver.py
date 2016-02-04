@@ -31,7 +31,7 @@ class MessageReceiver(threading.Thread):
                     print(msg)
 
 
-
+                self.Telegram_ui.main_loop.draw_screen()
 
 
 

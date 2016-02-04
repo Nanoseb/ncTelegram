@@ -80,6 +80,7 @@ class MessageWidget(urwid.ListBox):
         self.msg_list.insert( self.pos +1 , urwid.Text(date + sender + " -> " + text))
         self.focus_position = self.pos 
         self.pos = self.pos +1
+        #super().__init__(self.msg_list)
 
 
 

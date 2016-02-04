@@ -53,9 +53,9 @@ class Telegram_ui:
                                       ('weight', 5, right_side)])
         main_pile = urwid.Pile([(1, title_bar), main_columns, (1, hint_bar)])
 
-        main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.exit_on_q)
-        main_loop.screen.set_terminal_properties(colors=256)
-        main_loop.run()
+        self.main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.exit_on_q)
+        self.main_loop.screen.set_terminal_properties(colors=256)
+        self.main_loop.run()
 
 
     def start_Telegram(self):
