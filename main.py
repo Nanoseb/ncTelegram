@@ -43,6 +43,7 @@ class Telegram_ui:
 
         # Thread du dump de messages
         self.msg_dump = MessageReceiver(self)
+        self.msg_dump.daemon = True
         self.msg_dump.start()
 
         # Panneau droit
