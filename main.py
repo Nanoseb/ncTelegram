@@ -24,6 +24,7 @@ class Telegram_ui:
                    ('chan', 'black', 'white')]
 
         self.current_chan = []        
+
         # Barre de titre
         title_bar = InfoBar("ncTelegram v0.01", 
                              style='title', bar_align='top', text_align='center')
@@ -74,7 +75,6 @@ class Telegram_ui:
 
 
     def exit(self):
-        self.msg_dump.stop()
         self.stop_Telegram()
         raise urwid.ExitMainLoop
 

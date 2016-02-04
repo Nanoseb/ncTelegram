@@ -6,9 +6,6 @@ class MessageSendWidget(urwid.Filler):
 
         self.updateLocked = False
         self.Telegram_ui = Telegram_ui
-        
-        #self.widgetEdit = urwid.Edit(Telegram_ui.current_chan + " : ", "", multiline=False)
-        #super().__init__(self.widgetEdit)
 
         self.update_send_widget()
 

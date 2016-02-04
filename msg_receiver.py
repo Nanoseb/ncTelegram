@@ -5,33 +5,27 @@ class MessageReceiver(threading.Thread):
     def __init__(self, Telegram_ui):
         threading.Thread.__init__(self)
         self.Telegram_ui = Telegram_ui
-        self.stopper = False
+
 
     def run(self):
         self.Telegram_ui.receiver.message(self.get_dump())
 
-    def stop(self):
-        self.stopper = True
 
     @coroutine
     def get_dump(self):
-        while not self.stopper:
+        while True:
             msg = (yield)
 
-            #si c'est un message on l'affiche
+            # si c'est un message on l'affiche
             if msg['event'] == "message":
+                self.Telegram_ui.chan_widget.updateChanList()
+
                 current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id']) 
+                # vérifie que le message a été envoyé au chan courant
+                if msg['receiver']['cmd'] == current_cmd:
+                     self.Telegram_ui.msg_widget.print_msg(msg)
 
-                try:
-                    # vérifie que le message a été envoyé au chan courant
-                    if msg['receiver']['cmd'] == current_cmd:
-                        self.Telegram_ui.msg_widget.print_msg(msg)
-                    else:
-                        self.Telegram_ui.chan_widget.updateChanList()
-                except:
-                    print(msg)
-
-                
+                # On actualise l'affichage 
                 self.Telegram_ui.main_loop.draw_screen()
 
 

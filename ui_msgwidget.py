@@ -34,9 +34,6 @@ class MessageWidget(urwid.ListBox):
 
 
     def print_msg(self, msg):
-        date = 1
-        sender = "unknown"
-        text = "ERROR"
 
         try:
             date = msg['date'] 
