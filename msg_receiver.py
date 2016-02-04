@@ -24,13 +24,14 @@ class MessageReceiver(threading.Thread):
 
                 try:
                     # vérifie que le message a été envoyé au chan courant
-                    if msg['receiver']['cmd'] == current_cmd and msg['peer'] == None or \
-                            msg['peer']['cmd'] == current_cmd :
+                    if msg['receiver']['cmd'] == current_cmd:
                         self.Telegram_ui.msg_widget.print_msg(msg)
+                    else:
+                        self.Telegram_ui.chan_widget.updateChanList()
                 except:
                     print(msg)
 
-
+                
                 self.Telegram_ui.main_loop.draw_screen()
 
 

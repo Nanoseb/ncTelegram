@@ -12,7 +12,7 @@ class ChanWidget(urwid.ListBox):
         #super().__init__(self.chan_list)
         
         self.updateChanList()
-    
+   
     # Mettre a jour la liste des chans
     def updateChanList(self):
         while (self.updateLocked):
@@ -40,7 +40,6 @@ class ChanWidget(urwid.ListBox):
             urwid.connect_signal(button, 'click', self.chan_change, i[0])
             self.chan_list.insert(pos + 1, urwid.AttrMap(button, None, focus_map='reversed'))
             pos = pos + 1
-
 
         self.updateLocked = False
 
