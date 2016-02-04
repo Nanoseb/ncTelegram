@@ -37,30 +37,49 @@ class MessageWidget(urwid.ListBox):
         super().__init__(self.msg_list)
         pos = self.focus_position
         
-        msgDict = self.Telegram_ui.sender.history(self.Telegram_ui.current_chan)
+        msgDict = self.Telegram_ui.sender.history(self.Telegram_ui.current_chan['print_name'])
         msgList = []
 
+        self.pos = 1
+        for msg in msgDict:
+            self.print_msg(msg)
 
-        for field in msgDict:
-            try:
-                msgList.append([ field['from']['print_name'], field['text'], field['date']])
-            except:
-                # To handle message without text (like media)
-                try:
-                    msgList.append([ field['from']['print_name'], "No text", field['date']])
-                except:
-                    msgList.append([ "message", "ERROR", 123456]) #FIX ME : problem pour certain user
 
-        msgList = msgList[::-1]
-
-        for i in msgList:
-            date = time.strftime('%d-%m-%Y %H:%M:%S ', time.localtime(i[2]))
-            self.msg_list.insert(pos + 1, urwid.Text(date + i[0] + " -> " +i[1]))
-            self.focus_position = pos + 1
-        self.msgs = msgList
         self.updateLocked = False
 
 
+    def print_msg(self, msg):
+        date = 1
+        sender = "unknown"
+        text = "ERROR"
+
+        try:
+            date = msg['date'] 
+            sender = msg['from']['print_name']
+            text = msg['text']
+        except:
+            try:
+                date = msg['date'] 
+                sender = msg['sender']['first_name']
+                text = msg['text']
+
+                # To handle message without text (like media)
+            except:
+                try:
+                    date = msg['date'] 
+                    sender = msg['from']['print_name'] 
+                    test = "media"
+                except:
+                    date = 1                   #FIX ME : problem pour certain user
+                    sender = "unknown"
+                    text = "ERROR"
+
+        
+        date = time.strftime('%d-%m-%Y %H:%M:%S ', time.localtime(date))
+
+        self.msg_list.insert( self.pos +1 , urwid.Text(date + sender + " -> " + text))
+        self.focus_position = self.pos 
+        self.pos = self.pos +1
 
 
 

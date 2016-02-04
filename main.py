@@ -10,7 +10,7 @@ from ui_infobar import InfoBar
 from ui_chanwidget import ChanWidget
 from ui_msgwidget import MessageWidget
 from ui_msgsendwidget import MessageSendWidget
-
+from msg_receiver import MessageReceiver 
 from pytg import Telegram
 
 
@@ -23,7 +23,7 @@ class Telegram_ui:
                    ('msg', 'white', 'dark red'),
                    ('chan', 'black', 'white')]
 
-        self.current_chan = ''        
+        self.current_chan = []        
         # Barre de titre
         title_bar = InfoBar("ncTelegram v0.01", 
                              style='title', bar_align='top', text_align='center')
@@ -40,6 +40,10 @@ class Telegram_ui:
 
         # Envoie de messages
         self.msg_send_widget = MessageSendWidget(self);
+
+        # Thread du dump de messages
+        self.msg_dump = MessageReceiver(self)
+        self.msg_dump.start()
 
         # Panneau droit
         right_side = urwid.Pile([self.msg_widget, (1, self.msg_send_widget)])
@@ -69,6 +73,7 @@ class Telegram_ui:
 
 
     def exit(self):
+        self.msg_dump.stop()
         self.stop_Telegram()
         raise urwid.ExitMainLoop
 

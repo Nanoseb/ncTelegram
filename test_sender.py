@@ -10,6 +10,6 @@ sender = tg.sender
 
 list_contact = sender.execute_function("contacts_list")
 
-sender.send_msg(101634225, "Test !!!")
+print(sender.send_msg("Seb", "Test !!!"))
 
 tg.stopCLI()
