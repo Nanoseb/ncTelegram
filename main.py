@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-
+import sys
 import time
 
 import urwid
@@ -34,13 +34,15 @@ class Telegram_ui:
                    ('light gray','light gray',''),
                    ('dark gray','dark gray',''),
                    ('light red','light red',''),
-                   ( 'light green', 'light green',''),
-                   ( 'light blue', 'light blue',''),
+                   ('light green', 'light green',''),
+                   ('light blue', 'light blue',''),
                    ('light magenta','light magenta',''),
                    ('light cyan','light cyan',''),
                    ('white', 'white',''),]
 
         self.current_chan = []        
+        self.total_msg_waiting = 0
+        self.print_title()
 
         # Barre de titre
         title_bar = InfoBar("ncTelegram v0.01", 
@@ -76,6 +78,11 @@ class Telegram_ui:
         self.main_loop.screen.set_terminal_properties(colors=256)
         self.main_loop.run()
 
+    def print_title(self):
+        if self.total_msg_waiting == 0:
+            sys.stdout.write("\x1b]2;ncTelegram\x07")
+        else:
+            sys.stdout.write("\x1b]2;ncTelegram [" + str(self.total_msg_waiting) + "]\x07")
 
     def start_Telegram(self):
         # Liaison avec telegram-cli
@@ -84,7 +91,6 @@ class Telegram_ui:
         self.receiver = self.tg.receiver
         self.sender = self.tg.sender
         self.receiver.start()
-        #time.sleep(2)  # FIX ME
 
 
     def stop_Telegram(self):

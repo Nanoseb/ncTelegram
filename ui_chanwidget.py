@@ -70,6 +70,9 @@ class ChanWidget(urwid.ListBox):
             else:
                 self.msg_chan[cmd] = 1
 
+            self.Telegram_ui.total_msg_waiting = self.Telegram_ui.total_msg_waiting + 1
+            self.Telegram_ui.print_title()
+
         self.updateChanList()
         
 
@@ -83,6 +86,8 @@ class ChanWidget(urwid.ListBox):
         current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id']) 
         
         if current_cmd in self.msg_chan:
+            self.Telegram_ui.total_msg_waiting = self.Telegram_ui.total_msg_waiting - self.msg_chan[current_cmd]
+            self.Telegram_ui.print_title()
             del self.msg_chan[current_cmd]
 
         self.Telegram_ui.msg_send_widget.update_send_widget()
@@ -90,6 +95,5 @@ class ChanWidget(urwid.ListBox):
 
         #Appel pour actualiser le chan courant de la liste
         self.updateChanList()
-
 
 # vim: ai ts=4 sw=4 et sts=4
