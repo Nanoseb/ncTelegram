@@ -84,7 +84,7 @@ class Telegram_ui:
         self.receiver = self.tg.receiver
         self.sender = self.tg.sender
         self.receiver.start()
-        time.sleep(2)  # FIX ME
+        #time.sleep(2)  # FIX ME
 
 
     def stop_Telegram(self):

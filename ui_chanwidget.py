@@ -21,7 +21,15 @@ class ChanWidget(urwid.ListBox):
         super().__init__(self.chan_list)
 
         # list de dictionnaire contenant les chans
-        self.chans = self.Telegram_ui.sender.dialog_list()
+        self.chans = None
+        while self.chans is None:
+            try:
+                self.chans = self.Telegram_ui.sender.dialog_list()
+            except:
+                time.sleep(0.5)
+                pass
+
+
 
         if self.Telegram_ui.current_chan == []:
             self.Telegram_ui.current_chan = self.chans[-1]
@@ -33,10 +41,13 @@ class ChanWidget(urwid.ListBox):
 
             if i[1] == self.Telegram_ui.current_chan['print_name'] :            
                 button = urwid.Button(('cur_chan', i[1].replace('_', ' ')))
+                #button = urwid.Text(('cur_chan', i[1].replace('_', ' ')))
                 current_pos = pos + 1
             else:
                 button = urwid.Button(i[1].replace('_', ' '))
+                #button = urwid.Text(i[1].replace('_', ' '))
     
+            button.button_left = urwid.Text('*')
             urwid.connect_signal(button, 'click', self.chan_change, i[0])
             self.chan_list.insert(pos + 1, urwid.AttrMap(button, None, focus_map='reversed'))
             pos = pos + 1
@@ -45,6 +56,15 @@ class ChanWidget(urwid.ListBox):
         self.focus_position = current_pos
         self.updateLocked = False
 
+#    def keypress(self, size, key):
+#        print(self.focus_position)
+#        if key == 'enter':
+#            pos = self.focus_position
+#            self.chan_change("ui", self.chans[pos]['print_name'])
+#        elif key == 'down':
+#            self.focus_position = self.focus_position - 1
+#        elif key == 'up':
+#            self.focus_position = self.focus_position + 1
 
     def chan_change(self, button, print_name): 
         
