@@ -23,6 +23,8 @@ class Telegram_ui:
                    ('chan', 'black', 'white'),
                    ('date', 'light green', ''),
                    ('hour', 'dark gray',''),
+                   ('reversed', 'standout', ''),
+                   ('cur_chan', 'light green,bold', ''),
                    ('dark red','dark red',''),
                    ('dark green', 'dark green',''),
                    ('brown','brown',''),

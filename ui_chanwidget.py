@@ -32,10 +32,10 @@ class ChanWidget(urwid.ListBox):
         for i in revchanList:
 
             if i[1] == self.Telegram_ui.current_chan['print_name'] :            
-                button = urwid.Button(i[1] + ": " + i[2] + "*")
+                button = urwid.Button(('cur_chan', i[1].replace('_', ' ')))
                 current_pos = pos + 1
             else:
-                button = urwid.Button(i[1] + ": " + i[2])
+                button = urwid.Button(i[1].replace('_', ' '))
     
             urwid.connect_signal(button, 'click', self.chan_change, i[0])
             self.chan_list.insert(pos + 1, urwid.AttrMap(button, None, focus_map='reversed'))

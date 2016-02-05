@@ -37,12 +37,13 @@ class MessageWidget(urwid.ListBox):
 
         try:
             date = msg['date'] 
-            sender = msg['from']['print_name']
+            #sender = msg['from']['print_name'].replace('_', ' ')
+            sender = msg['from']['first_name']
             text = msg['text']
         except:
             try:
                 date = msg['date'] 
-                sender = msg['sender']['first_name']
+                sender = msg['sender']['first_name'] #+ ' ' + msg['sender']['last_name']
                 text = msg['text']
 
                 # To handle message without text (like media)
@@ -65,8 +66,16 @@ class MessageWidget(urwid.ListBox):
             self.prev_date = cur_date
 
         hour = time.strftime('%H:%M ', time.localtime(date))
-        color = self.get_name_color(sender)
-        self.msg_list.insert( self.pos +1 , urwid.Text([('hour', hour), ( color ,'{0: >10}'.format(sender)), ('light gray', " | "), text]))
+        color = self.get_name_color(sender + 'a')
+        size_name = 9
+
+        formated_text = text.replace(u'\n', u'\n' + ' '*(size_name + 7) + '| ')
+        
+        self.msg_list.insert( self.pos +1 , urwid.Text([('hour', hour),
+            ( color ,'{0: >9}'.format(sender[0:size_name])),
+            ('light gray', " | "),
+            formated_text]))
+
         self.focus_position = self.pos 
         self.pos = self.pos +1
 
@@ -78,7 +87,6 @@ class MessageWidget(urwid.ListBox):
                 'dark magenta',
                 'dark cyan',
                 'light gray',
-                'dark gray',
                 'light red',
                 'light green',
                 'yellow',
