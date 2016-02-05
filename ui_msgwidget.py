@@ -59,15 +59,12 @@ class MessageWidget(urwid.ListBox):
                         sender = msg['sender']['first_name'] #+ ' ' + msg['sender']['last_name']
                         text = msg['text']
                     except:
-                        id = msg['id']
-                        msg = self.Telegram_ui.sender.message_get(id)
-                        fichier_log = open('/home/seb/log.tele', "a")
-                        fichier_log.write(str(msg) + u'\n')
-                        fichier_log.close()
+                        #id = msg['id']
+                        #msg = self.Telegram_ui.sender.message_get(id)
                         date = 1                   #FIX ME : problem pour certain user
                         sender = "unknown"
                         text = "ERROR"
-                        return 0
+                        #return 0
 
         cur_date = time.strftime('%d/%m/%Y', time.localtime(date))
 
