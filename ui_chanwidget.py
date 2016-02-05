@@ -45,6 +45,7 @@ class ChanWidget(urwid.ListBox):
         self.focus_position = current_pos
         self.updateLocked = False
 
+
     def chan_change(self, button, print_name): 
         
         for i in self.chans:

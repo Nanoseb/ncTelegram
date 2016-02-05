@@ -20,8 +20,23 @@ class Telegram_ui:
         self.start_Telegram()
         palette = [('title', 'bold,yellow', 'dark blue'),
                    ('hint', 'bold,yellow', 'dark blue'),
-                   ('msg', 'white', 'dark red'),
-                   ('chan', 'black', 'white')]
+                   ('chan', 'black', 'white'),
+                   ('date', 'light green', ''),
+                   ('hour', 'dark gray',''),
+                   ('dark red','dark red',''),
+                   ('dark green', 'dark green',''),
+                   ('brown','brown',''),
+                   ('dark blue','dark blue',''),
+                   ('dark magenta','dark magenta',''),
+                   ('dark cyan','dark cyan',''),
+                   ('light gray','light gray',''),
+                   ('dark gray','dark gray',''),
+                   ('light red','light red',''),
+                   ( 'light green', 'light green',''),
+                   ( 'light blue', 'light blue',''),
+                   ('light magenta','light magenta',''),
+                   ('light cyan','light cyan',''),
+                   ('white', 'white',''),]
 
         self.current_chan = []        
 
