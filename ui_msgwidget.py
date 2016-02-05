@@ -66,7 +66,7 @@ class MessageWidget(urwid.ListBox):
 
         hour = time.strftime('%H:%M ', time.localtime(date))
         color = self.get_name_color(sender)
-        self.msg_list.insert( self.pos +1 , urwid.Text([('hour', hour), ( color ,'{0: > 10}'.format(sender)), ('light gray', " | "), text]))
+        self.msg_list.insert( self.pos +1 , urwid.Text([('hour', hour), ( color ,'{0: >10}'.format(sender)), ('light gray', " | "), text]))
         self.focus_position = self.pos 
         self.pos = self.pos +1
 
