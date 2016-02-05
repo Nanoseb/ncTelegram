@@ -63,9 +63,9 @@ class Telegram_ui:
         self.msg_dump = MessageReceiver(self)
         self.msg_dump.daemon = True
         self.msg_dump.start()
-
+        
         # Panneau droit
-        right_side = urwid.Pile([self.msg_widget, (1, self.msg_send_widget)])
+        right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
 
         # Arrangements finaux
         main_columns = urwid.Columns([('weight', 1, self.chan_widget),

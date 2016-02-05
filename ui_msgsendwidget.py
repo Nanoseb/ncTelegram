@@ -10,7 +10,7 @@ class MessageSendWidget(urwid.Filler):
         self.update_send_widget()
 
     def update_send_widget(self):
-        self.widgetEdit = urwid.Edit(self.Telegram_ui.current_chan['print_name'] + " : ", "", multiline=False)
+        self.widgetEdit = urwid.Edit(self.Telegram_ui.current_chan['print_name'].replace('_',' ') + " : ", "", multiline=False)
         super().__init__(self.widgetEdit)
 
     def keypress(self, size, key):
