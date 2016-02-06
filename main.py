@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -48,8 +48,6 @@ class Telegram_ui:
         self.me = self.sender.get_self()
 
         self.current_chan = []        
-        self.total_msg_waiting = 0
-        self.print_title()
 
         # Barre de titre
         title_bar = InfoBar("ncTelegram v0.01", 
@@ -58,6 +56,9 @@ class Telegram_ui:
 
         # Liste des chans
         self.chan_widget = ChanWidget(self);
+        
+        # barre de titre
+        self.print_title()
     
         # Liste des messages
         self.msg_widget = MessageWidget(self);
@@ -100,10 +101,11 @@ class Telegram_ui:
 
     
     def print_title(self):
-        if self.total_msg_waiting == 0:
+        total_msg_waiting = sum(self.chan_widget.msg_chan.values())
+        if total_msg_waiting == 0:
             sys.stdout.write("\x1b]2;ncTelegram\x07")
         else:
-            sys.stdout.write("\x1b]2;ncTelegram [" + str(self.total_msg_waiting) + "]\x07")
+            sys.stdout.write("\x1b]2;ncTelegram [" + str(total_msg_waiting) + "]\x07")
 
     def start_Telegram(self):
         # Liaison avec telegram-cli

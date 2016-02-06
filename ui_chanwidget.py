@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import urwid
@@ -63,20 +63,18 @@ class ChanWidget(urwid.ListBox):
 
 
 
-    def add_msg(self, msg):
-        cmd = msg['receiver']['cmd']  
+    def add_msg(self, cmd):
+
+        #current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id']) 
    
-        current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id']) 
-        if cmd != current_cmd:
-            if cmd in self.msg_chan:
-                self.msg_chan[cmd] = self.msg_chan[cmd] + 1
-            else:
-                self.msg_chan[cmd] = 1
+        #if cmd != current_cmd:
+        if cmd in self.msg_chan:
+            self.msg_chan[cmd] = self.msg_chan[cmd] + 1
+        else:
+            self.msg_chan[cmd] = 1
 
-            self.Telegram_ui.total_msg_waiting = self.Telegram_ui.total_msg_waiting + 1
-            self.Telegram_ui.print_title()
+        self.Telegram_ui.print_title()
 
-        self.updateChanList()
         
 
 
@@ -89,9 +87,8 @@ class ChanWidget(urwid.ListBox):
         current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id']) 
         
         if current_cmd in self.msg_chan:
-            self.Telegram_ui.total_msg_waiting = self.Telegram_ui.total_msg_waiting - self.msg_chan[current_cmd]
-            self.Telegram_ui.print_title()
             del self.msg_chan[current_cmd]
+            self.Telegram_ui.print_title()
 
         self.Telegram_ui.msg_send_widget.update_send_widget()
         self.Telegram_ui.msg_widget.getHistory()
