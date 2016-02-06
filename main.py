@@ -125,7 +125,7 @@ class Telegram_ui:
 
 
     def exit_on_q(self, key):
-        if key in('q','Q','ctrl w'):
+        if key in('q','Q'):
             self.exit()
 
 

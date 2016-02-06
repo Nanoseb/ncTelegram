@@ -79,18 +79,18 @@ class MessageSendWidget(urwid.Filler):
             self.Telegram_ui.sender.send_msg(dst, msg)
             self.widgetEdit.set_edit_text("")
 
-        if key == 'tab' and self.widgetEdit.get_edit_text().startswith("@") and \
+        elif key == 'tab' and self.widgetEdit.get_edit_text().startswith("@") and \
                 not ' ' in self.widgetEdit.get_edit_text():
             try:
                 self.autocomplete()
             except:
                 pass
 
-        if key == 'ctrl w':
-            self.Telegram_ui.exit()
+        elif key == 'ctrl w' or key == 'ctrl k':
+            self.widgetEdit.set_edit_text("")
 
         # donner le focus a la liste
-        if key == 'up' or key == 'page up':
+        elif key == 'up' or key == 'page up' or key == 'esc':
             self.Telegram_ui.right_side.focus_position = 0
 
 # vim: ai ts=4 sw=4 et sts=4
