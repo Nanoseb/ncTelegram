@@ -8,7 +8,7 @@ class MessageWidget(urwid.ListBox):
         self.updateLocked = False
         self.prev_date = 1
         self.Telegram_ui = Telegram_ui
-
+        self.fix_getHist = []
         self.getHistory()
     
 
@@ -16,54 +16,42 @@ class MessageWidget(urwid.ListBox):
         while (self.updateLocked):
             time.sleep(0.5)
         self.updateLocked = True
-
+        
         # Suppression des messages précédent (=redéfinition du widget)
         self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('top', " "),align='left')]) 
         super().__init__(self.msg_list)
         pos = self.focus_position
-        
-        msgDict = self.Telegram_ui.sender.history(self.Telegram_ui.current_chan['print_name'], 100)
-        msgList = []
+        current_print_name = self.Telegram_ui.current_chan['print_name']
+
+        # Hack pour fixer le problème des messages vide...
+        if not current_print_name in self.fix_getHist:
+            self.Telegram_ui.sender.history(current_print_name, 100)
+            self.fix_getHist.append(current_print_name)
+
+        msgDict = self.Telegram_ui.sender.history(current_print_name, 100)
 
         self.pos = 1
         for msg in msgDict:
             self.print_msg(msg)
 
-
         self.updateLocked = False
+
+
 
 
     def print_msg(self, msg):
 
+        date = msg['date']
         try:
-            date = msg['date'] 
-            sender = msg['from']['first_name']
             text = msg['text']
         except:
-            try:
-                date = msg['date'] 
-                sender = msg['sender']['first_name'] #+ ' ' + msg['sender']['last_name']
-                text = msg['text']
+            text = "media"
 
-                # To handle message without text (like media)
-            except:
-                try:
-                    date = msg['date'] 
-                    sender = msg['from']['first_name'] 
-                    text = "media"
-                except:
-                    try:
+        try:
+            sender = msg['from']['first_name']
+        except:
+            sender = msg['sender']['first_name'] 
 
-                        date = msg['date'] 
-                        sender = msg['sender']['first_name'] #+ ' ' + msg['sender']['last_name']
-                        text = msg['text']
-                    except:
-                        #id = msg['id']
-                        #msg = self.Telegram_ui.sender.message_get(id)
-                        date = 1                   #FIX ME : problem pour certain user
-                        sender = "unknown"
-                        text = "ERROR"
-                        #return 0
 
         cur_date = time.strftime('%d/%m/%Y', time.localtime(date))
 

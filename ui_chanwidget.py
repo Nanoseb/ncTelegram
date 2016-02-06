@@ -26,7 +26,7 @@ class ChanWidget(urwid.ListBox):
             try:
                 self.chans = self.Telegram_ui.sender.dialog_list()
             except:
-                time.sleep(0.5)
+                time.sleep(1)
                 pass
 
 
