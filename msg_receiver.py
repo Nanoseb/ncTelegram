@@ -21,10 +21,6 @@ class MessageReceiver(threading.Thread):
             # si c'est un message on l'affiche
             if msg['event'] == "message":
 
-                fichier_log = open('/home/seb/log.tele', "a")
-                fichier_log.write(str(msg) + u'\n')
-                fichier_log.close()
-
                 # vérifie que le message a été envoyé au chan courant
                 current_type = self.Telegram_ui.current_chan['type']
                 current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id']) 
