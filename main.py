@@ -97,7 +97,6 @@ class Telegram_ui:
 
             Notify.Notification.new('', '<b>' + sender + '</b>\n' + text, self.image).show()
 
-                
 
     
     def print_title(self):
@@ -126,7 +125,7 @@ class Telegram_ui:
 
 
     def exit_on_q(self, key):
-        if key in('q','Q'):
+        if key in('q','Q','ctrl w'):
             self.exit()
 
 
