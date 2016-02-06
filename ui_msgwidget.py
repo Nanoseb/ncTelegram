@@ -41,7 +41,6 @@ class MessageWidget(urwid.ListBox):
 
 
 
-
     def print_msg(self, msg):
 
         date = msg['date']
@@ -64,11 +63,11 @@ class MessageWidget(urwid.ListBox):
             self.pos = self.pos +1
             self.prev_date = cur_date
 
-        hour = time.strftime('%H:%M ', time.localtime(date))
+        hour = time.strftime(' %H:%M ', time.localtime(date))
         color = self.get_name_color(sender + 'a')
         size_name = 9
 
-        formated_text = text.replace(u'\n', u'\n' + ' '*(size_name + 7) + '| ')
+        formated_text = text.replace(u'\n', u'\n' + ' '*(size_name + 8) + '| ')
         
         self.msg_list.insert( self.pos +1 , urwid.Text([('hour', hour),
             ( color ,'{0: >9}'.format(sender[0:size_name])),

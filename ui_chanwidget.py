@@ -95,5 +95,9 @@ class ChanWidget(urwid.ListBox):
 
         #Appel pour actualiser le chan courant de la liste
         self.updateChanList()
+        
+        # remmetre le focus sur la zone de texte
+        self.Telegram_ui.main_columns.focus_position = 2
+        self.Telegram_ui.right_side.focus_position = 1
 
 # vim: ai ts=4 sw=4 et sts=4

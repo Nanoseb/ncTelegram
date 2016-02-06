@@ -20,9 +20,7 @@ from pytg import Telegram
 class Telegram_ui:
     def __init__(self):
         self.start_Telegram()
-        palette = [('title', 'bold,yellow', 'dark blue'),
-                   ('hint', 'bold,yellow', 'dark blue'),
-                   ('chan', 'black', 'white'),
+        palette = [('status_bar', 'bold,white', 'dark gray'),
                    ('date', 'light green', ''),
                    ('hour', 'dark gray',''),
                    ('reversed', 'standout', ''),
@@ -55,11 +53,8 @@ class Telegram_ui:
 
         # Barre de titre
         title_bar = InfoBar("ncTelegram v0.01", 
-                             style='title', bar_align='top', text_align='center')
+                             style='status_bar', bar_align='top', text_align='center')
 
-        # Barre de commandes
-        hint_bar = InfoBar("Quit(Q)", 
-                            style='hint', bar_align='bottom', text_align='left')
 
         # Liste des chans
         self.chan_widget = ChanWidget(self);
@@ -75,13 +70,17 @@ class Telegram_ui:
         self.msg_dump.daemon = True
         self.msg_dump.start()
         
+        
         # Panneau droit
-        right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
-
+        self.right_side = urwid.Pile([self.msg_widget,  (2, self.msg_send_widget)])
+        
+        vert_separator = urwid.AttrMap(urwid.Filler(urwid.Columns([])), 'status_bar')
+        
         # Arrangements finaux
-        main_columns = urwid.Columns([('weight', 1, self.chan_widget),
-                                      ('weight', 5, right_side)])
-        main_pile = urwid.Pile([(1, title_bar), main_columns, (1, hint_bar)])
+        self.main_columns = urwid.Columns([('weight', 1, self.chan_widget),
+                                        (1, vert_separator),
+                                      ('weight', 5, self.right_side)])
+        main_pile = urwid.Pile([(1, title_bar), self.main_columns,])
 
         self.main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.exit_on_q)
         self.main_loop.screen.set_terminal_properties(colors=256)
