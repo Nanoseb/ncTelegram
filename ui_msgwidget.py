@@ -37,7 +37,6 @@ class MessageWidget(urwid.ListBox):
 
         try:
             date = msg['date'] 
-            #sender = msg['from']['print_name'].replace('_', ' ')
             sender = msg['from']['first_name']
             text = msg['text']
         except:

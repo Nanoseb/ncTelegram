@@ -3,6 +3,7 @@
 
 import sys
 import time
+from gi.repository import Notify
 
 import urwid
 
@@ -39,6 +40,13 @@ class Telegram_ui:
                    ('light magenta','light magenta',''),
                    ('light cyan','light cyan',''),
                    ('white', 'white',''),]
+
+        # Notification
+        self.notif = True
+        if self.notif:
+            Notify.init("ncTelegram")
+        
+        self.me = self.sender.get_self()
 
         self.current_chan = []        
         self.total_msg_waiting = 0
@@ -78,6 +86,19 @@ class Telegram_ui:
         self.main_loop.screen.set_terminal_properties(colors=256)
         self.main_loop.run()
 
+    def display_notif(self, msg):
+        if self.notif:
+            text = msg['text']
+            
+            try:
+                sender = msg['from']['first_name']
+            except:
+                sender = msg['receiver']['name'] + " : " + msg['sender']['first_name']
+
+            Notify.Notification.new(sender, text).show()
+                
+
+    
     def print_title(self):
         if self.total_msg_waiting == 0:
             sys.stdout.write("\x1b]2;ncTelegram\x07")
