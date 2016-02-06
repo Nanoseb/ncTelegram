@@ -32,7 +32,10 @@ class MessageWidget(urwid.ListBox):
 
         self.pos = 1
         for msg in msgDict:
-            self.print_msg(msg)
+            try:
+                self.print_msg(msg)
+            except:
+                pass
 
         self.updateLocked = False
 

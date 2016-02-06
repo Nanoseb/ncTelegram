@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 import time
 from gi.repository import Notify
@@ -45,7 +46,7 @@ class Telegram_ui:
         self.notif = True
         if self.notif:
             Notify.init("ncTelegram")
-        
+            self.image = os.getcwd()+'/t_logo.png'
         self.me = self.sender.get_self()
 
         self.current_chan = []        
@@ -95,7 +96,8 @@ class Telegram_ui:
             except:
                 sender = msg['receiver']['name'] + " : " + msg['sender']['first_name']
 
-            Notify.Notification.new(sender, text).show()
+            Notify.Notification.new('', '<b>' + sender + '</b>\n' + text, self.image).show()
+
                 
 
     
@@ -119,6 +121,7 @@ class Telegram_ui:
 
 
     def exit(self):
+        Notify.uninit()
         self.stop_Telegram()
         raise urwid.ExitMainLoop
 
