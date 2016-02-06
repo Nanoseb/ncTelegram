@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -119,6 +119,7 @@ class Telegram_ui:
 
 
     def exit(self):
+        sys.stdout.write("\x1b]2;\x07")
         Notify.uninit()
         self.stop_Telegram()
         raise urwid.ExitMainLoop
