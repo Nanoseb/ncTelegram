@@ -44,9 +44,9 @@ class Telegram_ui:
         self.notif = True
         if self.notif:
             Notify.init("ncTelegram")
-            self.image = os.getcwd()+'/t_logo.png'
+            self.image = os.path.dirname(os.path.abspath(__file__))+'/t_logo.png'
         self.me = self.sender.get_self()
-
+        
         self.current_chan = []        
 
         # Barre de titre
