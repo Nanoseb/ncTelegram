@@ -28,13 +28,14 @@ class Telegram_ui:
     def __init__(self):
 
         global NOTIF, PATH_TELEGRAM, PATH_PUBKEY
+        self.lock_receiver = True
         self.start_Telegram()
 
         palette = [('status_bar', 'bold,white', 'dark gray'),
                    ('date', 'light green', ''),
                    ('hour', 'dark gray',''),
                    ('reversed', 'standout', ''),
-                   ('cur_chan', 'light green,bold', ''),
+                   ('cur_chan', 'light green', ''),
                    ('dark red','dark red',''),
                    ('dark green', 'dark green',''),
                    ('brown','brown',''),
@@ -79,7 +80,6 @@ class Telegram_ui:
         self.msg_dump.daemon = True
         self.msg_dump.start()
         
-        
         # Panneau droit
         self.right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
         
@@ -92,8 +92,10 @@ class Telegram_ui:
         main_pile = urwid.Pile([(1, title_bar), self.main_columns,])
 
         self.main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.exit_on_q)
-        self.main_loop.screen.set_terminal_properties(colors=256)
+        self.main_loop.screen.set_terminal_properties(colors=16)
+        self.lock_receiver = False
         self.main_loop.run()
+
 
     def display_notif(self, msg):
         if NOTIF:
@@ -105,7 +107,6 @@ class Telegram_ui:
                 sender = msg['receiver']['name'] + ": " + msg['sender']['first_name']
 
             Notify.Notification.new('', '<b>' + sender + '</b>\n' + text, self.image).show()
-
 
     
     def print_title(self):
@@ -126,7 +127,9 @@ class Telegram_ui:
 
 
     def stop_Telegram(self):
-        self.tg.stopCLI()
+        #self.tg.stopCLI()
+        self.sender.terminate()
+        self.receiver.stop()
 
 
     def exit(self):

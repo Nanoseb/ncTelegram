@@ -10,10 +10,10 @@ class MessageWidget(urwid.ListBox):
         self.updateLocked = False
         self.Telegram_ui = Telegram_ui
         self.fix_getHist = []
-        self.getHistory()
+        self.get_history()
     
 
-    def getHistory(self):
+    def get_history(self):
         while (self.updateLocked):
             time.sleep(0.5)
         self.updateLocked = True
@@ -60,23 +60,26 @@ class MessageWidget(urwid.ListBox):
             sender = "Unknown"
 
 
-        cur_date = time.strftime('%d/%m/%Y', time.localtime(date))
+        cur_date = time.strftime('│ %d/%m/%Y │', time.localtime(date))
 
         if cur_date != self.prev_date:
-            self.msg_list.insert(self.pos + 1, urwid.Text(('date', cur_date), align='center'))
-            self.focus_position = self.pos 
-            self.pos = self.pos +1
+            self.msg_list.insert(self.pos + 1, urwid.Text(('date', '┌────────────┐'), align='center'))
+            self.msg_list.insert(self.pos + 2, urwid.Text(('date', cur_date), align='center'))
+            self.msg_list.insert(self.pos + 3, urwid.Text(('date', '└────────────┘'), align='center'))
+            self.focus_position = self.pos +2
+            self.pos = self.pos +3
             self.prev_date = cur_date
 
         hour = time.strftime(' %H:%M ', time.localtime(date))
-        color = self.get_name_color(sender + 'a')
+        color = self.get_name_color(sender)
+
         size_name = 9
 
-        formated_text = text.replace(u'\n', u'\n' + ' '*(size_name + 8) + '| ')
+        formated_text = text.replace(u'\n', u'\n' + ' '*(size_name + 10))
 
         self.msg_list.insert( self.pos +1 , urwid.Text([('hour', hour),
             ( color ,'{0: >9}'.format(sender[0:size_name])),
-            ('light gray', " | "),
+            ('dark gray', " │ "),
             formated_text]))
 
         self.focus_position = self.pos 

@@ -18,10 +18,10 @@ class ChanWidget(urwid.ListBox):
         self.updateLocked = False
         self.Telegram_ui = Telegram_ui
         self.msg_chan = {}        
-        self.updateChanList()
+        self.update_chan_list()
    
     # Mettre a jour la liste des chans
-    def updateChanList(self):
+    def update_chan_list(self):
         while (self.updateLocked):
             time.sleep(0.1)
         self.updateLocked = True
@@ -104,10 +104,10 @@ class ChanWidget(urwid.ListBox):
             self.Telegram_ui.print_title()
 
         self.Telegram_ui.msg_send_widget.update_send_widget()
-        self.Telegram_ui.msg_widget.getHistory()
+        self.Telegram_ui.msg_widget.get_history()
 
         #Appel pour actualiser le chan courant de la liste
-        self.updateChanList()
+        self.update_chan_list()
         
         # remmetre le focus sur la zone de texte
         self.Telegram_ui.main_columns.focus_position = 2

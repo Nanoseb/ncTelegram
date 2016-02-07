@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import threading
 from pytg.utils import coroutine
+import time
 
 class MessageReceiver(threading.Thread):
     def __init__(self, Telegram_ui):
@@ -10,6 +11,9 @@ class MessageReceiver(threading.Thread):
 
 
     def run(self):
+        while self.Telegram_ui.lock_receiver:
+            time.sleep(1)
+
         self.Telegram_ui.receiver.message(self.get_dump())
 
 
@@ -17,6 +21,9 @@ class MessageReceiver(threading.Thread):
     def get_dump(self):
         while True:
             msg = (yield)
+
+            current_type = self.Telegram_ui.current_chan['type']
+            current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id']) 
 
             if msg['event'] == "message":
 
@@ -37,7 +44,7 @@ class MessageReceiver(threading.Thread):
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd)
 
 
-                self.Telegram_ui.chan_widget.updateChanList()
+                self.Telegram_ui.chan_widget.update_chan_list()
                 
                 # notif on hl
                 if self.Telegram_ui.me['username'] != '' and \
@@ -47,5 +54,16 @@ class MessageReceiver(threading.Thread):
 
                 # On actualise l'affichage 
                 self.Telegram_ui.main_loop.draw_screen()
-              
+
+            elif msg['event'] == 'online-status' and current_cmd == 'user#'+str(msg['user']['id']):
+                when = msg['when']
+                status = msg['online']
+
+                self.Telegram_ui.msg_send_widget.update_online(when, status)
+
+
+
+
+
+
 # vim: ai ts=4 sw=4 et sts=4
