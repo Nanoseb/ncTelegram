@@ -50,16 +50,21 @@ class ChanWidget(urwid.ListBox):
             
             cmd = i['type'] + "#" + str(i['id']) 
 
-            if cmd in self.msg_chan:
-                label = print_name.replace('_', ' ') + ' [' + str(self.msg_chan[cmd]) + ']' 
+            label = print_name.replace('_', ' ')
+
+            if i['type'] == 'user':
+                label = "➜  " + label
             else:
-                label = print_name.replace('_', ' ')
+                label = "➜➜ " + label
+
+            if cmd in self.msg_chan:
+                label = label + ' [' + str(self.msg_chan[cmd]) + ']' 
 
             if print_name == self.Telegram_ui.current_chan['print_name'] :            
-                button = NewButton(('cur_chan',"→ " + label), self.chan_change, print_name)
+                button = NewButton(('cur_chan',label), self.chan_change, print_name)
                 current_pos = pos + 1
             else:
-                button = NewButton("→ " + label,self.chan_change, print_name)
+                button = NewButton(label,self.chan_change, print_name)
     
             self.chan_list.insert(pos +1, button)
             pos = pos + 1
