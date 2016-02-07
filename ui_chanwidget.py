@@ -4,6 +4,13 @@
 import urwid
 import time
 
+class NewButton(urwid.Button):
+    def __init__(self, caption, callback, arg):
+        super(NewButton, self).__init__("")
+        urwid.connect_signal(self, 'click', callback, arg)
+        self._w = urwid.AttrMap(urwid.SelectableIcon(caption, 1),
+            None, focus_map='reversed')
+
 # Le widget utilise pour afficher la liste des chans
 class ChanWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
@@ -20,7 +27,7 @@ class ChanWidget(urwid.ListBox):
         self.updateLocked = True
 
         # Réécriture de la liste, pour actualiser le chan courant
-        self.chan_list = urwid.SimpleFocusListWalker([urwid.Text("Chan"), urwid.Divider()])
+        self.chan_list = urwid.SimpleFocusListWalker([urwid.Text("Chan list:"), urwid.Divider()])
         super().__init__(self.chan_list)
 
         # list de dictionnaire contenant les chans
@@ -49,13 +56,12 @@ class ChanWidget(urwid.ListBox):
                 label = print_name.replace('_', ' ')
 
             if print_name == self.Telegram_ui.current_chan['print_name'] :            
-                button = urwid.Button(('cur_chan', label))
+                button = NewButton(('cur_chan',"→ " + label), self.chan_change, print_name)
                 current_pos = pos + 1
             else:
-                button = urwid.Button(label)
+                button = NewButton("→ " + label,self.chan_change, print_name)
     
-            urwid.connect_signal(button, 'click', self.chan_change, print_name)
-            self.chan_list.insert(pos +1, urwid.AttrMap(button, None, focus_map='reversed'))
+            self.chan_list.insert(pos +1, button)
             pos = pos + 1
 
         self.focus_position = current_pos
@@ -63,11 +69,9 @@ class ChanWidget(urwid.ListBox):
 
 
 
+
     def add_msg(self, cmd):
 
-        #current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id']) 
-   
-        #if cmd != current_cmd:
         if cmd in self.msg_chan:
             self.msg_chan[cmd] = self.msg_chan[cmd] + 1
         else:
