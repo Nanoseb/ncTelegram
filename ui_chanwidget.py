@@ -44,7 +44,8 @@ class ChanWidget(urwid.ListBox):
             self.Telegram_ui.current_chan = self.chans[-1]
 
         pos = self.focus_position
-
+        
+        # Construction de la liste de chan
         for i in self.chans[::-1]:
             print_name = i['print_name']
             
@@ -69,6 +70,7 @@ class ChanWidget(urwid.ListBox):
             self.chan_list.insert(pos +1, button)
             pos = pos + 1
 
+
         self.focus_position = current_pos
         self.updateLocked = False
 
@@ -76,7 +78,8 @@ class ChanWidget(urwid.ListBox):
 
 
     def add_msg(self, cmd):
-
+        """ incrémentation des messages non lut
+        """
         if cmd in self.msg_chan:
             self.msg_chan[cmd] = self.msg_chan[cmd] + 1
         else:
@@ -95,6 +98,7 @@ class ChanWidget(urwid.ListBox):
         
         current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id']) 
         
+        # suppression des messages non lut pour le nouveau chan
         if current_cmd in self.msg_chan:
             del self.msg_chan[current_cmd]
             self.Telegram_ui.print_title()

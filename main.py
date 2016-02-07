@@ -4,22 +4,32 @@
 import os
 import sys
 import time
-from gi.repository import Notify
 
 import urwid
+from pytg import Telegram
+try: 
+    from gi.repository import Notify
+    NOTIF = True
+except:
+    NOTIF = False
 
 from ui_infobar import InfoBar
 from ui_chanwidget import ChanWidget
 from ui_msgwidget import MessageWidget
 from ui_msgsendwidget import MessageSendWidget
 from msg_receiver import MessageReceiver 
-from pytg import Telegram
 
+
+PATH_TELEGRAM = "/usr/bin/telegram-cli"
+PATH_PUBKEY = "/etc/telegram-cli/server.pub"
 
 
 class Telegram_ui:
     def __init__(self):
+
+        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY
         self.start_Telegram()
+
         palette = [('status_bar', 'bold,white', 'dark gray'),
                    ('date', 'light green', ''),
                    ('hour', 'dark gray',''),
@@ -41,8 +51,7 @@ class Telegram_ui:
                    ('white', 'white',''),]
 
         # Notification
-        self.notif = True
-        if self.notif:
+        if NOTIF:
             Notify.init("ncTelegram")
             self.image = os.path.dirname(os.path.abspath(__file__))+'/t_logo.png'
         self.me = self.sender.get_self()
@@ -52,7 +61,6 @@ class Telegram_ui:
         # Barre de titre
         title_bar = InfoBar("ncTelegram v0.01", 
                              style='status_bar', bar_align='top', text_align='center')
-
 
         # Liste des chans
         self.chan_widget = ChanWidget(self);
@@ -73,7 +81,7 @@ class Telegram_ui:
         
         
         # Panneau droit
-        self.right_side = urwid.Pile([self.msg_widget,  (2, self.msg_send_widget)])
+        self.right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
         
         vert_separator = urwid.AttrMap(urwid.Filler(urwid.Columns([])), 'status_bar')
         
@@ -88,13 +96,13 @@ class Telegram_ui:
         self.main_loop.run()
 
     def display_notif(self, msg):
-        if self.notif:
+        if NOTIF:
             text = msg['text']
             
             try:
-                sender = msg['from']['first_name']
+                sender = msg['peer']['first_name']
             except:
-                sender = msg['receiver']['name'] + " : " + msg['sender']['first_name']
+                sender = msg['receiver']['name'] + ": " + msg['sender']['first_name']
 
             Notify.Notification.new('', '<b>' + sender + '</b>\n' + text, self.image).show()
 
@@ -105,12 +113,13 @@ class Telegram_ui:
         if total_msg_waiting == 0:
             sys.stdout.write("\x1b]2;ncTelegram\x07")
         else:
-            sys.stdout.write("\x1b]2;ncTelegram [" + str(total_msg_waiting) + "]\x07")
+            sys.stdout.write("\x1b]2;ncTelegram (" + str(total_msg_waiting) + ")\x07")
+
 
     def start_Telegram(self):
         # Liaison avec telegram-cli
-        self.tg = Telegram(telegram="/usr/bin/telegram-cli",
-                      pubkey_file="/etc/telegram-cli/server.pub")
+        self.tg = Telegram(telegram= PATH_TELEGRAM,
+                            pubkey_file=PATH_PUBKEY)
         self.receiver = self.tg.receiver
         self.sender = self.tg.sender
         self.receiver.start()
@@ -133,7 +142,8 @@ class Telegram_ui:
 
 
 
-Telegram_ui()
+if __name__ == "__main__":
+    Telegram_ui()
 
 
 # vim: ai ts=4 sw=4 et sts=4

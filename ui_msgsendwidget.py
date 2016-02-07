@@ -20,6 +20,7 @@ class MessageSendWidget(urwid.Filler):
     def update_status_bar(self):
         chan_name = self.Telegram_ui.current_chan['print_name'].replace('_',' ')
         chan_type = self.Telegram_ui.current_chan['type']
+
         if chan_type == 'chat':
             chan_num = self.Telegram_ui.current_chan['members_num']
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " members ]"
@@ -29,6 +30,7 @@ class MessageSendWidget(urwid.Filler):
         self.status_bar = urwid.Text(('status_bar', text), align='left')
         self.attr = urwid.AttrMap(self.status_bar, 'status_bar')
         super().__init__(self.attr, 'top')
+
 
     def autocomplete(self):
         while (self.updateLockedauto):
@@ -40,6 +42,7 @@ class MessageSendWidget(urwid.Filler):
 
         username_list = []
         
+        # récupération des username possible
         if type_chan == 'chat':        
             chat_info = self.Telegram_ui.sender.chat_info(print_name_chan)
             for user in chat_info['members']:
@@ -55,11 +58,11 @@ class MessageSendWidget(urwid.Filler):
                 if 'username' in user:
                     username_list.append(user['username'])
 
-
         text = self.widgetEdit.get_edit_text()[1:]
 
         self.updateLockedauto = False
         
+        # autocompletion avec le premier résultat
         for user in username_list:
             if user.startswith(text):
                 to_complete = user[len(text):]
@@ -80,18 +83,20 @@ class MessageSendWidget(urwid.Filler):
 
             self.Telegram_ui.sender.send_msg(dst, msg)
             self.widgetEdit.set_edit_text("")
-
+        
+        # Autocompletion
         elif key == 'tab' and self.widgetEdit.get_edit_text().startswith("@") and \
                 not ' ' in self.widgetEdit.get_edit_text():
             try:
                 self.autocomplete()
             except:
                 pass
-
+        
+        # Supprimer le texte courant
         elif key == 'ctrl w' or key == 'ctrl k':
             self.widgetEdit.set_edit_text("")
 
-        # donner le focus a la liste
+        # donner le focus à la liste
         elif key == 'up' or key == 'page up' or key == 'esc':
             self.Telegram_ui.right_side.focus_position = 0
 

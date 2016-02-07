@@ -18,7 +18,6 @@ class MessageReceiver(threading.Thread):
         while True:
             msg = (yield)
 
-            # si c'est un message on l'affiche
             if msg['event'] == "message":
 
                 # vérifie que le message a été envoyé au chan courant
@@ -39,13 +38,12 @@ class MessageReceiver(threading.Thread):
 
 
                 self.Telegram_ui.chan_widget.updateChanList()
-  
-                try:
-                    if self.Telegram_ui.me['username'] != '' and \
+                
+                # notif on hl
+                if self.Telegram_ui.me['username'] != '' and \
                             "@" + self.Telegram_ui.me['username'] in msg['text']:
-                        self.Telegram_ui.display_notif(msg)
-                except:
-                    """ """
+                    self.Telegram_ui.display_notif(msg)
+
 
                 # On actualise l'affichage 
                 self.Telegram_ui.main_loop.draw_screen()

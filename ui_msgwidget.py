@@ -8,7 +8,6 @@ class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
         self.msgs = []
         self.updateLocked = False
-        self.prev_date = 1
         self.Telegram_ui = Telegram_ui
         self.fix_getHist = []
         self.getHistory()
@@ -19,10 +18,12 @@ class MessageWidget(urwid.ListBox):
             time.sleep(0.5)
         self.updateLocked = True
         
+        self.prev_date = 1
+        
         # Suppression des messages précédent (=redéfinition du widget)
         self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('top', " "),align='left')]) 
         super().__init__(self.msg_list)
-        pos = self.focus_position
+
         current_print_name = self.Telegram_ui.current_chan['print_name']
 
         # Hack pour fixer le problème des messages vide...
@@ -34,27 +35,29 @@ class MessageWidget(urwid.ListBox):
 
         self.pos = 1
         for msg in msgDict:
-            try:
-                self.print_msg(msg)
-            except:
-                pass
+            self.print_msg(msg)
 
         self.updateLocked = False
 
 
 
     def print_msg(self, msg):
-
-        date = msg['date']
+        
         try:
-            text = msg['text']
-        except:
-            text = "media"
+            date = msg['date']
+            try:
+                text = msg['text']
+            except:
+                text = "media"
 
-        try:
-            sender = msg['from']['first_name']
+            try:
+                sender = msg['from']['first_name']
+            except:
+                sender = msg['sender']['first_name'] 
         except:
-            sender = msg['sender']['first_name'] 
+            date = 1
+            text = "empty message"
+            sender = "Unknown"
 
 
         cur_date = time.strftime('%d/%m/%Y', time.localtime(date))
@@ -70,7 +73,7 @@ class MessageWidget(urwid.ListBox):
         size_name = 9
 
         formated_text = text.replace(u'\n', u'\n' + ' '*(size_name + 8) + '| ')
-        
+
         self.msg_list.insert( self.pos +1 , urwid.Text([('hour', hour),
             ( color ,'{0: >9}'.format(sender[0:size_name])),
             ('light gray', " | "),
@@ -78,6 +81,7 @@ class MessageWidget(urwid.ListBox):
 
         self.focus_position = self.pos 
         self.pos = self.pos +1
+
 
     def get_name_color(self, name):
         list_color =  ['dark red',
@@ -94,7 +98,6 @@ class MessageWidget(urwid.ListBox):
                 'light magenta',
                 'light cyan',
                 'white']
-
 
         color = int(''.join(str(ord(c)) for c in name)) % len(list_color)
         return list_color[color]
