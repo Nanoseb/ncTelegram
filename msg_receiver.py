@@ -47,7 +47,7 @@ class MessageReceiver(threading.Thread):
                 self.Telegram_ui.chan_widget.update_chan_list()
                 
                 # notif on hl
-                if self.Telegram_ui.me['username'] != '' and \
+                if 'text' in msg and self.Telegram_ui.me['username'] != '' and \
                             "@" + self.Telegram_ui.me['username'] in msg['text']:
                     self.Telegram_ui.display_notif(msg)
 
