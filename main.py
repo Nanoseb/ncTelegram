@@ -55,7 +55,6 @@ class Telegram_ui:
         if NOTIF:
             Notify.init("ncTelegram")
             self.image = os.path.dirname(os.path.abspath(__file__))+'/t_logo.png'
-        self.me = self.sender.get_self()
         
         self.current_chan = []        
 
@@ -93,6 +92,7 @@ class Telegram_ui:
 
         self.main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.exit_on_q)
         self.main_loop.screen.set_terminal_properties(colors=16)
+        self.me = self.sender.get_self()
         self.lock_receiver = False
         self.main_loop.run()
 

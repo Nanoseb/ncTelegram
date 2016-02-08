@@ -23,7 +23,7 @@ class MessageSendWidget(urwid.Filler):
         if 'when' in self.Telegram_ui.current_chan:
             self.current_status = (self.Telegram_ui.current_chan['when'], False)
         else:
-            self.current_status = ('', True)
+            self.current_status = ('?', False)
 
         self.widgetEdit.set_edit_text('')
         self.update_status_bar()
@@ -42,6 +42,8 @@ class MessageSendWidget(urwid.Filler):
 
             if status:
                 text = text + ' --- [ Online ]'
+            elif when == '?':
+                text = text + ' --- [ Offline ]'
             else:
                 current_date = time.strftime('%d/%m/%Y', time.localtime(int(time.time()))) 
                 pattern = '%Y-%m-%d %H:%M:%S'
