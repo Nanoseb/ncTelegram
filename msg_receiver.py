@@ -51,13 +51,6 @@ class MessageReceiver(threading.Thread):
                             "@" + self.Telegram_ui.me['username'] in msg['text']:
                     self.Telegram_ui.display_notif(msg)
                 
-                if msg['text'] == 'd':
-                    self.Telegram_ui.msg_widget.delete_separator()
-
-                    fichier_log = open('/home/seb/log.tele', "a")
-                    fichier_log.write(str(1) + u'\n')
-                    fichier_log.close()
-
                 # On actualise l'affichage 
                 self.Telegram_ui.main_loop.draw_screen()
 

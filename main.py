@@ -34,6 +34,7 @@ class Telegram_ui:
         palette = [('status_bar', 'bold,white', 'dark gray'),
                    ('date', 'light green', ''),
                    ('hour', 'dark gray',''),
+                   ('separator', 'dark gray',''),
                    ('reversed', 'standout', ''),
                    ('cur_chan', 'light green', ''),
                    ('dark red','dark red',''),

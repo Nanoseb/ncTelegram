@@ -64,11 +64,10 @@ class MessageWidget(urwid.ListBox):
         cur_date = time.strftime('│ %d/%m/%Y │', time.localtime(date))
 
         if cur_date != self.prev_date:
-            self.msg_list.insert(self.pos + 1, urwid.Text(('date', '┌────────────┐'), align='center'))
-            self.msg_list.insert(self.pos + 2, urwid.Text(('date', cur_date), align='center'))
-            self.msg_list.insert(self.pos + 3, urwid.Text(('date', '└────────────┘'), align='center'))
-            self.focus_position = self.pos +2
-            self.pos = self.pos +3
+            date_text = '┌────────────┐\n' + cur_date + '\n└────────────┘'
+            self.msg_list.insert(self.pos + 1, urwid.Text(('date', date_text), align='center'))
+            self.focus_position = self.pos 
+            self.pos = self.pos +1
             self.prev_date = cur_date
 
         hour = time.strftime(' %H:%M ', time.localtime(date))
@@ -92,7 +91,8 @@ class MessageWidget(urwid.ListBox):
             self.delete_separator()
         self.separator_pos = self.pos
         self.pos = self.pos +1
-        self.msg_list.insert(self.pos, urwid.AttrMap(urwid.Divider('-'), 'hour'))
+        self.msg_list.insert(self.pos, urwid.AttrMap(urwid.Divider('-'), 'separator'))
+        self.focus_position = self.pos -1
 
     def delete_separator(self):
         if self.separator_pos != -1:
