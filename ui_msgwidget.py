@@ -75,12 +75,13 @@ class MessageWidget(urwid.ListBox):
 
         size_name = 9
 
-        formated_text = text.replace(u'\n', u'\n' + ' '*(size_name + 10))
-
-        self.msg_list.insert( self.pos +1 , urwid.Text([('hour', hour),
+        message_meta = urwid.Text([('hour', hour),
             ( color ,'{0: >9}'.format(sender[0:size_name])),
-            ('dark gray', " │ "),
-            formated_text]))
+            ('dark gray', " │ ")])
+
+        message_text = urwid.Text(text)
+        self.msg_list.insert( self.pos +1 , 
+                urwid.Columns([(size_name +10, message_meta), message_text]))
 
         self.focus_position = self.pos 
         self.pos = self.pos +1
