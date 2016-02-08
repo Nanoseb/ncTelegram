@@ -132,4 +132,5 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'up' or key == 'page up' or key == 'esc':
             self.Telegram_ui.right_side.focus_position = 0
 
+
 # vim: ai ts=4 sw=4 et sts=4

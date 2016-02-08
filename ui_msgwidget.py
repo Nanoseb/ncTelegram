@@ -7,6 +7,7 @@ import time
 class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
         self.msgs = []
+        self.separator_pos = -1
         self.updateLocked = False
         self.Telegram_ui = Telegram_ui
         self.fix_getHist = []
@@ -36,7 +37,7 @@ class MessageWidget(urwid.ListBox):
         self.pos = 1
         for msg in msgDict:
             self.print_msg(msg)
-
+        
         self.updateLocked = False
 
 
@@ -72,7 +73,7 @@ class MessageWidget(urwid.ListBox):
 
         hour = time.strftime(' %H:%M ', time.localtime(date))
         color = self.get_name_color(sender)
-
+        
         size_name = 9
 
         message_meta = urwid.Text([('hour', hour),
@@ -85,6 +86,19 @@ class MessageWidget(urwid.ListBox):
 
         self.focus_position = self.pos 
         self.pos = self.pos +1
+    
+    def draw_separator(self):
+        if self.separator_pos != -1:
+            self.delete_separator()
+        self.separator_pos = self.pos
+        self.pos = self.pos +1
+        self.msg_list.insert(self.pos, urwid.AttrMap(urwid.Divider('-'), 'hour'))
+
+    def delete_separator(self):
+        if self.separator_pos != -1:
+            del self.msg_list[self.separator_pos]
+            self.pos = self.pos -1
+            self.separator_pos = -1
 
 
     def get_name_color(self, name):

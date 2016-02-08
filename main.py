@@ -90,7 +90,7 @@ class Telegram_ui:
                                       ('weight', 5, self.right_side)])
         main_pile = urwid.Pile([(1, title_bar), self.main_columns,])
 
-        self.main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.exit_on_q)
+        self.main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.unhandle_key)
         self.main_loop.screen.set_terminal_properties(colors=16)
         self.me = self.sender.get_self()
         self.lock_receiver = False
@@ -139,10 +139,12 @@ class Telegram_ui:
         raise urwid.ExitMainLoop
 
 
-    def exit_on_q(self, key):
+    def unhandle_key(self, key):
         if key in('q','Q'):
             self.exit()
 
+        elif key == 'esc':
+            self.msg_widget.draw_separator()
 
 
 if __name__ == "__main__":
