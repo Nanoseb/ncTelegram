@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import urwid
 import time
+import urwid
 
 class MessageSendWidget(urwid.Filler):
     def __init__(self, Telegram_ui):
         self.Telegram_ui = Telegram_ui
         self.updateLockedauto = False
+        self.current_status = ('?', False)
 
         self.status_bar = urwid.Text(('status_bar', ' '), align='left')
         self.attr = urwid.AttrMap(self.status_bar, 'status_bar')
@@ -30,7 +31,7 @@ class MessageSendWidget(urwid.Filler):
 
 
     def update_status_bar(self):
-        chan_name = self.Telegram_ui.current_chan['print_name'].replace('_',' ')
+        chan_name = self.Telegram_ui.current_chan['print_name'].replace('_', ' ')
         chan_type = self.Telegram_ui.current_chan['type']
 
         if chan_type == 'chat':
@@ -45,19 +46,19 @@ class MessageSendWidget(urwid.Filler):
             elif when == '?':
                 text = text + ' --- [ Offline ]'
             else:
-                current_date = time.strftime('%d/%m/%Y', time.localtime(int(time.time()))) 
+                current_date = time.strftime('%d/%m/%Y', time.localtime(int(time.time())))
                 pattern = '%Y-%m-%d %H:%M:%S'
                 when_epoch = int(time.mktime(time.strptime(when, pattern)))
-                when_date = time.strftime('%d/%m/%Y', time.localtime(when_epoch)) 
+                when_date = time.strftime('%d/%m/%Y', time.localtime(when_epoch))
                 when_hour = time.strftime('%H:%M', time.localtime(when_epoch))
-                
+
                 if when_date == current_date:
                     text = text + ' --- [ last seen at ' + when_hour + ' ]'
                 else:
                     text = text + ' --- [ last seen ' + when_date + ' at ' + when_hour + ' ]'
 
         self.status_bar.set_text(text)
-        
+
 
     def update_online(self, when, status):
         self.current_status = (when, status)
@@ -69,22 +70,22 @@ class MessageSendWidget(urwid.Filler):
             time.sleep(0.5)
         self.updateLockedauto = True
 
-        type_chan = self.Telegram_ui.current_chan['type'] 
-        print_name_chan = self.Telegram_ui.current_chan['print_name'] 
+        type_chan = self.Telegram_ui.current_chan['type']
+        print_name_chan = self.Telegram_ui.current_chan['print_name']
 
         username_list = []
-        
+
         # récupération des username possibles
-        if type_chan == 'chat':        
+        if type_chan == 'chat':
             chat_info = self.Telegram_ui.sender.chat_info(print_name_chan)
             for user in chat_info['members']:
                 if 'username' in user:
                     username_list.append(user['username'])
 
         elif type_chan == 'user' and 'username' in self.Telegram_ui.current_chan:
-            username_list = [ self.Telegram_ui.current_chan['username'] ]
-        
-        elif type_chan == 'channel': 
+            username_list = [self.Telegram_ui.current_chan['username']]
+
+        elif type_chan == 'channel':
             channel_info = self.Telegram_ui.sender.channel_info(print_name_chan)
             for user in channel_info['members']:
                 if 'username' in user:
@@ -93,7 +94,7 @@ class MessageSendWidget(urwid.Filler):
         text = self.widgetEdit.get_edit_text()[1:]
 
         self.updateLockedauto = False
-        
+
         # autocompletion avec le premier résultat
         for user in username_list:
             if user.startswith(text):
@@ -115,7 +116,7 @@ class MessageSendWidget(urwid.Filler):
 
             self.Telegram_ui.sender.send_msg(dst, msg)
             self.widgetEdit.set_edit_text("")
-        
+
         # Autocompletion
         elif key == 'tab' and self.widgetEdit.get_edit_text().startswith("@") and \
                 not ' ' in self.widgetEdit.get_edit_text():
@@ -123,7 +124,7 @@ class MessageSendWidget(urwid.Filler):
                 self.autocomplete()
             except:
                 pass
-        
+
         # Supprimer le texte courant
         elif key == 'ctrl w' or key == 'ctrl k':
             self.widgetEdit.set_edit_text("")

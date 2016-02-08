@@ -7,7 +7,7 @@ import time
 
 import urwid
 from pytg import Telegram
-try: 
+try:
     from gi.repository import Notify
     NOTIF = True
 except:
@@ -17,7 +17,7 @@ from ui_infobar import InfoBar
 from ui_chanwidget import ChanWidget
 from ui_msgwidget import MessageWidget
 from ui_msgsendwidget import MessageSendWidget
-from msg_receiver import MessageReceiver 
+from msg_receiver import MessageReceiver
 
 
 PATH_TELEGRAM = "/usr/bin/telegram-cli"
@@ -33,62 +33,62 @@ class Telegram_ui:
 
         palette = [('status_bar', 'bold,white', 'dark gray'),
                    ('date', 'light green', ''),
-                   ('hour', 'dark gray',''),
-                   ('separator', 'dark gray',''),
+                   ('hour', 'dark gray', ''),
+                   ('separator', 'dark gray', ''),
                    ('reversed', 'standout', ''),
                    ('cur_chan', 'light green', ''),
-                   ('dark red','dark red',''),
-                   ('dark green', 'dark green',''),
-                   ('brown','brown',''),
-                   ('dark blue','dark blue',''),
-                   ('dark magenta','dark magenta',''),
-                   ('dark cyan','dark cyan',''),
-                   ('light gray','light gray',''),
-                   ('dark gray','dark gray',''),
-                   ('light red','light red',''),
-                   ('light green', 'light green',''),
-                   ('light blue', 'light blue',''),
-                   ('light magenta','light magenta',''),
-                   ('light cyan','light cyan',''),
-                   ('white', 'white',''),]
+                   ('dark red', 'dark red', ''),
+                   ('dark green', 'dark green', ''),
+                   ('brown', 'brown', ''),
+                   ('dark blue', 'dark blue', ''),
+                   ('dark magenta', 'dark magenta', ''),
+                   ('dark cyan', 'dark cyan', ''),
+                   ('light gray', 'light gray', ''),
+                   ('dark gray', 'dark gray', ''),
+                   ('light red', 'light red', ''),
+                   ('light green', 'light green', ''),
+                   ('light blue', 'light blue', ''),
+                   ('light magenta', 'light magenta', ''),
+                   ('light cyan', 'light cyan', ''),
+                   ('white', 'white', ''),]
 
         # Notification
         if NOTIF:
             Notify.init("ncTelegram")
             self.image = os.path.dirname(os.path.abspath(__file__))+'/t_logo.png'
-        
-        self.current_chan = []        
+
+        self.current_chan = []
 
         # Barre de titre
-        title_bar = InfoBar("ncTelegram v0.01", 
-                             style='status_bar', bar_align='top', text_align='center')
+        title_bar = InfoBar("ncTelegram v0.01",
+                            style='status_bar', bar_align='top', text_align='center')
 
         # Liste des chans
-        self.chan_widget = ChanWidget(self);
-        
+        self.chan_widget = ChanWidget(self)
+
         # barre de titre
         self.print_title()
-    
+
         # Liste des messages
-        self.msg_widget = MessageWidget(self);
+        self.msg_widget = MessageWidget(self)
 
         # Envoie de messages
-        self.msg_send_widget = MessageSendWidget(self);
+        self.msg_send_widget = MessageSendWidget(self)
 
         # Thread du dump de messages
         self.msg_dump = MessageReceiver(self)
         self.msg_dump.daemon = True
         self.msg_dump.start()
-        
+
         # Panneau droit
         self.right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
-        
+
         vert_separator = urwid.AttrMap(urwid.Filler(urwid.Columns([])), 'status_bar')
-        
+
         # Arrangements finaux
         self.main_columns = urwid.Columns([('weight', 1, self.chan_widget),
-                                        (1, vert_separator),
-                                      ('weight', 5, self.right_side)])
+                                           (1, vert_separator),
+                                           ('weight', 5, self.right_side)])
         main_pile = urwid.Pile([(1, title_bar), self.main_columns,])
 
         self.main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.unhandle_key)
@@ -101,7 +101,7 @@ class Telegram_ui:
     def display_notif(self, msg):
         if NOTIF:
             text = msg['text']
-            
+
             try:
                 sender = msg['peer']['first_name']
             except:
@@ -109,7 +109,7 @@ class Telegram_ui:
 
             Notify.Notification.new('', '<b>' + sender + '</b>\n' + text, self.image).show()
 
-    
+
     def print_title(self):
         total_msg_waiting = sum(self.chan_widget.msg_chan.values())
         if total_msg_waiting == 0:
@@ -120,8 +120,8 @@ class Telegram_ui:
 
     def start_Telegram(self):
         # Liaison avec telegram-cli
-        self.tg = Telegram(telegram= PATH_TELEGRAM,
-                            pubkey_file=PATH_PUBKEY)
+        self.tg = Telegram(telegram=PATH_TELEGRAM,
+                           pubkey_file=PATH_PUBKEY)
         self.receiver = self.tg.receiver
         self.sender = self.tg.sender
         self.receiver.start()
@@ -141,7 +141,7 @@ class Telegram_ui:
 
 
     def unhandle_key(self, key):
-        if key in('q','Q'):
+        if key in('q', 'Q'):
             self.exit()
 
         elif key == 'esc':

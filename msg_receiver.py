@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import threading
-from pytg.utils import coroutine
 import time
+from pytg.utils import coroutine
 
 class MessageReceiver(threading.Thread):
     def __init__(self, Telegram_ui):
@@ -23,19 +23,19 @@ class MessageReceiver(threading.Thread):
             msg = (yield)
 
             current_type = self.Telegram_ui.current_chan['type']
-            current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id']) 
+            current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id'])
 
             if msg['event'] == "message":
 
                 # vérifie que le message a été envoyé au chan courant
                 current_type = self.Telegram_ui.current_chan['type']
-                current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id']) 
+                current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id'])
 
                 msg_type = msg['receiver']['type']
                 if msg_type == 'user' and not msg['own']:
-                    msg_cmd = msg['sender']['cmd'] 
+                    msg_cmd = msg['sender']['cmd']
                 else:
-                    msg_cmd = msg['receiver']['cmd'] 
+                    msg_cmd = msg['receiver']['cmd']
 
                 # si le message est pas pour le chan courant on actualise le nombre de msg non lut
                 if msg_cmd == current_cmd:
@@ -45,13 +45,13 @@ class MessageReceiver(threading.Thread):
 
 
                 self.Telegram_ui.chan_widget.update_chan_list()
-                
+
                 # notif on hl
                 if 'text' in msg and self.Telegram_ui.me['username'] != '' and \
                             "@" + self.Telegram_ui.me['username'] in msg['text']:
                     self.Telegram_ui.display_notif(msg)
-                
-                # On actualise l'affichage 
+
+                # On actualise l'affichage
                 self.Telegram_ui.main_loop.draw_screen()
 
             elif msg['event'] == 'online-status' and current_cmd == 'user#'+str(msg['user']['id']):

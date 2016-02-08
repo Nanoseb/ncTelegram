@@ -9,7 +9,7 @@ class NewButton(urwid.Button):
         super(NewButton, self).__init__("")
         urwid.connect_signal(self, 'click', callback, arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(caption, 1),
-            None, focus_map='reversed')
+                                None, focus_map='reversed')
 
 # Le widget utilise pour afficher la liste des chans
 class ChanWidget(urwid.ListBox):
@@ -17,12 +17,12 @@ class ChanWidget(urwid.ListBox):
         self.chans = []
         self.updateLocked = False
         self.Telegram_ui = Telegram_ui
-        self.msg_chan = {}        
+        self.msg_chan = {}
         self.update_chan_list()
-   
+
     # Mettre a jour la liste des chans
     def update_chan_list(self):
-        while (self.updateLocked):
+        while self.updateLocked:
             time.sleep(0.1)
         self.updateLocked = True
 
@@ -44,12 +44,12 @@ class ChanWidget(urwid.ListBox):
             self.Telegram_ui.current_chan = self.chans[-1]
 
         pos = self.focus_position
-        
+
         # Construction de la liste de chan
         for i in self.chans[::-1]:
             print_name = i['print_name']
-            
-            cmd = i['type'] + "#" + str(i['id']) 
+
+            cmd = i['type'] + "#" + str(i['id'])
 
             label = print_name.replace('_', ' ')
 
@@ -59,14 +59,14 @@ class ChanWidget(urwid.ListBox):
                 label = "➜➜ " + label
 
             if cmd in self.msg_chan:
-                label = label + ' [' + str(self.msg_chan[cmd]) + ']' 
+                label = label + ' [' + str(self.msg_chan[cmd]) + ']'
 
-            if print_name == self.Telegram_ui.current_chan['print_name'] :            
-                button = NewButton(('cur_chan',label), self.chan_change, print_name)
+            if print_name == self.Telegram_ui.current_chan['print_name']:
+                button = NewButton(('cur_chan', label), self.chan_change, print_name)
                 current_pos = pos + 1
             else:
-                button = NewButton(label,self.chan_change, print_name)
-    
+                button = NewButton(label, self.chan_change, print_name)
+
             self.chan_list.insert(pos +1, button)
             pos = pos + 1
 
@@ -87,17 +87,17 @@ class ChanWidget(urwid.ListBox):
 
         self.Telegram_ui.print_title()
 
-        
 
 
-    def chan_change(self, button, print_name): 
-        
+
+    def chan_change(self, button, print_name):
+
         for i in self.chans:
             if i['print_name'] == print_name:
                 self.Telegram_ui.current_chan = i
-        
-        current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id']) 
-        
+
+        current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id'])
+
         # suppression des messages non lut pour le nouveau chan
         if current_cmd in self.msg_chan:
             del self.msg_chan[current_cmd]
@@ -108,7 +108,7 @@ class ChanWidget(urwid.ListBox):
 
         #Appel pour actualiser le chan courant de la liste
         self.update_chan_list()
-        
+
         # remmetre le focus sur la zone de texte
         self.Telegram_ui.main_columns.focus_position = 2
         self.Telegram_ui.right_side.focus_position = 1
