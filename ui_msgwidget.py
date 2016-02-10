@@ -39,6 +39,7 @@ class MessageWidget(urwid.ListBox):
         for msg in msgDict:
             self.print_msg(msg)
 
+        self.draw_separator()
         self.updateLocked = False
 
 

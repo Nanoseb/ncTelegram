@@ -9,7 +9,7 @@ class NewButton(urwid.Button):
         super(NewButton, self).__init__("")
         urwid.connect_signal(self, 'click', callback, arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(caption, 1),
-                                None, focus_map='reversed')
+                                None, focus_map='status_bar')
 
 # Le widget utilise pour afficher la liste des chans
 class ChanWidget(urwid.ListBox):
@@ -27,7 +27,7 @@ class ChanWidget(urwid.ListBox):
         self.updateLocked = True
 
         # Réécriture de la liste, pour actualiser le chan courant
-        self.chan_list = urwid.SimpleFocusListWalker([urwid.Text("Chan list:"), urwid.Divider()])
+        self.chan_list = urwid.SimpleFocusListWalker([urwid.AttrMap(urwid.Text("Chan list:"), 'status_bar')])
         super().__init__(self.chan_list)
 
         # list de dictionnaire contenant les chans
@@ -76,7 +76,6 @@ class ChanWidget(urwid.ListBox):
 
 
 
-
     def add_msg(self, cmd):
         """ incrémentation des messages non lut
         """
@@ -86,7 +85,6 @@ class ChanWidget(urwid.ListBox):
             self.msg_chan[cmd] = 1
 
         self.Telegram_ui.print_title()
-
 
 
 

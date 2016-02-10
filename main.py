@@ -59,9 +59,9 @@ class Telegram_ui:
 
         self.current_chan = []
 
-        # Barre de titre
-        title_bar = InfoBar("ncTelegram v0.01",
-                            style='status_bar', bar_align='top', text_align='center')
+        # Barre de titre à voir si c'est vraiment utile
+        #title_bar = InfoBar("ncTelegram v0.01",
+        #                    style='status_bar', bar_align='top', text_align='center')
 
         # Liste des chans
         self.chan_widget = ChanWidget(self)
@@ -89,9 +89,9 @@ class Telegram_ui:
         self.main_columns = urwid.Columns([('weight', 1, self.chan_widget),
                                            (1, vert_separator),
                                            ('weight', 5, self.right_side)])
-        main_pile = urwid.Pile([(1, title_bar), self.main_columns,])
+        #main_pile = urwid.Pile([(1, title_bar), self.main_columns,])
 
-        self.main_loop = urwid.MainLoop((main_pile), palette, unhandled_input=self.unhandle_key)
+        self.main_loop = urwid.MainLoop((self.main_columns), palette, unhandled_input=self.unhandle_key)
         self.main_loop.screen.set_terminal_properties(colors=16)
         self.me = self.sender.get_self()
         self.lock_receiver = False
