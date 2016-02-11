@@ -150,6 +150,13 @@ class Telegram_ui:
         elif key == 'esc':
             self.msg_widget.draw_separator()
 
+        elif key == 'ctrl p':
+            self.chan_widget.go_prev_chan()
+
+        elif key == 'ctrl n':
+            self.chan_widget.go_next_chan()
+
+
 
 if __name__ == "__main__":
     Telegram_ui()

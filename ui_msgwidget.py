@@ -100,10 +100,16 @@ class MessageWidget(urwid.ListBox):
     def draw_separator(self):
         if self.separator_pos != -1:
             self.delete_separator()
+        current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id'])
+
         self.separator_pos = self.pos
+
+        if current_cmd in self.Telegram_ui.chan_widget.msg_chan:
+            self.separator_pos -= self.Telegram_ui.chan_widget.msg_chan[current_cmd]
+
         self.pos = self.pos +1
-        self.msg_list.insert(self.pos, urwid.AttrMap(urwid.Divider('-'), 'separator'))
-        self.focus_position = self.pos -1
+        self.msg_list.insert(self.separator_pos, urwid.AttrMap(urwid.Divider('-'), 'separator'))
+        self.focus_position = self.separator_pos
 
     def delete_separator(self):
         if self.separator_pos != -1:

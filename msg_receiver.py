@@ -51,7 +51,7 @@ class MessageReceiver(threading.Thread):
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd)
 
 
-                self.Telegram_ui.chan_widget.update_chan_list()
+                self.Telegram_ui.chan_widget.get_new_chan_list()
 
                 # notif on hl
                 if 'text' in msg and self.Telegram_ui.me['username'] != '' and \
