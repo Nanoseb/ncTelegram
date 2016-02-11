@@ -10,7 +10,6 @@ class MessageWidget(urwid.ListBox):
         self.separator_pos = -1
         self.updateLocked = False
         self.Telegram_ui = Telegram_ui
-        self.fix_getHist = []
         self.get_history()
 
 
@@ -26,20 +25,30 @@ class MessageWidget(urwid.ListBox):
         self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
         super().__init__(self.msg_list)
 
-        current_print_name = self.Telegram_ui.current_chan['print_name']
-
-        # Hack pour fixer le problème des messages vide...
-        if not current_print_name in self.fix_getHist:
-            self.Telegram_ui.sender.history(current_print_name, 100)
-            self.fix_getHist.append(current_print_name)
-
-        msgDict = self.Telegram_ui.sender.history(current_print_name, 100)
-
+        current_type = self.Telegram_ui.current_chan['type']
+        current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id'])
         self.pos = 1
-        for msg in msgDict:
-            self.print_msg(msg)
+
+        if current_cmd in self.Telegram_ui.msg_cache:
+
+            for msg in self.Telegram_ui.msg_cache[current_cmd]:
+                self.print_msg(msg)
+
+        else:
+            current_print_name = self.Telegram_ui.current_chan['print_name']
+
+            # Hack pour fixer le problème des messages vide...
+            self.Telegram_ui.sender.history(current_print_name, 100)
+            msgDict = self.Telegram_ui.sender.history(current_print_name, 100)
+            
+            self.Telegram_ui.msg_cache[current_cmd] = []
+
+            for msg in msgDict:
+                self.print_msg(msg)
+                self.Telegram_ui.msg_cache[current_cmd].append(msg)
 
         self.draw_separator()
+
         self.updateLocked = False
 
 

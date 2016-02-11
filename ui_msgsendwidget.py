@@ -136,6 +136,10 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'left':
             self.Telegram_ui.main_columns.focus_position = 0
 
+        elif key == 'ctrl p':
+            self.Telegram_ui.chan_widget.go_prev_chan()
 
+        elif key == 'ctrl n':
+            self.Telegram_ui.chan_widget.go_next_chan()
 
 # vim: ai ts=4 sw=4 et sts=4

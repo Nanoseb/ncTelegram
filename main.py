@@ -63,6 +63,9 @@ class Telegram_ui:
         #title_bar = InfoBar("ncTelegram v0.01",
         #                    style='status_bar', bar_align='top', text_align='center')
 
+        # Cache des messages
+        self.msg_cache = {}
+
         # Liste des chans
         self.chan_widget = ChanWidget(self)
 

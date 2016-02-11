@@ -16,21 +16,17 @@ class ChanWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
         self.chans = []
         self.updateLocked = False
+        self.current_chan_pos = 0
         self.Telegram_ui = Telegram_ui
         self.msg_chan = {}
-        self.update_chan_list()
+        self.get_new_chan_list()
 
-    # Mettre a jour la liste des chans
-    def update_chan_list(self):
+    def get_new_chan_list(self):
         while self.updateLocked:
             time.sleep(0.1)
         self.updateLocked = True
 
-        # Réécriture de la liste, pour actualiser le chan courant
-        self.chan_list = urwid.SimpleFocusListWalker([urwid.AttrMap(urwid.Text("Chan list:"), 'status_bar')])
-        super().__init__(self.chan_list)
-
-        # list de dictionnaire contenant les chans
+       # list de dictionnaire contenant les chans
         self.chans = None
         while self.chans is None:
             try:
@@ -38,22 +34,33 @@ class ChanWidget(urwid.ListBox):
             except:
                 time.sleep(1)
                 pass
+        
+        self.update_chan_list()
+        self.updateLocked = False
+
+
+    # Mettre a jour la liste des chans
+    def update_chan_list(self):
+        # Réécriture de la liste, pour actualiser le chan courant
+        self.chan_list = urwid.SimpleFocusListWalker([urwid.AttrMap(urwid.Text("Chan list:"), 'status_bar')])
+        super().__init__(self.chan_list)
 
 
         if self.Telegram_ui.current_chan == []:
             self.Telegram_ui.current_chan = self.chans[-1]
 
         pos = self.focus_position
-
+        
+        i = len(self.chans) -1
         # Construction de la liste de chan
-        for i in self.chans[::-1]:
-            print_name = i['print_name']
+        for chan in self.chans[::-1]:
+            print_name = chan['print_name']
 
-            cmd = i['type'] + "#" + str(i['id'])
+            cmd = chan['type'] + "#" + str(chan['id'])
 
             label = print_name.replace('_', ' ')
 
-            if i['type'] == 'user':
+            if chan['type'] == 'user':
                 label = "➜  " + label
             else:
                 label = "➜➜ " + label
@@ -62,18 +69,24 @@ class ChanWidget(urwid.ListBox):
                 label = label + ' [' + str(self.msg_chan[cmd]) + ']'
 
             if print_name == self.Telegram_ui.current_chan['print_name']:
-                button = NewButton(('cur_chan', label), self.chan_change, print_name)
+                button = NewButton(('cur_chan', label), self.chan_change, chan)
                 current_pos = pos + 1
+                self.current_chan_pos = i
             else:
-                button = NewButton(label, self.chan_change, print_name)
+                button = NewButton(label, self.chan_change, chan)
 
             self.chan_list.insert(pos +1, button)
             pos = pos + 1
+            i -= 1
 
-
+        self.chan_list.insert(pos +1, urwid.AttrMap(urwid.Divider(' '), 'status_bar'))
+        pos = pos + 1
+        self.chan_list.insert(pos +1, urwid.Text('✚  Create new group chat'))
+        pos = pos + 1
+        self.chan_list.insert(pos +1, urwid.Text('✚  Create new channel'))
+        pos = pos + 1
+        self.chan_list.insert(pos +1, urwid.Text('☺  Contacts'))
         self.focus_position = current_pos
-        self.updateLocked = False
-
 
 
     def add_msg(self, cmd):
@@ -86,13 +99,23 @@ class ChanWidget(urwid.ListBox):
 
         self.Telegram_ui.print_title()
 
+    def go_next_chan(self):
+        self.current_chan_pos -= 1
+        if self.current_chan_pos < 0:
+            nb_chan = len(self.chans) 
+            self.current_chan_pos = nb_chan -1
+        self.chan_change('bu', self.chans[self.current_chan_pos])
 
+    def go_prev_chan(self):
+        nb_chan = len(self.chans) 
+        self.current_chan_pos += 1
+        if self.current_chan_pos > nb_chan -1:
+            self.current_chan_pos = 0
+        self.chan_change('bu', self.chans[self.current_chan_pos])
 
-    def chan_change(self, button, print_name):
+    def chan_change(self, button, chan):
 
-        for i in self.chans:
-            if i['print_name'] == print_name:
-                self.Telegram_ui.current_chan = i
+        self.Telegram_ui.current_chan = chan
 
         current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id'])
 
