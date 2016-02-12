@@ -23,7 +23,7 @@ class ChanWidget(urwid.ListBox):
 
     def get_new_chan_list(self):
         while self.updateLocked:
-            time.sleep(0.1)
+            time.sleep(0.3)
         self.updateLocked = True
 
        # list de dictionnaire contenant les chans
@@ -32,15 +32,17 @@ class ChanWidget(urwid.ListBox):
             try:
                 self.chans = self.Telegram_ui.sender.dialog_list()
             except:
-                time.sleep(1)
+                time.sleep(0.3)
                 pass
         
-        self.update_chan_list()
         self.updateLocked = False
+        self.update_chan_list()
 
 
     # Mettre a jour la liste des chans
     def update_chan_list(self):
+        while self.updateLocked:
+            time.sleep(0.3)
         # Réécriture de la liste, pour actualiser le chan courant
         self.chan_list = urwid.SimpleFocusListWalker([urwid.AttrMap(urwid.Text("Chan list:"), 'status_bar')])
         super().__init__(self.chan_list)
@@ -116,6 +118,8 @@ class ChanWidget(urwid.ListBox):
 
 
     def chan_change(self, button, chan):
+        while self.updateLocked:
+            time.sleep(0.5)
 
         self.Telegram_ui.current_chan = chan
 

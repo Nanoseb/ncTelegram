@@ -137,8 +137,9 @@ class Telegram_ui:
 
 
     def exit(self):
+        if NOTIF:
+            Notify.uninit()
         sys.stdout.write("\x1b]2;\x07")
-        Notify.uninit()
         self.stop_Telegram()
         raise urwid.ExitMainLoop
 
