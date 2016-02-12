@@ -29,23 +29,22 @@ class MessageWidget(urwid.ListBox):
         current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id'])
         self.pos = 1
 
-        if current_cmd in self.Telegram_ui.msg_cache:
+        if current_cmd not in self.Telegram_ui.msg_cache:
 
-            for msg in self.Telegram_ui.msg_cache[current_cmd]:
-                self.print_msg(msg)
-
-        else:
             current_print_name = self.Telegram_ui.current_chan['print_name']
 
             # Hack pour fixer le problème des messages vide...
             self.Telegram_ui.sender.history(current_print_name, 100)
-            msgDict = self.Telegram_ui.sender.history(current_print_name, 100)
+            msgList = self.Telegram_ui.sender.history(current_print_name, 100)
             
-            self.Telegram_ui.msg_cache[current_cmd] = []
+            self.Telegram_ui.msg_cache[current_cmd] = msgList
 
-            for msg in msgDict:
+            for msg in msgList:
                 self.print_msg(msg)
-                self.Telegram_ui.msg_cache[current_cmd].append(msg)
+            
+
+        for msg in self.Telegram_ui.msg_cache[current_cmd]:
+            self.print_msg(msg)
 
         self.draw_separator()
 
@@ -55,21 +54,17 @@ class MessageWidget(urwid.ListBox):
 
     def print_msg(self, msg):
 
-        try:
-            date = msg['date']
-            try:
-                text = msg['text']
-            except:
-                text = "media"
+        date = msg['date']
 
-            try:
-                sender = msg['from']['first_name']
-            except:
-                sender = msg['sender']['first_name']
-        except:
-            date = 1
-            text = "empty message"
-            sender = "Unknown"
+        if 'text' in msg:
+            text = msg['text']
+        else:
+            text = "media"
+
+        if 'from' in msg:
+            sender = msg['from']['first_name']
+        else:
+            sender = msg['sender']['first_name']
 
 
         cur_date = time.strftime('│ %d/%m/%Y │', time.localtime(date))

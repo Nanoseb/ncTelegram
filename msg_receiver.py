@@ -38,17 +38,18 @@ class MessageReceiver(threading.Thread):
                     msg_cmd = msg['receiver']['cmd']
 
                 msg_id = msg['id']
-                
                 # si le message est pas pour le chan courant on actualise le nombre de msg non lut
                 if msg_cmd == current_cmd:
-                    # Vérifie que le message a pas déjà été affiché (par la récupération de l'historique du chan)
-                    if msg_id > self.Telegram_ui.msg_cache[msg_cmd][-1]['id']:
-                        self.Telegram_ui.msg_cache[msg_cmd].append(msg)
-                        self.Telegram_ui.msg_widget.print_msg(msg)
+                        if msg_id > self.Telegram_ui.msg_cache[msg_cmd][-1]['id']:
+                            self.Telegram_ui.msg_widget.print_msg(msg)
                 else:
-                    if msg_cmd in self.Telegram_ui.msg_cache:
-                        self.Telegram_ui.msg_cache[msg_cmd].append(msg)
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd)
+
+
+                # Vérifie que le message a pas déjà été affiché (par la récupération de l'historique du chan)
+                if msg_cmd in self.Telegram_ui.msg_cache and \
+                        msg_id > self.Telegram_ui.msg_cache[msg_cmd][-1]['id']:
+                    self.Telegram_ui.msg_cache[msg_cmd].append(msg)
 
 
                 self.Telegram_ui.chan_widget.get_new_chan_list()

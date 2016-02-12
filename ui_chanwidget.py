@@ -18,19 +18,20 @@ class ChanWidget(urwid.ListBox):
         self.updateLocked = False
         self.current_chan_pos = 0
         self.Telegram_ui = Telegram_ui
-        self.msg_chan = {}
+        self.msg_chan = {}        #nombre de message non lut par chan
         self.get_new_chan_list()
 
     def get_new_chan_list(self):
-        while self.updateLocked:
-            time.sleep(0.3)
-        self.updateLocked = True
+        if self.updateLocked:
+            return
 
-       # list de dictionnaire contenant les chans
-        self.chans = None
-        while self.chans is None:
+        self.updateLocked = True
+        bool = True
+        while bool:
             try:
+                # list contenant les chans
                 self.chans = self.Telegram_ui.sender.dialog_list()
+                bool = False
             except:
                 time.sleep(0.3)
                 pass
@@ -41,8 +42,7 @@ class ChanWidget(urwid.ListBox):
 
     # Mettre a jour la liste des chans
     def update_chan_list(self):
-        while self.updateLocked:
-            time.sleep(0.3)
+
         # Réécriture de la liste, pour actualiser le chan courant
         self.chan_list = urwid.SimpleFocusListWalker([urwid.AttrMap(urwid.Text("Chan list:"), 'status_bar')])
         super().__init__(self.chan_list)
@@ -118,8 +118,6 @@ class ChanWidget(urwid.ListBox):
 
 
     def chan_change(self, button, chan):
-        while self.updateLocked:
-            time.sleep(0.5)
 
         self.Telegram_ui.current_chan = chan
 
