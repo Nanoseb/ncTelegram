@@ -8,6 +8,8 @@ import time
 import urwid
 from pytg import Telegram
 try:
+    import gi
+    gi.require_version('Notify', '0.7')
     from gi.repository import Notify
     NOTIF = True
 except:
