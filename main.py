@@ -22,12 +22,12 @@ from msg_receiver import MessageReceiver
 
 PATH_TELEGRAM = "/usr/bin/telegram-cli"
 PATH_PUBKEY = "/etc/telegram-cli/server.pub"
-
+NOTIF_LEVEL = "all" # or "hl"
 
 class Telegram_ui:
     def __init__(self):
 
-        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY
+        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL
         self.lock_receiver = True
         self.start_Telegram()
 
@@ -64,7 +64,7 @@ class Telegram_ui:
         #                    style='status_bar', bar_align='top', text_align='center')
 
         # Cache des messages
-        self.msg_cache = {}
+        self.msg_buffer = {}
 
         # Liste des chans
         self.chan_widget = ChanWidget(self)
@@ -119,6 +119,18 @@ class Telegram_ui:
             sys.stdout.write("\x1b]2;ncTelegram\x07")
         else:
             sys.stdout.write("\x1b]2;ncTelegram (" + str(total_msg_waiting) + ")\x07")
+
+
+    def fill_msg_buffer(self, button):
+
+        for chan in self.chan_widget.chans:
+    
+            cmd = chan['cmd']
+            if cmd not in self.msg_buffer:
+                print_name = chan['print_name']
+                self.sender.history(print_name, 100)
+                self.msg_buffer[cmd] = self.sender.history(print_name, 100)
+
 
 
     def start_Telegram(self):

@@ -5,7 +5,7 @@ import urwid
 import time
 
 class NewButton(urwid.Button):
-    def __init__(self, caption, callback, arg):
+    def __init__(self, caption, callback,arg=None):
         super(NewButton, self).__init__("")
         urwid.connect_signal(self, 'click', callback, arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(caption, 1),
@@ -35,7 +35,13 @@ class ChanWidget(urwid.ListBox):
             except:
                 time.sleep(0.3)
                 pass
-        
+
+        # On ajoute cmd en champ de la liste de chan
+        for i in range(len(self.chans)):
+            chan = self.chans[i]
+            self.chans[i]['cmd'] = chan['type'] + "#" + str(chan['id'])
+
+
         self.updateLocked = False
         self.update_chan_list()
 
@@ -58,7 +64,7 @@ class ChanWidget(urwid.ListBox):
         for chan in self.chans[::-1]:
             print_name = chan['print_name']
 
-            cmd = chan['type'] + "#" + str(chan['id'])
+            cmd = chan['cmd']
 
             label = print_name.replace('_', ' ')
 
@@ -81,13 +87,19 @@ class ChanWidget(urwid.ListBox):
             pos = pos + 1
             i -= 1
 
-        self.chan_list.insert(pos +1, urwid.AttrMap(urwid.Divider(' '), 'status_bar'))
+        self.chan_list.insert(pos +1, urwid.AttrMap(urwid.Divider('─'), 'separator'))
         pos = pos + 1
         self.chan_list.insert(pos +1, urwid.Text('✚  Create new group chat'))
         pos = pos + 1
         self.chan_list.insert(pos +1, urwid.Text('✚  Create new channel'))
         pos = pos + 1
         self.chan_list.insert(pos +1, urwid.Text('☺  Contacts'))
+        pos = pos + 1
+        self.chan_list.insert(pos +1, urwid.AttrMap(urwid.Divider('─'), 'separator'))
+        pos = pos + 1
+        button = NewButton('⬇  Download message buffer', self.Telegram_ui.fill_msg_buffer)
+        self.chan_list.insert(pos +1, button)
+
         self.focus_position = current_pos
 
     def add_msg(self, cmd):
@@ -121,7 +133,7 @@ class ChanWidget(urwid.ListBox):
 
         self.Telegram_ui.current_chan = chan
 
-        current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id'])
+        current_cmd = chan['cmd'] 
 
         self.Telegram_ui.msg_send_widget.update_send_widget()
         self.Telegram_ui.msg_widget.get_history()

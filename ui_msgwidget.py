@@ -25,11 +25,10 @@ class MessageWidget(urwid.ListBox):
         self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
         super().__init__(self.msg_list)
 
-        current_type = self.Telegram_ui.current_chan['type']
-        current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id'])
+        current_cmd = self.Telegram_ui.current_chan['cmd']
         self.pos = 1
 
-        if current_cmd not in self.Telegram_ui.msg_cache:
+        if current_cmd not in self.Telegram_ui.msg_buffer:
 
             current_print_name = self.Telegram_ui.current_chan['print_name']
 
@@ -37,13 +36,13 @@ class MessageWidget(urwid.ListBox):
             self.Telegram_ui.sender.history(current_print_name, 100)
             msgList = self.Telegram_ui.sender.history(current_print_name, 100)
             
-            self.Telegram_ui.msg_cache[current_cmd] = msgList
+            self.Telegram_ui.msg_buffer[current_cmd] = msgList
 
             for msg in msgList:
                 self.print_msg(msg)
             
 
-        for msg in self.Telegram_ui.msg_cache[current_cmd]:
+        for msg in self.Telegram_ui.msg_buffer[current_cmd]:
             self.print_msg(msg)
 
         self.draw_separator()
@@ -95,7 +94,7 @@ class MessageWidget(urwid.ListBox):
     def draw_separator(self):
         if self.separator_pos != -1:
             self.delete_separator()
-        current_cmd = self.Telegram_ui.current_chan['type'] + "#" + str(self.Telegram_ui.current_chan['id'])
+        current_cmd = self.Telegram_ui.current_chan['cmd']
 
         self.separator_pos = self.pos
 

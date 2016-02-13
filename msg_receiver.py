@@ -22,14 +22,11 @@ class MessageReceiver(threading.Thread):
         while True:
             msg = (yield)
 
-            current_type = self.Telegram_ui.current_chan['type']
-            current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id'])
+            current_cmd = self.Telegram_ui.current_chan['cmd']
 
             if msg['event'] == "message":
 
                 # vérifie que le message a été envoyé au chan courant
-                current_type = self.Telegram_ui.current_chan['type']
-                current_cmd = current_type + "#" + str(self.Telegram_ui.current_chan['id'])
 
                 msg_type = msg['receiver']['type']
                 if msg_type == 'user' and not msg['own']:
@@ -40,16 +37,16 @@ class MessageReceiver(threading.Thread):
                 msg_id = msg['id']
                 # si le message est pas pour le chan courant on actualise le nombre de msg non lut
                 if msg_cmd == current_cmd:
-                        if msg_id > self.Telegram_ui.msg_cache[msg_cmd][-1]['id']:
+                        if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
                             self.Telegram_ui.msg_widget.print_msg(msg)
                 else:
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd)
 
 
                 # Vérifie que le message a pas déjà été affiché (par la récupération de l'historique du chan)
-                if msg_cmd in self.Telegram_ui.msg_cache and \
-                        msg_id > self.Telegram_ui.msg_cache[msg_cmd][-1]['id']:
-                    self.Telegram_ui.msg_cache[msg_cmd].append(msg)
+                if msg_cmd in self.Telegram_ui.msg_buffer and \
+                        msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
+                    self.Telegram_ui.msg_buffer[msg_cmd].append(msg)
 
 
                 self.Telegram_ui.chan_widget.get_new_chan_list()
