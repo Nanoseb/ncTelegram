@@ -133,6 +133,8 @@ class Telegram_ui:
                 self.sender.history(print_name, 100)
                 self.msg_buffer[cmd] = self.sender.history(print_name, 100)
 
+        self.chan_widget.update_chan_list()
+
 
 
     def start_Telegram(self):

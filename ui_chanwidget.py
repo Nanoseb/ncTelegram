@@ -96,9 +96,19 @@ class ChanWidget(urwid.ListBox):
         self.chan_list.insert(pos +1, urwid.Text('☺  Contacts'))
         pos = pos + 1
         self.chan_list.insert(pos +1, urwid.AttrMap(urwid.Divider('─'), 'separator'))
-        pos = pos + 1
-        button = NewButton('⬇  Download message buffer', self.Telegram_ui.fill_msg_buffer)
-        self.chan_list.insert(pos +1, button)
+
+        
+        # on affiche le bouton uniquement s'il est utile
+        list_buff = [ cmd for cmd in self.Telegram_ui.msg_buffer.keys() ]
+        list_chan = [ chan['cmd'] for chan in self.chans ]
+
+        list_buff.sort()
+        list_chan.sort()
+        if list_buff != list_chan :
+            pos = pos + 1
+            button = NewButton('⬇  Download message buffer', self.Telegram_ui.fill_msg_buffer)
+            self.chan_list.insert(pos +1, button)
+
 
         self.focus_position = current_pos
 
