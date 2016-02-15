@@ -96,6 +96,10 @@ class MessageWidget(urwid.ListBox):
             self.delete_separator()
         current_cmd = self.Telegram_ui.current_chan['cmd']
 
+        # mark messages as read
+        current_print_name = self.Telegram_ui.current_chan['print_name']
+        self.Telegram_ui.sender.mark_read(current_print_name)
+    
         self.separator_pos = self.pos
 
         if current_cmd in self.Telegram_ui.chan_widget.msg_chan:
