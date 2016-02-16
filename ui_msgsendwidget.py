@@ -8,6 +8,7 @@ class MessageSendWidget(urwid.Filler):
         self.Telegram_ui = Telegram_ui
         self.updateLockedauto = False
         self.current_status = ('?', False)
+        self.username_list = []
 
         self.status_bar = urwid.Text(('status_bar', ' '), align='left')
         self.attr = urwid.AttrMap(self.status_bar, 'status_bar')
@@ -26,6 +27,7 @@ class MessageSendWidget(urwid.Filler):
         else:
             self.current_status = ('?', False)
 
+        self.username_list = []
         self.widgetEdit.set_edit_text('')
         self.update_status_bar()
 
@@ -66,37 +68,39 @@ class MessageSendWidget(urwid.Filler):
 
 
     def autocomplete(self):
-        while (self.updateLockedauto):
-            time.sleep(0.5)
+        if self.updateLockedauto:
+            return
+
         self.updateLockedauto = True
 
-        type_chan = self.Telegram_ui.current_chan['type']
-        print_name_chan = self.Telegram_ui.current_chan['print_name']
+        # Verifie si on a deja la liste des gens du chan
+        if self.username_list == []:
+            type_chan = self.Telegram_ui.current_chan['type']
+            print_name_chan = self.Telegram_ui.current_chan['print_name']
 
-        username_list = []
+            # récupération des username possibles
+            if type_chan == 'chat':
+                chat_info = self.Telegram_ui.sender.chat_info(print_name_chan)
+                for user in chat_info['members']:
+                    if 'username' in user:
+                        self.username_list.append(user['username'])
 
-        # récupération des username possibles
-        if type_chan == 'chat':
-            chat_info = self.Telegram_ui.sender.chat_info(print_name_chan)
-            for user in chat_info['members']:
-                if 'username' in user:
-                    username_list.append(user['username'])
+            elif type_chan == 'user' and 'username' in self.Telegram_ui.current_chan:
+                self.username_list = [self.Telegram_ui.current_chan['username']]
 
-        elif type_chan == 'user' and 'username' in self.Telegram_ui.current_chan:
-            username_list = [self.Telegram_ui.current_chan['username']]
+            elif type_chan == 'channel':
+                channel_info = self.Telegram_ui.sender.channel_info(print_name_chan)
+                for user in channel_info['members']:
+                    if 'username' in user:
+                        self.username_list.append(user['username'])
 
-        elif type_chan == 'channel':
-            channel_info = self.Telegram_ui.sender.channel_info(print_name_chan)
-            for user in channel_info['members']:
-                if 'username' in user:
-                    username_list.append(user['username'])
 
         text = self.widgetEdit.get_edit_text()[1:]
-
+        text = self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1][1:]
         self.updateLockedauto = False
 
         # autocompletion avec le premier résultat
-        for user in username_list:
+        for user in self.username_list:
             if user.startswith(text):
                 to_complete = user[len(text):]
                 self.widgetEdit.insert_text(to_complete + ' ')
@@ -118,12 +122,8 @@ class MessageSendWidget(urwid.Filler):
             self.widgetEdit.set_edit_text("")
 
         # Autocompletion
-        elif key == 'tab' and self.widgetEdit.get_edit_text().startswith("@") and \
-                not ' ' in self.widgetEdit.get_edit_text():
-            try:
-                self.autocomplete()
-            except:
-                pass
+        elif key == 'tab' and self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1].startswith("@"):
+            self.autocomplete()
 
         # Supprimer le texte courant
         elif key == 'ctrl w' or key == 'ctrl k':
