@@ -40,8 +40,11 @@ class MessageReceiver(threading.Thread):
                         if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
                             self.Telegram_ui.msg_widget.print_msg(msg)
                 else:
-                    self.Telegram_ui.chan_widget.add_msg(msg_cmd)
-
+                    if msg_cmd in self.Telegram_ui.msg_buffer:
+                        if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
+                            self.Telegram_ui.chan_widget.add_msg(msg_cmd)
+                    else:
+                        self.Telegram_ui.chan_widget.add_msg(msg_cmd)
 
                 # Vérifie que le message a pas déjà été affiché (par la récupération de l'historique du chan)
                 if msg_cmd in self.Telegram_ui.msg_buffer and \
