@@ -3,6 +3,7 @@
 import time
 import urwid
 
+
 # Le widget utilise pour afficher la liste des messages
 class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
@@ -134,6 +135,17 @@ class MessageWidget(urwid.ListBox):
 
         color = int(''.join(str(ord(c)) for c in name)) % len(list_color)
         return list_color[color]
+
+    def mouse_event(self, size, event, button, col, row, focus):
+
+        if button == 4:
+            self.keypress(size, 'up')
+            self.keypress(size, 'up')
+
+        if button == 5:
+            self.keypress(size, 'down')
+            self.keypress(size, 'down')
+
 
 
 # vim: ai ts=4 sw=4 et sts=4
