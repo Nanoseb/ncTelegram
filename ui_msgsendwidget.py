@@ -110,13 +110,13 @@ class MessageSendWidget(urwid.Filler):
     def keypress(self, size, key):
         key = super(MessageSendWidget, self).keypress(size, key)
 
+        dst = self.Telegram_ui.current_chan['print_name']
         if key == 'enter':
             msg = self.widgetEdit.get_edit_text()
 
             if msg == '/quit':
                 self.Telegram_ui.exit()
 
-            dst = self.Telegram_ui.current_chan['print_name']
 
             self.Telegram_ui.sender.send_msg(dst, msg)
             self.widgetEdit.set_edit_text("")
@@ -141,5 +141,12 @@ class MessageSendWidget(urwid.Filler):
 
         elif key == 'ctrl n':
             self.Telegram_ui.chan_widget.go_next_chan()
+
+            
+        if len(self.widgetEdit.get_edit_text()) == 1:
+            self.Telegram_ui.sender.send_typing(dst)
+        elif len(self.widgetEdit.get_edit_text()) == 0:
+            self.Telegram_ui.sender.send_typing_abort(dst)
+        
 
 # vim: ai ts=4 sw=4 et sts=4
