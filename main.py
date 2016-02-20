@@ -6,20 +6,32 @@ import sys
 import time
 
 import urwid
-from pytg import Telegram
-try:
-    import gi
-    gi.require_version('Notify', '0.7')
-    from gi.repository import Notify
-    NOTIF = True
-except:
-    NOTIF = False
 
 try:
-    from PIL import Image
-    VIEW_IMAGES = True
+    from pytg import Telegram
 except:
+    print("pytg needed, can be installed with:")
+    print("pip install --user pytg")
+    sys.exit(1)
+
+if not 'DISPLAY' in os.environ:
+    NOTIF = False
     VIEW_IMAGES = False
+else:
+    try:
+        import gi
+        gi.require_version('Notify', '0.7')
+        from gi.repository import Notify
+        NOTIF = True
+    except:
+        NOTIF = False
+    
+    try:
+        from PIL import Image
+        VIEW_IMAGES = True
+    except:
+        VIEW_IMAGES = False
+
 
 from ui_infobar import InfoBar
 from ui_chanwidget import ChanWidget
@@ -36,7 +48,6 @@ class Telegram_ui:
     def __init__(self):
 
         global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES
-        self.VIEW_IMAGES = VIEW_IMAGES
         self.lock_receiver = True
         self.start_Telegram()
 
@@ -141,7 +152,7 @@ class Telegram_ui:
 
 
     def load_last_media(self):
-        if self.last_media == {} or not self.VIEW_IMAGES:
+        if self.last_media == {} or not VIEW_IMAGES:
             return
     
         media = {}
