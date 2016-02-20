@@ -40,9 +40,6 @@ class MessageWidget(urwid.ListBox):
             
             self.Telegram_ui.msg_buffer[current_cmd] = msgList
 
-            for msg in msgList:
-                self.print_msg(msg)
-            
 
         for msg in self.Telegram_ui.msg_buffer[current_cmd]:
             self.print_msg(msg)
@@ -58,16 +55,19 @@ class MessageWidget(urwid.ListBox):
         date = msg['date']
 
 
+        if 'action' in msg:
+            text = '➜ ' + msg['action']['type'].replace('_',' ')
+
         if 'media' in msg:
             self.Telegram_ui.last_media = msg
             if msg['media']['type'] == 'photo':
-                text = "photo ➜  " + msg['media']['caption']
+                text = "➜ photo " + msg['media']['caption']
             else:
                 text = "media"
 
         if 'text' in msg:
             text = msg['text']
-
+    
 
         if 'from' in msg:
             sender = msg['from']['first_name']

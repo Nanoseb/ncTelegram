@@ -144,22 +144,27 @@ class Telegram_ui:
         if self.last_media == {} or not self.VIEW_IMAGES:
             return
     
+        media = {}
         mtype = self.last_media['media']['type']
         mid =  self.last_media['id']
 
         if mtype == 'photo':
-            photo = self.sender.load_photo(mid)
-            Image.open(photo['result']).show()
+            media = self.sender.load_photo(mid)
 
         elif mtype == 'document':
-            doc = self.sender.load_document(mid)
-            if doc['result'].endswith('png') or doc['result'].endswith('jpg'):
-                Image.open(doc['result']).show()
+            media = self.sender.load_document(mid)
 
         elif mtype == 'file':
-            mfile = self.sender.load_file(mid)
-            if mfile['result'].endswith('png') or mfile['result'].endswith('jpg'):
-                Image.open(mfile['result']).show()
+            media = self.sender.load_file(mid)
+
+
+        if not media == {} and media['result'].endswith('png') \
+                or media['result'].endswith('jpg') \
+                or media['result'].endswith('jpeg') \
+                or media['result'].endswith('JPG') \
+                or media['result'].endswith('PNG'): 
+
+                Image.open(media['result']).show()
 
 
 
