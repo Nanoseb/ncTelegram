@@ -55,18 +55,18 @@ class MessageWidget(urwid.ListBox):
         date = msg['date']
 
 
-        if 'action' in msg:
-            text = '➜ ' + msg['action']['type'].replace('_',' ')
-
-        if 'media' in msg:
-            self.Telegram_ui.last_media = msg
-            if msg['media']['type'] == 'photo':
-                text = "➜ photo " + msg['media']['caption']
-            else:
-                text = "media"
-
         if 'text' in msg:
             text = msg['text']
+        else:
+            if 'action' in msg:
+                text = '➜ ' + msg['action']['type'].replace('_',' ')
+
+            if 'media' in msg:
+                self.Telegram_ui.last_media = msg
+                if msg['media']['type'] == 'photo':
+                    text = "➜ photo " + msg['media']['caption']
+                else:
+                    text = "➜ " + msg['media']['type']
     
 
         if 'from' in msg:
@@ -75,10 +75,11 @@ class MessageWidget(urwid.ListBox):
             sender = msg['sender']['first_name']
 
 
-        cur_date = time.strftime('│ %d/%m/%Y │', time.localtime(date))
+        cur_date = time.strftime('│ ' + self.Telegram_ui.DATE_FORMAT + ' │', time.localtime(date))
 
         if cur_date != self.prev_date:
-            date_text = '┌────────────┐\n' + cur_date + '\n└────────────┘'
+            fill = '─'*(len(cur_date) - 2)
+            date_text = '┌' + fill + '┐\n' + cur_date + '\n└' + fill + '┘'
             self.msg_list.insert(self.pos + 1, urwid.Text(('date', date_text), align='center'))
             self.focus_position = self.pos
             self.pos = self.pos +1

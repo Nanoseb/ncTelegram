@@ -44,11 +44,16 @@ PATH_TELEGRAM = "/usr/bin/telegram-cli"
 PATH_PUBKEY = "/etc/telegram-cli/server.pub"
 NOTIF_LEVEL = "all" # or "hl"
 
+#DATE_FORMAT = "%d/%m/%Y"
+#DATE_FORMAT = "%A %d %B"
+DATE_FORMAT = "%x"
+
 class Telegram_ui:
     def __init__(self):
 
-        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES
+        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES, DATE_FORMAT
         self.lock_receiver = True
+        self.DATE_FORMAT = DATE_FORMAT
         self.start_Telegram()
 
         palette = [('status_bar', 'bold,white', 'dark gray'),
@@ -168,14 +173,13 @@ class Telegram_ui:
         elif mtype == 'file':
             media = self.sender.load_file(mid)
 
-
-        if not media == {} and media['result'].endswith('png') \
+        if not media == {} and (media['result'].endswith('png') \
                 or media['result'].endswith('jpg') \
                 or media['result'].endswith('jpeg') \
                 or media['result'].endswith('JPG') \
-                or media['result'].endswith('PNG'): 
+                or media['result'].endswith('PNG')): 
 
-                Image.open(media['result']).show()
+            Image.open(media['result']).show()
 
 
 
