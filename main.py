@@ -15,6 +15,12 @@ try:
 except:
     NOTIF = False
 
+try:
+    from PIL import Image
+    VIEW_IMAGES = True
+except:
+    VIEW_IMAGES = False
+
 from ui_infobar import InfoBar
 from ui_chanwidget import ChanWidget
 from ui_msgwidget import MessageWidget
@@ -29,7 +35,8 @@ NOTIF_LEVEL = "all" # or "hl"
 class Telegram_ui:
     def __init__(self):
 
-        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL
+        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES
+        self.VIEW_IMAGES = VIEW_IMAGES
         self.lock_receiver = True
         self.start_Telegram()
 
@@ -60,10 +67,7 @@ class Telegram_ui:
             self.image = os.path.dirname(os.path.abspath(__file__))+'/t_logo.png'
 
         self.current_chan = []
-
-        # Barre de titre à voir si c'est vraiment utile
-        #title_bar = InfoBar("ncTelegram v0.01",
-        #                    style='status_bar', bar_align='top', text_align='center')
+        self.last_media = {}
 
         # Cache des messages
         self.msg_buffer = {}
@@ -136,6 +140,28 @@ class Telegram_ui:
         self.chan_widget.update_chan_list()
 
 
+    def load_last_media(self):
+        if self.last_media == {} or not self.VIEW_IMAGES:
+            return
+    
+        mtype = self.last_media['media']['type']
+        mid =  self.last_media['id']
+
+        if mtype == 'photo':
+            photo = self.sender.load_photo(mid)
+            Image.open(photo['result']).show()
+
+        elif mtype == 'document':
+            doc = self.sender.load_document(mid)
+            if doc['result'].endswith('png') or doc['result'].endswith('jpg'):
+                Image.open(doc['result']).show()
+
+        elif mtype == 'file':
+            mfile = self.sender.load_file(mid)
+            if mfile['result'].endswith('png') or mfile['result'].endswith('jpg'):
+                Image.open(mfile['result']).show()
+
+
 
     def start_Telegram(self):
         # Liaison avec telegram-cli
@@ -172,6 +198,9 @@ class Telegram_ui:
 
         elif key == 'ctrl n':
             self.chan_widget.go_next_chan()
+
+        elif key == 'ctrl o':
+            self.load_last_media()
 
 
 

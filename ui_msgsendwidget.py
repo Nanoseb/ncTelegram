@@ -142,6 +142,8 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'ctrl n':
             self.Telegram_ui.chan_widget.go_next_chan()
 
+        elif key == 'ctrl o':
+            self.Telegram_ui.load_last_media()
             
         if len(self.widgetEdit.get_edit_text()) == 1:
             self.Telegram_ui.sender.send_typing(dst)

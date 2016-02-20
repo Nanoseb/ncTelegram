@@ -4,6 +4,7 @@ import time
 import urwid
 
 
+
 # Le widget utilise pour afficher la liste des messages
 class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
@@ -56,10 +57,17 @@ class MessageWidget(urwid.ListBox):
 
         date = msg['date']
 
+
+        if 'media' in msg:
+            self.Telegram_ui.last_media = msg
+            if msg['media']['type'] == 'photo':
+                text = "photo ➜  " + msg['media']['caption']
+            else:
+                text = "media"
+
         if 'text' in msg:
             text = msg['text']
-        else:
-            text = "media"
+
 
         if 'from' in msg:
             sender = msg['from']['first_name']
