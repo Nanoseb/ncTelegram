@@ -111,6 +111,8 @@ class MessageWidget(urwid.ListBox):
 
         if not self.Telegram_ui.NINJA_MODE:
             self.Telegram_ui.sender.mark_read(current_print_name)
+            self.Telegram_ui.sender.status_online()
+            self.Telegram_ui.sender.status_offline()
     
         self.separator_pos = self.pos
 
