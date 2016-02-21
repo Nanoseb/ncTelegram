@@ -120,6 +120,9 @@ class MessageSendWidget(urwid.Filler):
 
             self.Telegram_ui.sender.send_msg(dst, msg)
             self.widgetEdit.set_edit_text("")
+            if not self.Telegram_ui.NINJA_MODE:
+                self.Telegram_ui.sender.status_online()
+                self.Telegram_ui.sender.status_offline()
 
         # Autocompletion
         elif key == 'tab' and self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1].startswith("@"):
@@ -145,10 +148,11 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'ctrl o':
             self.Telegram_ui.load_last_media()
             
-        if len(self.widgetEdit.get_edit_text()) == 1:
-            self.Telegram_ui.sender.send_typing(dst)
-        elif len(self.widgetEdit.get_edit_text()) == 0:
-            self.Telegram_ui.sender.send_typing_abort(dst)
+        if not self.Telegram_ui.NINJA_MODE:
+            if len(self.widgetEdit.get_edit_text()) == 1:
+                self.Telegram_ui.sender.send_typing(dst)
+            elif len(self.widgetEdit.get_edit_text()) == 0:
+                self.Telegram_ui.sender.send_typing_abort(dst)
         
 
 # vim: ai ts=4 sw=4 et sts=4

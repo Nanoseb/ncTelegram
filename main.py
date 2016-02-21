@@ -43,7 +43,7 @@ from msg_receiver import MessageReceiver
 PATH_TELEGRAM = "/usr/bin/telegram-cli"
 PATH_PUBKEY = "/etc/telegram-cli/server.pub"
 NOTIF_LEVEL = "all" # or "hl"
-
+NINJA_MODE = False
 #DATE_FORMAT = "%d/%m/%Y"
 #DATE_FORMAT = "%A %d %B"
 DATE_FORMAT = "%x"
@@ -51,9 +51,10 @@ DATE_FORMAT = "%x"
 class Telegram_ui:
     def __init__(self):
 
-        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES, DATE_FORMAT
+        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES, DATE_FORMAT, NINJA_MODE
         self.lock_receiver = True
         self.DATE_FORMAT = DATE_FORMAT
+        self.NINJA_MODE = NINJA_MODE
         self.start_Telegram()
 
         palette = [('status_bar', 'bold,white', 'dark gray'),
@@ -194,6 +195,7 @@ class Telegram_ui:
 
     def stop_Telegram(self):
         #self.tg.stopCLI()
+        self.sender.status_offline()
         self.sender.terminate()
         self.receiver.stop()
 

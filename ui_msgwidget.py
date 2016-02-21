@@ -108,7 +108,9 @@ class MessageWidget(urwid.ListBox):
 
         # mark messages as read
         current_print_name = self.Telegram_ui.current_chan['print_name']
-        self.Telegram_ui.sender.mark_read(current_print_name)
+
+        if not self.Telegram_ui.NINJA_MODE:
+            self.Telegram_ui.sender.mark_read(current_print_name)
     
         self.separator_pos = self.pos
 
