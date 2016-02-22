@@ -124,12 +124,13 @@ class MessageSendWidget(urwid.Filler):
             if msg == '/quit':
                 self.Telegram_ui.exit()
 
-            self.Telegram_ui.sender.send_msg(dst, msg)
-            self.widgetEdit.set_edit_text("")
             if not self.Telegram_ui.NINJA_MODE:
                 self.Telegram_ui.sender.status_online()
                 self.Telegram_ui.sender.status_offline()
                 self.Telegram_ui.sender.mark_read(dst)
+
+            self.Telegram_ui.sender.send_msg(dst, msg)
+            self.widgetEdit.set_edit_text("")
 
         # Autocompletion
         elif key == 'tab' and self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1].startswith("@"):
