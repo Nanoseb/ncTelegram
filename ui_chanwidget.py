@@ -160,4 +160,19 @@ class ChanWidget(urwid.ListBox):
         self.Telegram_ui.main_columns.focus_position = 2
         self.Telegram_ui.right_side.focus_position = 1
 
+
+    def keypress(self, size, key):
+        key = super(ChanWidget, self).keypress(size, key)
+
+        if key == 'j':
+            self.keypress(size, 'down')
+        elif key == 'k':
+            self.keypress(size, 'up')
+        elif key == 'l':
+            self.Telegram_ui.main_columns.focus_position = 2
+        else:
+            return key
+
+
+
 # vim: ai ts=4 sw=4 et sts=4

@@ -224,6 +224,10 @@ class Telegram_ui:
         elif key == 'ctrl o':
             self.load_last_media()
 
+        elif key == 'i':
+            self.main_columns.focus_position = 2
+            self.right_side.focus_position = 1
+
 
 
 if __name__ == "__main__":

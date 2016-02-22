@@ -149,6 +149,19 @@ class MessageWidget(urwid.ListBox):
         color = int(''.join(str(ord(c)) for c in name)) % len(list_color)
         return list_color[color]
 
+    def keypress(self, size, key):
+        key = super(MessageWidget, self).keypress(size, key)
+
+        if key == 'j':
+            self.keypress(size, 'down')
+        elif key == 'k':
+            self.keypress(size, 'up')
+        elif key == 'h':
+            self.Telegram_ui.main_columns.focus_position = 0
+        else:
+            return key
+
+
     def mouse_event(self, size, event, button, col, row, focus):
 
         if button == 4:

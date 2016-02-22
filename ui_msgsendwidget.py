@@ -111,6 +111,13 @@ class MessageSendWidget(urwid.Filler):
         key = super(MessageSendWidget, self).keypress(size, key)
 
         dst = self.Telegram_ui.current_chan['print_name']
+
+        if not self.Telegram_ui.NINJA_MODE:
+            if len(self.widgetEdit.get_edit_text()) == 1:
+                self.Telegram_ui.sender.send_typing(dst)
+            elif len(self.widgetEdit.get_edit_text()) == 0:
+                self.Telegram_ui.sender.send_typing_abort(dst)
+
         if key == 'enter':
             msg = self.widgetEdit.get_edit_text()
 
@@ -138,21 +145,8 @@ class MessageSendWidget(urwid.Filler):
 
         elif key == 'left':
             self.Telegram_ui.main_columns.focus_position = 0
-
-        elif key == 'ctrl p':
-            self.Telegram_ui.chan_widget.go_prev_chan()
-
-        elif key == 'ctrl n':
-            self.Telegram_ui.chan_widget.go_next_chan()
-
-        elif key == 'ctrl o':
-            self.Telegram_ui.load_last_media()
-            
-        if not self.Telegram_ui.NINJA_MODE:
-            if len(self.widgetEdit.get_edit_text()) == 1:
-                self.Telegram_ui.sender.send_typing(dst)
-            elif len(self.widgetEdit.get_edit_text()) == 0:
-                self.Telegram_ui.sender.send_typing_abort(dst)
+        else:
+            return key
         
 
 # vim: ai ts=4 sw=4 et sts=4
