@@ -109,12 +109,13 @@ class MessageWidget(urwid.ListBox):
         current_cmd = self.Telegram_ui.current_chan['cmd']
 
 
-        if not self.Telegram_ui.NINJA_MODE:
+        if not self.Telegram_ui.NINJA_MODE and (self.Telegram_ui.last_online - int(time.time())) > 30:
             # mark messages as read
             current_print_name = self.Telegram_ui.current_chan['print_name']
             self.Telegram_ui.sender.mark_read(current_print_name)
             self.Telegram_ui.sender.status_online()
             self.Telegram_ui.sender.status_offline()
+            self.Telegram_ui.last_online = int(time.time())
     
         self.separator_pos = self.pos
 

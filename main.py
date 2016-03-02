@@ -56,6 +56,7 @@ class Telegram_ui:
         self.DATE_FORMAT = DATE_FORMAT
         self.NINJA_MODE = NINJA_MODE
         self.start_Telegram()
+        self.last_online = 1
 
         palette = [('status_bar', 'bold,white', 'dark gray'),
                    ('date', 'light green', ''),
