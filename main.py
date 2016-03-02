@@ -76,6 +76,7 @@ class Telegram_ui:
                    ('light blue', 'light blue', ''),
                    ('light magenta', 'light magenta', ''),
                    ('light cyan', 'light cyan', ''),
+                   ('yellow', 'yellow', ''),
                    ('white', 'white', ''),]
 
         # Notification

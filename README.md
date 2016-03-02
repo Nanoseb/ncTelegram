@@ -8,3 +8,7 @@ A curse Telegram client developed in Python with the urwid library.
 * [urwid](http://urwid.org)
 * libnotify (optional)
 * [pillow](http://python-pillow.org)/[PIL](http://www.pythonware.com/products/pil) (optional)
+
+## Installation
+
+For now only pytg V0.4.5 is compatible with the stable branch of telegram-cli, so install is via: `pip install pytg==0.4.5`

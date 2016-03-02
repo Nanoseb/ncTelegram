@@ -71,8 +71,10 @@ class MessageWidget(urwid.ListBox):
 
         if 'from' in msg:
             sender = msg['from']['first_name']
+            sender_id = msg['from']['id']
         else:
             sender = msg['sender']['first_name']
+            sender_id = msg['sender']['id']
 
 
         cur_date = time.strftime('│ ' + self.Telegram_ui.DATE_FORMAT + ' │', time.localtime(date))
@@ -86,7 +88,7 @@ class MessageWidget(urwid.ListBox):
             self.prev_date = cur_date
 
         hour = time.strftime(' %H:%M ', time.localtime(date))
-        color = self.get_name_color(sender)
+        color = self.get_name_color(sender_id)
 
         size_name = 9
 
@@ -130,23 +132,23 @@ class MessageWidget(urwid.ListBox):
             self.separator_pos = -1
 
 
-    def get_name_color(self, name):
+    def get_name_color(self, id):
         list_color = ['dark red',
-                      'dark green',
-                      'brown',
-                      'dark blue',
-                      'dark magenta',
-                      'dark cyan',
-                      'light gray',
-                      'light red',
-                      'light green',
-                      'yellow',
-                      'light blue',
-                      'light magenta',
-                      'light cyan',
-                      'white']
+                'dark blue',
+                'dark cyan',
+                'dark green',
+                'dark magenta',
+                'brown',
+                'light magenta',
+                'light green',
+                'yellow',
+                'light blue',
+                'light red',
+                'light cyan',
+                'light gray',
+                ]
 
-        color = int(''.join(str(ord(c)) for c in name)) % len(list_color)
+        color = id % len(list_color)
         return list_color[color]
 
     def keypress(self, size, key):
