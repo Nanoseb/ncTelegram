@@ -47,38 +47,57 @@ NINJA_MODE = False
 #DATE_FORMAT = "%d/%m/%Y"
 #DATE_FORMAT = "%A %d %B"
 DATE_FORMAT = "%x"
+INLINE_IMAGE = True
+
+def gen_palette():
+    table = ['black',
+            'dark red',
+            'dark green',
+            'brown',
+            'dark blue',
+            'dark magenta',
+            'dark cyan',
+            'light gray',
+            'dark gray',
+            'light red',
+            'light green',
+            'yellow',
+            'light blue',
+            'light magenta',
+            'light cyan',
+            'white']
+    ans = []
+    for fg in table:
+        ans.append((fg,fg,''))
+        for bg in table:
+            ans.append((fg+bg,fg,bg))
+
+    for bg in table:
+        ans.append(('b'+bg,'',bg))
+
+    return ans
+
+
 
 class Telegram_ui:
     def __init__(self):
 
-        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES, DATE_FORMAT, NINJA_MODE
+        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES, DATE_FORMAT, NINJA_MODE, INLINE_IMAGE
         self.lock_receiver = True
         self.DATE_FORMAT = DATE_FORMAT
         self.NINJA_MODE = NINJA_MODE
+        self.INLINE_IMAGE = INLINE_IMAGE
         self.start_Telegram()
         self.last_online = 1
 
-        palette = [('status_bar', 'bold,white', 'dark gray'),
+        palette_init = [('status_bar', 'bold,white', 'dark gray'),
                    ('date', 'light green', ''),
                    ('hour', 'dark gray', ''),
                    ('separator', 'dark gray', ''),
                    ('reversed', 'standout', ''),
-                   ('cur_chan', 'light green', ''),
-                   ('dark red', 'dark red', ''),
-                   ('dark green', 'dark green', ''),
-                   ('brown', 'brown', ''),
-                   ('dark blue', 'dark blue', ''),
-                   ('dark magenta', 'dark magenta', ''),
-                   ('dark cyan', 'dark cyan', ''),
-                   ('light gray', 'light gray', ''),
-                   ('dark gray', 'dark gray', ''),
-                   ('light red', 'light red', ''),
-                   ('light green', 'light green', ''),
-                   ('light blue', 'light blue', ''),
-                   ('light magenta', 'light magenta', ''),
-                   ('light cyan', 'light cyan', ''),
-                   ('yellow', 'yellow', ''),
-                   ('white', 'white', ''),]
+                   ('cur_chan', 'light green', ''),]
+                   
+        palette = palette_init + gen_palette()
 
         # Notification
         if NOTIF:
@@ -119,8 +138,8 @@ class Telegram_ui:
                                            ('weight', 5, self.right_side)])
         #main_pile = urwid.Pile([(1, title_bar), self.main_columns,])
 
-        self.main_loop = urwid.MainLoop((self.main_columns), palette, unhandled_input=self.unhandle_key)
-        self.main_loop.screen.set_terminal_properties(colors=16)
+        self.main_loop = urwid.MainLoop((self.main_columns), palette, unhandled_input=self.unhandle_key, screen=urwid.raw_display.Screen())
+        self.main_loop.screen.set_terminal_properties(colors=256)
         self.me = self.sender.get_self()
         self.lock_receiver = False
         self.main_loop.run()

@@ -42,8 +42,8 @@ class ChanWidget(urwid.ListBox):
             self.chans[i]['cmd'] = chan['type'] + "#" + str(chan['id'])
 
 
-        self.updateLocked = False
         self.update_chan_list()
+        self.updateLocked = False
 
 
     # Mettre a jour la liste des chans
