@@ -66,20 +66,20 @@ class MessageWidget(urwid.ListBox):
 
             if 'media' in msg:
                 self.Telegram_ui.last_media = msg
-                if msg['media']['type'] == 'photo':
-                    if self.Telegram_ui.INLINE_IMAGE:
-                        file = self.Telegram_ui.sender.load_photo(msg['id'])['result']
-                        try:
-                            raw_text = subprocess.check_output(['img2txt', file, '-f', 'utf8', '-H', '12'])
-                            text = translate_color(raw_text)
-                        except:
-                            text = "➜ photo " + msg['media']['caption']
-                    else:
-                        text = "➜ photo " + msg['media']['caption']
+                text = "➜ " + msg['media']['type']
+                if 'caption' in msg['media']:
+                    text = text + " " + msg['media']['caption']
+        
+                if self.Telegram_ui.INLINE_IMAGE:
+                    path = self.Telegram_ui.download_media(msg)
 
-                else:
-                    text = "➜ " + msg['media']['type']
-    
+                    if self.Telegram_ui.is_image(path):
+                        try:
+                            raw_text = subprocess.check_output(['img2txt', path, '-f', 'utf8', '-H', '12'])
+                            text = [text + u'\n'] + translate_color(raw_text)
+                        except:
+                            pass
+
 
         if 'from' in msg:
             sender = msg['from']['first_name']
@@ -87,7 +87,6 @@ class MessageWidget(urwid.ListBox):
         else:
             sender = msg['sender']['first_name']
             sender_id = msg['sender']['id']
-
 
             
 
@@ -117,13 +116,14 @@ class MessageWidget(urwid.ListBox):
         self.focus_position = self.pos
         self.pos = self.pos +1
 
+
     def draw_separator(self):
         if self.separator_pos != -1:
             self.delete_separator()
         current_cmd = self.Telegram_ui.current_chan['cmd']
 
-
-        if not self.Telegram_ui.NINJA_MODE and (self.Telegram_ui.last_online - int(time.time())) > 5:
+        if not self.Telegram_ui.NINJA_MODE and \
+                (self.Telegram_ui.last_online - int(time.time())) > 10:
             # mark messages as read
             current_print_name = self.Telegram_ui.current_chan['print_name']
             self.Telegram_ui.sender.mark_read(current_print_name)
@@ -195,9 +195,6 @@ class MessageWidget(urwid.ListBox):
 
 
 
-
-
-
 # Translate raw_text (ansi sequence) to something readable by urwid (attribut and text)
 def translate_color(raw_text):
 
@@ -221,45 +218,42 @@ def translate_color(raw_text):
     raw_text = raw_text.decode("utf-8")
 
     for at in raw_text.split(u"\x1b["):
-        nocolor = False
         try:
             attr, text = at.split("m",1)
         except:
             attr = '0'
-            nocolor = True
             text = at.split("m",1)
         list_attr = [ int(i) for i in attr.split(';') ]
         list_attr.sort()
         fg = 0
         bg = 0
-        
-        if not nocolor:
-            for elem in list_attr:
-                if elem <= 37:
-                    fg = elem - 30
-                elif elem <= 47:
-                    bg = elem - 40
-                elif elem <= 94:
-                    fg = fg + 8
-                elif elem >= 100 and elem <= 104:
-                    bg = bg + 8
-                
-                if fg < 0:
-                    fg = 0
-                if bg < 0:
-                    bg = 0
+       
+        for elem in list_attr:
+            if elem <= 37 and elem >= 30:
+                fg = elem - 30
+            elif elem <= 47:
+                bg = elem - 40
+            elif elem <= 94:
+                fg = fg + 8
+            elif elem >= 100 and elem <= 104:
+                bg = bg + 8
+            
+        if fg < 0:
+            fg = 0
+        if bg < 0:
+            bg = 0
 
-                fgcolor = table[fg]
-                bgcolor = table[bg]
+        fgcolor = table[fg]
+        bgcolor = table[bg]
 
-                attribut = ''
-                if fg == 0:
-                    attribut = 'b'+bgcolor
-                elif bg == 0:
-                    attribut = fgcolor
-                else:
-                    attribut = fgcolor + bgcolor
+        if fg == 0:
+            attribut = 'b'+bgcolor
+        elif bg == 0:
+            attribut = fgcolor
         else:
+            attribut = fgcolor + bgcolor
+
+        if list_attr == [0]:
             attribut = ''
 
         formated_text.append((attribut, text))

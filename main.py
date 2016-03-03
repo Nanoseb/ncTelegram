@@ -177,32 +177,31 @@ class Telegram_ui:
 
         self.chan_widget.update_chan_list()
 
+    def is_image(self, path):
+        return not path == None and (path.endswith('png') \
+        or path.endswith('jpg') \
+        or path.endswith('jpeg') \
+        or path.endswith('JPG') \
+        or path.endswith('PNG'))
 
-    def load_last_media(self):
-        if self.last_media == {} or not VIEW_IMAGES:
-            return
-    
-        media = {}
-        mtype = self.last_media['media']['type']
-        mid =  self.last_media['id']
+
+    def download_media(self, msg):
+        mtype = msg['media']['type']
+        mid = msg['id']
 
         if mtype == 'photo':
-            media = self.sender.load_photo(mid)
+            file = self.sender.load_photo(mid)['result']
 
         elif mtype == 'document':
-            media = self.sender.load_document(mid)
+            file = self.sender.load_document(mid)['result']
+        else:
+            file = None
 
-        elif mtype == 'file':
-            media = self.sender.load_file(mid)
+        return file
 
-        if not media == {} and (media['result'].endswith('png') \
-                or media['result'].endswith('jpg') \
-                or media['result'].endswith('jpeg') \
-                or media['result'].endswith('JPG') \
-                or media['result'].endswith('PNG')): 
-
-            Image.open(media['result']).show()
-
+    def open_image(self, path):
+        if VIEW_IMAGES and self.is_image(path):
+            Image.open(path).show()
 
 
     def start_Telegram(self):
@@ -242,8 +241,9 @@ class Telegram_ui:
         elif key == 'ctrl n':
             self.chan_widget.go_next_chan()
 
-        elif key == 'ctrl o':
-            self.load_last_media()
+        elif key == 'ctrl o' and not self.last_media == {} and VIEW_IMAGES:
+            path = self.download_media(self.last_media)
+            self.open_image(path)
 
         elif key == 'i':
             self.main_columns.focus_position = 2
