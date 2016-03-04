@@ -141,9 +141,15 @@ class ChanWidget(urwid.ListBox):
 
     def chan_change(self, button, chan):
 
+        #save previous message
+        prev_cmd = self.Telegram_ui.current_chan['cmd']
+        prev_msg = self.Telegram_ui.msg_send_widget.widgetEdit.get_edit_text()
+        self.Telegram_ui.msg_send_widget.buffer_writing_text[prev_cmd] = prev_msg
+        
         self.Telegram_ui.current_chan = chan
 
         current_cmd = chan['cmd'] 
+
 
         self.Telegram_ui.last_media = {}
         self.Telegram_ui.msg_send_widget.update_send_widget()

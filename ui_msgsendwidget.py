@@ -9,6 +9,7 @@ class MessageSendWidget(urwid.Filler):
         self.updateLockedauto = False
         self.current_status = ('?', False)
         self.username_list = []
+        self.buffer_writing_text = {}
 
         self.status_bar = urwid.Text(('status_bar', ' '), align='left')
         self.attr = urwid.AttrMap(self.status_bar, 'status_bar')
@@ -27,8 +28,13 @@ class MessageSendWidget(urwid.Filler):
         else:
             self.current_status = ('?', False)
 
-        self.username_list = []
         self.widgetEdit.set_edit_text('')
+        self.username_list = []
+
+        cmd = self.Telegram_ui.current_chan['cmd']
+        if cmd in self.buffer_writing_text:
+            self.widgetEdit.insert_text(self.buffer_writing_text[cmd])
+
         self.update_status_bar()
 
 
