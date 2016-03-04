@@ -12,6 +12,7 @@ import urwid
 class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
         self.msgs = []
+        self.img_buffer = {}
         self.separator_pos = -1
         self.updateLocked = False
         self.Telegram_ui = Telegram_ui
@@ -52,7 +53,6 @@ class MessageWidget(urwid.ListBox):
         self.updateLocked = False
 
 
-
     def print_msg(self, msg):
 
         date = msg['date']
@@ -71,14 +71,9 @@ class MessageWidget(urwid.ListBox):
                     text = text + " " + msg['media']['caption']
         
                 if self.Telegram_ui.INLINE_IMAGE:
-                    path = self.Telegram_ui.download_media(msg)
-
-                    if self.Telegram_ui.is_image(path):
-                        try:
-                            raw_text = subprocess.check_output(['img2txt', path, '-f', 'utf8', '-H', '12'])
-                            text = [text + u'\n'] + translate_color(raw_text)
-                        except:
-                            pass
+                    image = self.get_inline_img(msg)
+                    if image != None:
+                        text = [text + u'\n'] + self.get_inline_img(msg)
 
 
         if 'from' in msg:
@@ -165,6 +160,26 @@ class MessageWidget(urwid.ListBox):
 
         color = id % len(list_color)
         return list_color[color]
+
+
+    def get_inline_img(self, msg):
+        cmd = self.Telegram_ui.current_chan['cmd']
+        mid = msg['id']
+        key = cmd + str(mid)
+        if key in self.img_buffer:
+            return self.img_buffer[key]
+        else:
+            path = self.Telegram_ui.download_media(msg)
+
+            if self.Telegram_ui.is_image(path):
+                try:
+                    raw_text = subprocess.check_output(['img2txt', path, '-f', 'utf8', '-H', '12'])
+                    text = translate_color(raw_text)
+                    self.img_buffer[key] = text
+                    return text
+                except:
+                    return None 
+
 
     def keypress(self, size, key):
         key = super(MessageWidget, self).keypress(size, key)
