@@ -87,6 +87,11 @@ class ChanWidget(urwid.ListBox):
             pos = pos + 1
             i -= 1
 
+        if not 'current_pos' in locals():
+            self.current_chan_pos = 1
+            current_pos = pos -1
+
+
         self.chan_list.insert(pos +1, urwid.AttrMap(urwid.Divider('─'), 'separator'))
         pos = pos + 1
         self.chan_list.insert(pos +1, urwid.Text('✚  Create new group chat'))
