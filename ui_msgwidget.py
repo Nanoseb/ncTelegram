@@ -172,13 +172,13 @@ class MessageWidget(urwid.ListBox):
             path = self.Telegram_ui.download_media(msg)
 
             if self.Telegram_ui.is_image(path):
-                try:
+                #try:
                     raw_text = subprocess.check_output(['img2txt', path, '-f', 'utf8', '-H', '12'])
                     text = translate_color(raw_text)
                     self.img_buffer[key] = text
                     return text
-                except:
-                    return None 
+                #except:
+                #    return None 
 
 
     def keypress(self, size, key):
@@ -212,7 +212,6 @@ class MessageWidget(urwid.ListBox):
 
 # Translate raw_text (ansi sequence) to something readable by urwid (attribut and text)
 def translate_color(raw_text):
-
     table = ['black',
         'dark red',
         'dark green',
@@ -238,13 +237,16 @@ def translate_color(raw_text):
         except:
             attr = '0'
             text = at.split("m",1)
+
         list_attr = [ int(i) for i in attr.split(';') ]
         list_attr.sort()
-        fg = 0
-        bg = 0
+        fg = -1
+        bg = -1
        
         for elem in list_attr:
-            if elem <= 37 and elem >= 30:
+            if elem <= 29:
+                pass
+            elif elem <= 37:
                 fg = elem - 30
             elif elem <= 47:
                 bg = elem - 40
@@ -253,17 +255,12 @@ def translate_color(raw_text):
             elif elem >= 100 and elem <= 104:
                 bg = bg + 8
             
-        if fg < 0:
-            fg = 0
-        if bg < 0:
-            bg = 0
-
         fgcolor = table[fg]
         bgcolor = table[bg]
 
-        if fg == 0:
+        if fg < 0:
             attribut = 'b'+bgcolor
-        elif bg == 0:
+        elif bg < 0:
             attribut = fgcolor
         else:
             attribut = fgcolor + bgcolor
@@ -272,8 +269,6 @@ def translate_color(raw_text):
             attribut = ''
 
         formated_text.append((attribut, text))
-
-
 
     return formated_text
 
