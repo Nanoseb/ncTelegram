@@ -79,12 +79,12 @@ class MessageSendWidget(urwid.Filler):
 
         self.updateLockedauto = True
 
-        # Verifie si on a deja la liste des gens du chan
+        # check if the list of username is already there
         if self.username_list == []:
             type_chan = self.Telegram_ui.current_chan['type']
             print_name_chan = self.Telegram_ui.current_chan['print_name']
 
-            # récupération des username possibles
+            # get possible username
             if type_chan == 'chat':
                 chat_info = self.Telegram_ui.sender.chat_info(print_name_chan)
                 for user in chat_info['members']:
@@ -105,7 +105,7 @@ class MessageSendWidget(urwid.Filler):
         text = self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1][1:]
         self.updateLockedauto = False
 
-        # autocompletion avec le premier résultat
+        # autocompletion with the first match
         for user in self.username_list:
             if user.startswith(text):
                 to_complete = user[len(text):]
@@ -142,11 +142,11 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'tab' and self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1].startswith("@"):
             self.autocomplete()
 
-        # Supprimer le texte courant
+        # deletion of current text
         elif key == 'ctrl w' or key == 'ctrl k':
             self.widgetEdit.set_edit_text("")
 
-        # donner le focus à la liste
+        # gives the focus to the message list
         elif key == 'up' or key == 'page up' or key == 'esc':
             self.Telegram_ui.right_side.focus_position = 0
 

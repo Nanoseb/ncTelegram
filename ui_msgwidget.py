@@ -8,7 +8,7 @@ import urwid
 
 
 
-# Le widget utilise pour afficher la liste des messages
+# widget used to print the message list
 class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
         self.msgs = []
@@ -27,7 +27,7 @@ class MessageWidget(urwid.ListBox):
 
         self.prev_date = 1
 
-        # Suppression des messages précédent (=redéfinition du widget)
+        # deletion of previous messages
         self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
         super().__init__(self.msg_list)
 
@@ -38,7 +38,7 @@ class MessageWidget(urwid.ListBox):
 
             current_print_name = self.Telegram_ui.current_chan['print_name']
 
-            # Hack pour fixer le problème des messages vide...
+            # hack to fix empty message bug (from telegram-cli probably)
             self.Telegram_ui.sender.history(current_print_name, 100)
             msgList = self.Telegram_ui.sender.history(current_print_name, 100)
             
@@ -144,19 +144,19 @@ class MessageWidget(urwid.ListBox):
 
     def get_name_color(self, id):
         list_color = ['dark red',
-                'dark blue',
-                'dark cyan',
-                'dark green',
-                'dark magenta',
-                'brown',
-                'light magenta',
-                'light green',
-                'yellow',
-                'light blue',
-                'light red',
-                'light cyan',
-                'light gray',
-                ]
+                      'dark blue',
+                      'dark cyan',
+                      'dark green',
+                      'dark magenta',
+                      'brown',
+                      'light magenta',
+                      'light green',
+                      'yellow',
+                      'light blue',
+                      'light red',
+                      'light cyan',
+                      'light gray',
+                      ]
 
         color = id % len(list_color)
         return list_color[color]
@@ -213,21 +213,21 @@ class MessageWidget(urwid.ListBox):
 # Translate raw_text (ansi sequence) to something readable by urwid (attribut and text)
 def translate_color(raw_text):
     table = ['black',
-        'dark red',
-        'dark green',
-        'brown',
-        'dark blue',
-        'dark magenta',
-        'dark cyan',
-        'light gray',
-        'dark gray',
-        'light red',
-        'light green',
-        'yellow',
-        'light blue',
-        'light magenta',
-        'light cyan',
-        'white']
+             'dark red',
+             'dark green',
+             'brown',
+             'dark blue',
+             'dark magenta',
+             'dark cyan',
+             'light gray',
+             'dark gray',
+             'light red',
+             'light green',
+             'yellow',
+             'light blue',
+             'light magenta',
+             'light cyan',
+             'white']
     formated_text = []
     raw_text = raw_text.decode("utf-8")
 

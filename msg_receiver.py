@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import threading
 import time
 from pytg.utils import coroutine
@@ -26,8 +27,8 @@ class MessageReceiver(threading.Thread):
 
             if msg['event'] == "message":
 
-                # vérifie que le message a été envoyé au chan courant
 
+                # get chan cmd
                 msg_type = msg['receiver']['type']
                 if msg_type == 'user' and not msg['own']:
                     msg_cmd = msg['sender']['cmd']
@@ -35,10 +36,11 @@ class MessageReceiver(threading.Thread):
                     msg_cmd = msg['receiver']['cmd']
 
                 msg_id = msg['id']
-                # si le message est pas pour le chan courant on actualise le nombre de msg non lut
+
+                # handeling of unread count, message print, and buffer fill
                 if msg_cmd == current_cmd:
-                        if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
-                            self.Telegram_ui.msg_widget.print_msg(msg)
+                    if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
+                        self.Telegram_ui.msg_widget.print_msg(msg)
                 else:
                     if msg_cmd in self.Telegram_ui.msg_buffer:
                         if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
@@ -46,7 +48,7 @@ class MessageReceiver(threading.Thread):
                     else:
                         self.Telegram_ui.chan_widget.add_msg(msg_cmd)
 
-                # Vérifie que le message a pas déjà été affiché (par la récupération de l'historique du chan)
+                # check if the message is not already printed (by get history)
                 if msg_cmd in self.Telegram_ui.msg_buffer and \
                         msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
                     self.Telegram_ui.msg_buffer[msg_cmd].append(msg)
@@ -59,7 +61,7 @@ class MessageReceiver(threading.Thread):
                             "@" + self.Telegram_ui.me['username'] in msg['text']:
                     self.Telegram_ui.display_notif(msg)
 
-                # On actualise l'affichage
+                # refresh of the screen
                 self.Telegram_ui.main_loop.draw_screen()
 
             elif msg['event'] == 'online-status' and current_cmd == 'user#'+str(msg['user']['id']):

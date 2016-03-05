@@ -5,9 +5,9 @@ import os
 import sys
 import subprocess
 import time
+import configparser
 
 import urwid
-import configparser
 
 try:
     from pytg import Telegram
@@ -15,7 +15,6 @@ except:
     print("pytg needed, can be installed with:")
     print("$ pip install --user pytg==0.4.5")
     sys.exit(1)
-
     
 from ui_chanwidget import ChanWidget
 from ui_msgwidget import MessageWidget
@@ -25,29 +24,29 @@ from msg_receiver import MessageReceiver
 
 def gen_palette():
     table = ['black',
-            'dark red',
-            'dark green',
-            'brown',
-            'dark blue',
-            'dark magenta',
-            'dark cyan',
-            'light gray',
-            'dark gray',
-            'light red',
-            'light green',
-            'yellow',
-            'light blue',
-            'light magenta',
-            'light cyan',
-            'white']
+             'dark red',
+             'dark green',
+             'brown',
+             'dark blue',
+             'dark magenta',
+             'dark cyan',
+             'light gray',
+             'dark gray',
+             'light red',
+             'light green',
+             'yellow',
+             'light blue',
+             'light magenta',
+             'light cyan',
+             'white']
     ans = []
     for fg in table:
-        ans.append((fg,fg,''))
+        ans.append((fg, fg, ''))
         for bg in table:
-            ans.append((fg+bg,fg,bg))
+            ans.append((fg+bg, fg, bg))
 
     for bg in table:
-        ans.append(('b'+bg,'',bg))
+        ans.append(('b'+bg, '', bg))
 
     return ans
 
@@ -84,36 +83,33 @@ class Telegram_ui:
         self.current_chan = []
         self.last_media = {}
 
-        # Cache des messages
+        # message buffer init
         self.msg_buffer = {}
 
-        # Liste des chans
         self.chan_widget = ChanWidget(self)
 
-        # barre de titre
         self.print_title()
 
-        # Liste des messages
+        # message list
         self.msg_widget = MessageWidget(self)
 
-        # Envoie de messages
+        # message writing + status bar widget
         self.msg_send_widget = MessageSendWidget(self)
 
-        # Thread du dump de messages
+        # Thread to dump received messages
         self.msg_dump = MessageReceiver(self)
         self.msg_dump.daemon = True
         self.msg_dump.start()
 
-        # Panneau droit
+        # Right pannel
         self.right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
 
         vert_separator = urwid.AttrMap(urwid.Filler(urwid.Columns([])), 'status_bar')
 
-        # Arrangements finaux
+        # Final arrangements
         self.main_columns = urwid.Columns([('weight', 1, self.chan_widget),
                                            (1, vert_separator),
                                            ('weight', 5, self.right_side)])
-        #main_pile = urwid.Pile([(1, title_bar), self.main_columns,])
 
         self.main_loop = urwid.MainLoop((self.main_columns), palette, unhandled_input=self.unhandle_key, screen=urwid.raw_display.Screen())
         self.main_loop.screen.set_terminal_properties(colors=256)
@@ -222,7 +218,7 @@ class Telegram_ui:
             self.chan_widget.go_next_chan()
 
         elif key == self.conf['keymap']['open_file'] and \
-                not self.last_media == {} and \
+                self.last_media != {} and \
                 self.conf['general']['open_file']:
             path = self.download_media(self.last_media)
             self.open_file(path)
