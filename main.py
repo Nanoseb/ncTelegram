@@ -3,6 +3,7 @@
 
 import os
 import sys
+import subprocess
 import time
 
 import urwid
@@ -16,7 +17,6 @@ except:
     sys.exit(1)
 
     
-from ui_infobar import InfoBar
 from ui_chanwidget import ChanWidget
 from ui_msgwidget import MessageWidget
 from ui_msgsendwidget import MessageSendWidget
@@ -176,9 +176,9 @@ class Telegram_ui:
 
         return file
 
-    def open_image(self, path):
-        if self.conf['general']['open_image'] and self.is_image(path):
-            Image.open(path).show()
+    def open_file(self, path):
+        if self.conf['general']['open_file'] and path != None:
+            subprocess.Popen(['xdg-open', path], stderr=subprocess.DEVNULL)
 
 
     def start_Telegram(self):
@@ -221,11 +221,11 @@ class Telegram_ui:
         elif key == self.conf['keymap']['next_chan']:
             self.chan_widget.go_next_chan()
 
-        elif key == self.conf['keymap']['open_image'] and \
+        elif key == self.conf['keymap']['open_file'] and \
                 not self.last_media == {} and \
-                self.conf['general']['open_image']:
+                self.conf['general']['open_file']:
             path = self.download_media(self.last_media)
-            self.open_image(path)
+            self.open_file(path)
 
         elif key == self.conf['keymap']['insert_text']:
             self.main_columns.focus_position = 2
@@ -250,7 +250,7 @@ if __name__ == "__main__":
     config_full['general']['notification'] = config['general'].getboolean('notification', True)
     config_full['general']['ninja_mode'] = config['general'].getboolean('ninja_mode', False)
     config_full['general']['inline_image'] = config['general'].getboolean('inline_image', True)
-    config_full['general']['open_image'] = config['general'].getboolean('open_image', True)
+    config_full['general']['open_file'] = config['general'].getboolean('open_file', True)
     config_full['general']['date_format'] = config['general'].get('date_format', "%x", raw=True)
 
 
@@ -267,13 +267,13 @@ if __name__ == "__main__":
     config_full['keymap']['down'] = config['keymap'].get('down', 'j')
     config_full['keymap']['quit'] = config['keymap'].get('quit', 'q')
     config_full['keymap']['insert_text'] = config['keymap'].get('insert_text', 'i')
-    config_full['keymap']['open_image'] = config['keymap'].get('open_image', 'ctrl o')
+    config_full['keymap']['open_file'] = config['keymap'].get('open_file', 'ctrl o')
     config_full['keymap']['next_chan'] = config['keymap'].get('next_chan', 'ctrl n')
     config_full['keymap']['prev_chan'] = config['keymap'].get('prev_chan', 'ctrl p')
 
     if not 'DISPLAY' in os.environ:
         config_full['general']['notification'] = False
-        config_full['general']['open_image'] = False
+        config_full['general']['open_file'] = False
     
     if config_full['general']['notification']:
         try:
@@ -282,13 +282,6 @@ if __name__ == "__main__":
             from gi.repository import Notify
         except:
             config_full['general']['notification'] = False
-
-    if config_full['general']['open_image']:
-        try:
-            from PIL import Image
-        except:
-            config_full['general']['open_image'] = False
-
 
 
     Telegram_ui(config_full)

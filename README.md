@@ -8,7 +8,6 @@ A curse Telegram client developed in Python with the urwid library.
 * [urwid](http://urwid.org)
 * libnotify (optional)
 * caca-utils (optional)
-* [pillow](http://python-pillow.org)/[PIL](http://www.pythonware.com/products/pil) (optional)
 
 ## Installation
 
