@@ -1,6 +1,8 @@
 # ncTelegram
 A curse Telegram client developed in Python with the urwid library.
 
+![Presentation of ncTelegram](http://pix.toile-libre.org/?img=1457204711.png)
+
 ## Dependencies
 
 * [Telegram-cli](https://github.com/vysheng/tg)
