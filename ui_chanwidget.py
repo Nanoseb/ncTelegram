@@ -175,11 +175,11 @@ class ChanWidget(urwid.ListBox):
     def keypress(self, size, key):
         key = super(ChanWidget, self).keypress(size, key)
 
-        if key == 'j':
+        if key == self.Telegram_ui.conf['keymap']['down']:
             self.keypress(size, 'down')
-        elif key == 'k':
+        elif key == self.Telegram_ui.conf['keymap']['up']:
             self.keypress(size, 'up')
-        elif key == 'l':
+        elif key == self.Telegram_ui.conf['keymap']['right']:
             self.Telegram_ui.main_columns.focus_position = 2
         else:
             return key

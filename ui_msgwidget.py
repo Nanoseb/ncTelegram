@@ -172,23 +172,23 @@ class MessageWidget(urwid.ListBox):
             path = self.Telegram_ui.download_media(msg)
 
             if self.Telegram_ui.is_image(path):
-                #try:
+                try:
                     raw_text = subprocess.check_output(['img2txt', path, '-f', 'utf8', '-H', '12'])
                     text = translate_color(raw_text)
                     self.img_buffer[key] = text
                     return text
-                #except:
-                #    return None 
+                except:
+                    return None 
 
 
     def keypress(self, size, key):
         key = super(MessageWidget, self).keypress(size, key)
 
-        if key == 'j':
+        if key == self.Telegram_ui.conf['keymap']['down']:
             self.keypress(size, 'down')
-        elif key == 'k':
+        elif key == self.Telegram_ui.conf['keymap']['up']:
             self.keypress(size, 'up')
-        elif key == 'h':
+        elif key ==  self.Telegram_ui.conf['keymap']['left']:
             self.Telegram_ui.main_columns.focus_position = 0
         else:
             return key

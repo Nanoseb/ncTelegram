@@ -6,48 +6,22 @@ import sys
 import time
 
 import urwid
+import configparser
 
 try:
     from pytg import Telegram
 except:
     print("pytg needed, can be installed with:")
-    print("pip install --user pytg")
+    print("$ pip install --user pytg==0.4.5")
     sys.exit(1)
 
-if not 'DISPLAY' in os.environ:
-    NOTIF = False
-    VIEW_IMAGES = False
-else:
-    try:
-        import gi
-        gi.require_version('Notify', '0.7')
-        from gi.repository import Notify
-        NOTIF = True
-    except:
-        NOTIF = False
     
-    try:
-        from PIL import Image
-        VIEW_IMAGES = True
-    except:
-        VIEW_IMAGES = False
-
-
 from ui_infobar import InfoBar
 from ui_chanwidget import ChanWidget
 from ui_msgwidget import MessageWidget
 from ui_msgsendwidget import MessageSendWidget
 from msg_receiver import MessageReceiver
 
-
-PATH_TELEGRAM = "/usr/bin/telegram-cli"
-PATH_PUBKEY = "/etc/telegram-cli/server.pub"
-NOTIF_LEVEL = "all" # or "hl"
-NINJA_MODE = False
-#DATE_FORMAT = "%d/%m/%Y"
-#DATE_FORMAT = "%A %d %B"
-DATE_FORMAT = "%x"
-INLINE_IMAGE = True
 
 def gen_palette():
     table = ['black',
@@ -80,27 +54,30 @@ def gen_palette():
 
 
 class Telegram_ui:
-    def __init__(self):
+    def __init__(self, conf):
 
-        global NOTIF, PATH_TELEGRAM, PATH_PUBKEY, NOTIF_LEVEL, VIEW_IMAGES, DATE_FORMAT, NINJA_MODE, INLINE_IMAGE
         self.lock_receiver = True
-        self.DATE_FORMAT = DATE_FORMAT
-        self.NINJA_MODE = NINJA_MODE
-        self.INLINE_IMAGE = INLINE_IMAGE
+        self.conf = conf
+
+        # Just shortcut for some configurations :
+        self.DATE_FORMAT = self.conf['general']['date_format']
+        self.NINJA_MODE = self.conf['general']['ninja_mode']
+        self.INLINE_IMAGE = self.conf['general']['inline_image']
+
         self.start_Telegram()
         self.last_online = 1
 
-        palette_init = [('status_bar', 'bold,white', 'dark gray'),
-                   ('date', 'light green', ''),
-                   ('hour', 'dark gray', ''),
-                   ('separator', 'dark gray', ''),
-                   ('reversed', 'standout', ''),
-                   ('cur_chan', 'light green', ''),]
+        palette_init = [('status_bar', self.conf['style']['status_bar_fg'], self.conf['style']['status_bar_bg']),
+                        ('date', self.conf['style']['date'], ''),
+                        ('hour', self.conf['style']['hour'], ''),
+                        ('separator', self.conf['style']['separator'], ''),
+                        ('reversed', 'standout', ''),
+                        ('cur_chan', self.conf['style']['cur_chan'], '')]
                    
         palette = palette_init + gen_palette()
 
         # Notification
-        if NOTIF:
+        if self.conf['general']['notification']:
             Notify.init("ncTelegram")
             self.image = os.path.dirname(os.path.abspath(__file__))+'/t_logo.png'
 
@@ -146,7 +123,7 @@ class Telegram_ui:
 
 
     def display_notif(self, msg):
-        if NOTIF:
+        if self.conf['general']['notification']:
             text = msg['text']
 
             try:
@@ -200,12 +177,15 @@ class Telegram_ui:
         return file
 
     def open_image(self, path):
-        if VIEW_IMAGES and self.is_image(path):
+        if self.conf['general']['open_image'] and self.is_image(path):
             Image.open(path).show()
 
 
     def start_Telegram(self):
         # Liaison avec telegram-cli
+        PATH_TELEGRAM = self.conf['general']['path_telegram']
+        PATH_PUBKEY = self.conf['general']['path_pubkey']
+
         self.tg = Telegram(telegram=PATH_TELEGRAM,
                            pubkey_file=PATH_PUBKEY)
         self.receiver = self.tg.receiver
@@ -221,7 +201,7 @@ class Telegram_ui:
 
 
     def exit(self):
-        if NOTIF:
+        if self.conf['general']['notification']:
             Notify.uninit()
         sys.stdout.write("\x1b]2;\x07")
         self.stop_Telegram()
@@ -229,30 +209,89 @@ class Telegram_ui:
 
 
     def unhandle_key(self, key):
-        if key in('q', 'Q'):
+        if key == self.conf['keymap']['quit']:
             self.exit()
 
         elif key == 'esc':
             self.msg_widget.draw_separator()
 
-        elif key == 'ctrl p':
+        elif key == self.conf['keymap']['prev_chan']:
             self.chan_widget.go_prev_chan()
 
-        elif key == 'ctrl n':
+        elif key == self.conf['keymap']['next_chan']:
             self.chan_widget.go_next_chan()
 
-        elif key == 'ctrl o' and not self.last_media == {} and VIEW_IMAGES:
+        elif key == self.conf['keymap']['open_image'] and \
+                not self.last_media == {} and \
+                self.conf['general']['open_image']:
             path = self.download_media(self.last_media)
             self.open_image(path)
 
-        elif key == 'i':
+        elif key == self.conf['keymap']['insert_text']:
             self.main_columns.focus_position = 2
             self.right_side.focus_position = 1
 
 
 
 if __name__ == "__main__":
-    Telegram_ui()
+    
+    conffile = os.path.dirname(os.path.abspath(__file__))+'/ncTelegram.conf'
+    config = configparser.ConfigParser()
+    config.read(conffile)
+
+    config_full = {}
+
+    config_full['general'] = {}
+    config_full['style'] = {}
+    config_full['keymap'] = {}
+
+    config_full['general']['path_telegram'] = config['general'].get('path_telegram', "/usr/bin/telegram-cli")
+    config_full['general']['path_pubkey'] = config['general'].get('path_telegram', "/etc/telegram-cli/server.pub")
+    config_full['general']['notification'] = config['general'].getboolean('notification', True)
+    config_full['general']['ninja_mode'] = config['general'].getboolean('ninja_mode', False)
+    config_full['general']['inline_image'] = config['general'].getboolean('inline_image', True)
+    config_full['general']['open_image'] = config['general'].getboolean('open_image', True)
+    config_full['general']['date_format'] = config['general'].get('date_format', "%x", raw=True)
+
+
+    config_full['style']['status_bar_fg'] = config['style'].get('status_bar_fg', 'bold, white')
+    config_full['style']['status_bar_bg'] = config['style'].get('status_bar_bg', 'dark gray')
+    config_full['style']['date'] = config['style'].get('date', 'light green')
+    config_full['style']['hour'] = config['style'].get('hour', 'dark gray')
+    config_full['style']['separator'] = config['style'].get('separator', 'dark gray')
+    config_full['style']['cur_chan'] = config['style'].get('cur_chan', 'light green')
+
+    config_full['keymap']['left'] = config['keymap'].get('left', 'h')
+    config_full['keymap']['right'] = config['keymap'].get('right', 'l')
+    config_full['keymap']['up'] = config['keymap'].get('up', 'k')
+    config_full['keymap']['down'] = config['keymap'].get('down', 'j')
+    config_full['keymap']['quit'] = config['keymap'].get('quit', 'q')
+    config_full['keymap']['insert_text'] = config['keymap'].get('insert_text', 'i')
+    config_full['keymap']['open_image'] = config['keymap'].get('open_image', 'ctrl o')
+    config_full['keymap']['next_chan'] = config['keymap'].get('next_chan', 'ctrl n')
+    config_full['keymap']['prev_chan'] = config['keymap'].get('prev_chan', 'ctrl p')
+
+    if not 'DISPLAY' in os.environ:
+        config_full['general']['notification'] = False
+        config_full['general']['open_image'] = False
+    
+    if config_full['general']['notification']:
+        try:
+            import gi
+            gi.require_version('Notify', '0.7')
+            from gi.repository import Notify
+        except:
+            config_full['general']['notification'] = False
+
+    if config_full['general']['open_image']:
+        try:
+            from PIL import Image
+        except:
+            config_full['general']['open_image'] = False
+
+
+
+    Telegram_ui(config_full)
 
 
 # vim: ai ts=4 sw=4 et sts=4
