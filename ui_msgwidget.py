@@ -102,7 +102,7 @@ class MessageWidget(urwid.ListBox):
 
         message_meta = urwid.Text([('hour', hour),
                                    (color, '{0: >9}'.format(sender[0:size_name])),
-                                   ('dark gray', " │ ")])
+                                   ('separator', " │ ")])
 
         message_text = urwid.Text(text)
         self.msg_list.insert(self.pos +1,

@@ -246,7 +246,7 @@ if __name__ == "__main__":
     config_full['keymap'] = {}
 
     config_full['general']['path_telegram'] = config['general'].get('path_telegram', "/usr/bin/telegram-cli")
-    config_full['general']['path_pubkey'] = config['general'].get('path_telegram', "/etc/telegram-cli/server.pub")
+    config_full['general']['path_pubkey'] = config['general'].get('path_pubkey', "/etc/telegram-cli/server.pub")
     config_full['general']['notification'] = config['general'].getboolean('notification', True)
     config_full['general']['ninja_mode'] = config['general'].getboolean('ninja_mode', False)
     config_full['general']['inline_image'] = config['general'].getboolean('inline_image', True)
