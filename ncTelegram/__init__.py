@@ -3,6 +3,7 @@
 
 import os
 import sys
+import os.path
 import subprocess
 import time
 import configparser
@@ -15,11 +16,18 @@ except:
     print("pytg needed, can be installed with:")
     print("$ pip install --user pytg==0.4.5")
     sys.exit(1)
-    
-from ui_chanwidget import ChanWidget
-from ui_msgwidget import MessageWidget
-from ui_msgsendwidget import MessageSendWidget
-from msg_receiver import MessageReceiver
+
+try:
+    import gi
+    gi.require_version('Notify', '0.7')
+    from gi.repository import Notify
+except:
+    pass
+
+from .ui_chanwidget import ChanWidget
+from .ui_msgwidget import MessageWidget
+from .ui_msgsendwidget import MessageSendWidget
+from .msg_receiver import MessageReceiver
 
 
 def gen_palette():
@@ -54,7 +62,6 @@ def gen_palette():
 
 class Telegram_ui:
     def __init__(self, conf):
-
         self.lock_receiver = True
         self.conf = conf
 
@@ -78,7 +85,7 @@ class Telegram_ui:
         # Notification
         if self.conf['general']['notification']:
             Notify.init("ncTelegram")
-            self.image = os.path.dirname(os.path.abspath(__file__))+'/t_logo.png'
+            self.image = '/usr/share/ncTelegram/t_logo.png'
 
         self.current_chan = []
         self.last_media = {}
@@ -231,60 +238,5 @@ class Telegram_ui:
             self.main_columns.focus_position = 2
             self.right_side.focus_position = 1
             self.msg_send_widget.widgetEdit.insert_text("'")
-
-
-if __name__ == "__main__":
-    
-    conffile = os.path.dirname(os.path.abspath(__file__))+'/ncTelegram.conf'
-    config = configparser.ConfigParser()
-    config.read(conffile)
-
-    config_full = {}
-
-    config_full['general'] = {}
-    config_full['style'] = {}
-    config_full['keymap'] = {}
-
-    config_full['general']['path_telegram'] = config['general'].get('path_telegram', "/usr/bin/telegram-cli")
-    config_full['general']['path_pubkey'] = config['general'].get('path_pubkey', "/etc/telegram-cli/server.pub")
-    config_full['general']['notification'] = config['general'].getboolean('notification', True)
-    config_full['general']['ninja_mode'] = config['general'].getboolean('ninja_mode', False)
-    config_full['general']['inline_image'] = config['general'].getboolean('inline_image', True)
-    config_full['general']['open_file'] = config['general'].getboolean('open_file', True)
-    config_full['general']['date_format'] = config['general'].get('date_format', "%x", raw=True)
-
-
-    config_full['style']['status_bar_fg'] = config['style'].get('status_bar_fg', 'bold, white')
-    config_full['style']['status_bar_bg'] = config['style'].get('status_bar_bg', 'dark gray')
-    config_full['style']['date'] = config['style'].get('date', 'light green')
-    config_full['style']['hour'] = config['style'].get('hour', 'dark gray')
-    config_full['style']['separator'] = config['style'].get('separator', 'dark gray')
-    config_full['style']['cur_chan'] = config['style'].get('cur_chan', 'light green')
-
-    config_full['keymap']['left'] = config['keymap'].get('left', 'h')
-    config_full['keymap']['right'] = config['keymap'].get('right', 'l')
-    config_full['keymap']['up'] = config['keymap'].get('up', 'k')
-    config_full['keymap']['down'] = config['keymap'].get('down', 'j')
-    config_full['keymap']['quit'] = config['keymap'].get('quit', 'q')
-    config_full['keymap']['insert_text'] = config['keymap'].get('insert_text', 'i')
-    config_full['keymap']['open_file'] = config['keymap'].get('open_file', 'ctrl o')
-    config_full['keymap']['next_chan'] = config['keymap'].get('next_chan', 'ctrl n')
-    config_full['keymap']['prev_chan'] = config['keymap'].get('prev_chan', 'ctrl p')
-
-    if not 'DISPLAY' in os.environ:
-        config_full['general']['notification'] = False
-        config_full['general']['open_file'] = False
-    
-    if config_full['general']['notification']:
-        try:
-            import gi
-            gi.require_version('Notify', '0.7')
-            from gi.repository import Notify
-        except:
-            config_full['general']['notification'] = False
-
-
-    Telegram_ui(config_full)
-
 
 # vim: ai ts=4 sw=4 et sts=4
