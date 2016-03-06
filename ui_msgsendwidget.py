@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
+import os.path
 import time
+import re
 import urwid
 
 class MessageSendWidget(urwid.Filler):
@@ -135,7 +138,20 @@ class MessageSendWidget(urwid.Filler):
                 self.Telegram_ui.sender.status_offline()
                 self.Telegram_ui.sender.mark_read(dst)
 
-            self.Telegram_ui.sender.send_msg(dst, msg)
+            msg = re.sub(r'\s+$', '', msg)
+            if msg.startswith("'") and msg.endswith("'") and\
+                    os.path.isfile(msg[1:][:-1]):
+
+                self.widgetEdit.insert_text(" Please wait...")
+                self.Telegram_ui.main_loop.draw_screen()
+                if self.Telegram_ui.is_image(msg[1:][:-1]):
+                    self.Telegram_ui.sender.send_photo(dst, msg[1:][:-1])
+                else:
+                    self.Telegram_ui.sender.send_document(dst, msg[1:][:-1])
+
+            else:
+                self.Telegram_ui.sender.send_msg(dst, msg)
+
             self.widgetEdit.set_edit_text("")
 
         # Autocompletion

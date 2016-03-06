@@ -227,6 +227,10 @@ class Telegram_ui:
             self.main_columns.focus_position = 2
             self.right_side.focus_position = 1
 
+        elif key == "'":
+            self.main_columns.focus_position = 2
+            self.right_side.focus_position = 1
+            self.msg_send_widget.widgetEdit.insert_text("'")
 
 
 if __name__ == "__main__":
