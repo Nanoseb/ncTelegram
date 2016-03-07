@@ -61,6 +61,7 @@ class ChanWidget(urwid.ListBox):
 
         # build of chan list
         for chan in self.chans[::-1]:
+            pos +=1
             print_name = chan['print_name']
 
             cmd = chan['cmd']
@@ -77,13 +78,12 @@ class ChanWidget(urwid.ListBox):
 
             if print_name == self.Telegram_ui.current_chan['print_name']:
                 button = NewButton(('cur_chan', label), self.chan_change, chan)
-                current_pos = pos + 1
+                current_pos = pos
                 self.current_chan_pos = i
             else:
                 button = NewButton(label, self.chan_change, chan)
 
-            self.chan_list.insert(pos +1, button)
-            pos = pos + 1
+            self.chan_list.insert(pos, button)
             i -= 1
 
         if not 'current_pos' in locals():
@@ -91,15 +91,16 @@ class ChanWidget(urwid.ListBox):
             current_pos = pos -1
 
 
-        self.chan_list.insert(pos +1, urwid.AttrMap(urwid.Divider('─'), 'separator'))
-        pos = pos + 1
-        self.chan_list.insert(pos +1, urwid.Text('✚  Create new group chat'))
-        pos = pos + 1
-        self.chan_list.insert(pos +1, urwid.Text('✚  Create new channel'))
-        pos = pos + 1
-        self.chan_list.insert(pos +1, urwid.Text('☺  Contacts'))
-        pos = pos + 1
-        self.chan_list.insert(pos +1, urwid.AttrMap(urwid.Divider('─'), 'separator'))
+        pos +=1
+        self.chan_list.insert(pos, urwid.AttrMap(urwid.Divider('─'), 'separator'))
+        #pos += 1
+        #self.chan_list.insert(pos, urwid.Text('✚  Create new group chat'))
+        #pos += 1
+        #self.chan_list.insert(pos, urwid.Text('✚  Create new channel'))
+        #pos += 1
+        #self.chan_list.insert(pos, urwid.Text('☺  Contacts'))
+        #pos += 1
+        #self.chan_list.insert(pos, urwid.AttrMap(urwid.Divider('─'), 'separator'))
 
         
         # print of buffer button only if needed
@@ -109,9 +110,9 @@ class ChanWidget(urwid.ListBox):
         list_buff.sort()
         list_chan.sort()
         if list_buff != list_chan :
-            pos = pos + 1
+            pos += 1
             button = NewButton('⬇  Download message buffer', self.Telegram_ui.fill_msg_buffer)
-            self.chan_list.insert(pos +1, button)
+            self.chan_list.insert(pos, button)
 
 
         self.focus_position = current_pos

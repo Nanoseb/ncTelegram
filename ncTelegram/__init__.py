@@ -3,10 +3,8 @@
 
 import os
 import sys
-import os.path
 import subprocess
 import time
-import configparser
 
 import urwid
 

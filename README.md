@@ -14,11 +14,17 @@ A curse Telegram client developed in Python with the urwid library.
 ## Installation
 
 ### For archlinux
-You can use the pkgbuild from the aur repo
+You can use the pkgbuild from [aur](https://aur.archlinux.org/packages/nctelegram-git/)
+```
+yaourt -S nctelegram-git
+```
+And install pytg with pip:
 
-    yaourt -S nctelegram
+```
+pip install --user pytg==0.4.5
+```
 
-### Other distribution
+### Other distributions
 
 #### Telegram-cli
 Just follow its [readme](https://github.com/vysheng/tg).
@@ -26,15 +32,16 @@ Just follow its [readme](https://github.com/vysheng/tg).
 #### Urwid
 This one should be in your repository
 
-- Debian/ubuntu/...
+- On Debian/ubuntu/...
 ```
     apt-get install python3-urwid 
 ```
 
-- Fedora
+- On Fedora
 ```
     dnf install python-urwid
 ```
+
 #### pytg
 
 For now only pytg V0.4.5 is compatible with the stable branch of telegram-cli, so install it via: 
@@ -45,17 +52,23 @@ For now only pytg V0.4.5 is compatible with the stable branch of telegram-cli, s
 #### caca-utils and libnotify (optional)
 These one should also be in your repos
 
-- Debian/ubuntu/...
+- On Debian/ubuntu/...
 ```
     apt-get install caca-utils libnotify
 ```
 
-- Fedora
+- On Fedora
 ```
     dnf install caca-utils libnotify
 ```
 
-### First launch
+### Installation of ncTelegram
+
+```
+git clone https://github.com/Nanoseb/ncTelegram.git
+cd ncTelegram
+python3 setup.py install
+```
 
 Before running `nctelegram` you have to launch `telegram-cli` in order to register you account (phone number and verification code).
 
@@ -66,6 +79,7 @@ An example of configuration file can be found in `/etc/ncTelegram.conf`, copy it
 ```
 cp /etc/ncTelegram.conf ~/.ncTelegram.conf
 ```
+Be sure that the path of `telegram-cli` and the public key in the configuration file are correct.
 
 
 

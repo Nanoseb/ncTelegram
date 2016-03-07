@@ -64,3 +64,5 @@ if config_full['general']['notification']:
 ncTelegram.Telegram_ui(config_full)
 
 
+
+# vim: ai ts=4 sw=4 et sts=4
