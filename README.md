@@ -32,7 +32,7 @@ Everything is in the repos:
 ```
 # dnf install telegram-cli python-urwid
 
-$ pip install --user pytg==0.4.5
+$ pip3 install --user pytg==0.4.5
 ```
 
 If you want notifications and inline images:
@@ -55,7 +55,7 @@ And then:
 ```
 # apt-get install python3-urwid 
 
-$ pip install --user pytg==0.4.5
+$ pip3 install --user pytg==0.4.5
 ```
 
 And if you want notifications and inline images:
