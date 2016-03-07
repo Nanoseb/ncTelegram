@@ -1,7 +1,9 @@
 # ncTelegram
 A curse Telegram client developed in Python with the urwid library.
 
-![Presentation of ncTelegram](http://pix.toile-libre.org/upload/original/1457204711.png)
+<p align="center">
+  <img src="http://pix.toile-libre.org/upload/original/1457204711.png" alt="screenshot of ncTelegram"/>
+</p>
 
 ## Dependencies
 
@@ -14,73 +16,84 @@ A curse Telegram client developed in Python with the urwid library.
 ## Installation
 
 ### For archlinux
-You can use the pkgbuild from [aur](https://aur.archlinux.org/packages/nctelegram-git/)
+You can use the pkgbuild from [aur](https://aur.archlinux.org/packages/nctelegram-git/):
 ```
-yaourt -S nctelegram-git
+$ yaourt -S nctelegram-git
 ```
+
 And install pytg with pip:
-
 ```
-pip install --user pytg==0.4.5
-```
-
-### Other distributions
-
-#### Telegram-cli
-Just follow its [readme](https://github.com/vysheng/tg).
-
-#### Urwid
-This one should be in your repository
-
-- On Debian/ubuntu/...
-```
-    apt-get install python3-urwid 
+$ pip install --user pytg==0.4.5
 ```
 
-- On Fedora
-```
-    dnf install python-urwid
-```
-
-#### pytg
-
-For now only pytg V0.4.5 is compatible with the stable branch of telegram-cli, so install it via: 
-```
-    pip install --user pytg==0.4.5
-```
-
-#### caca-utils and libnotify (optional)
-These one should also be in your repos
-
-- On Debian/ubuntu/...
-```
-    apt-get install caca-utils libnotify
-```
-
-- On Fedora
-```
-    dnf install caca-utils libnotify
-```
-
-### Installation of ncTelegram
+### For Fedora
+Everything is in the repos:
 
 ```
-git clone https://github.com/Nanoseb/ncTelegram.git
-cd ncTelegram
-python3 setup.py install
+# dnf install telegram-cli python-urwid
+
+$ pip install --user pytg==0.4.5
 ```
 
-Before running `nctelegram` you have to launch `telegram-cli` in order to register you account (phone number and verification code).
+If you want notifications and inline images:
+```
+# dnf install caca-utils libnotify
+```
 
+And ncTelegram:
+```
+$ git clone https://github.com/Nanoseb/ncTelegram.git
+$ cd ncTelegram
+# python3 setup.py install
+```
+
+### For Debian/ubuntu/...
+
+To install telegram-cli just follow its [readme](https://github.com/vysheng/tg).
+
+And then:
+```
+# apt-get install python3-urwid 
+
+$ pip install --user pytg==0.4.5
+```
+
+And if you want notifications and inline images:
+```
+# apt-get install caca-utils libnotify
+```
+
+Finnaly ncTelegram:
+```
+$ git clone https://github.com/Nanoseb/ncTelegram.git
+$ cd ncTelegram
+# python3 setup.py install
+```
 
 ## Usage
 
-An example of configuration file can be found in `/etc/ncTelegram.conf`, copy it to your personal folder before modifying it : 
+Before running `nctelegram` you have to launch `telegram-cli` in order to register you account (phone number and verification code).
+
+An example of configuration file can be found in `/etc/ncTelegram.conf`, copy it to your personal folder before modifying it: 
 ```
-cp /etc/ncTelegram.conf ~/.ncTelegram.conf
+$ cp /etc/ncTelegram.conf ~/.ncTelegram.conf
 ```
 Be sure that the path of `telegram-cli` and the public key in the configuration file are correct.
 
 
+#### Tips
 
+- press `esc` to leave the text area
+
+- press `q` to quit the ncTelegram
+
+- press `esc` twice to draw a separator at the end of the message list
+
+- use `ctrl+o` to open the last file sent to the current chan
+
+- you can navigate in the chan list with `ctrl+p` and `ctrl+n`
+
+- select `Download message buffer` to navigate more quickly between chan
+
+- vim like keymap is also available, use `hjkl` to navigate between lists, use `i` to select the text area and `esc` to leave it
 

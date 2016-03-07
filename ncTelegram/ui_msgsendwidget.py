@@ -130,9 +130,6 @@ class MessageSendWidget(urwid.Filler):
         if key == 'enter':
             msg = self.widgetEdit.get_edit_text()
 
-            if msg == '/quit':
-                self.Telegram_ui.exit()
-
             if not self.Telegram_ui.NINJA_MODE:
                 self.Telegram_ui.sender.status_online()
                 self.Telegram_ui.sender.status_offline()
