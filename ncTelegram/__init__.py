@@ -12,7 +12,7 @@ try:
     from pytg import Telegram
 except:
     print("pytg needed, can be installed with:")
-    print("$ pip install --user pytg==0.4.5")
+    print("$ pip3 install --user pytg==0.4.5")
     sys.exit(1)
 
 try:
@@ -62,7 +62,8 @@ class Telegram_ui:
     def __init__(self, conf):
         self.lock_receiver = True
         self.conf = conf
-
+        
+        self.boot_time = int(time.time())
         # Just shortcut for some configurations :
         self.DATE_FORMAT = self.conf['general']['date_format']
         self.NINJA_MODE = self.conf['general']['ninja_mode']
@@ -195,11 +196,12 @@ class Telegram_ui:
 
 
     def stop_Telegram(self):
-        #self.tg.stopCLI()
         self.sender.status_offline()
+        #self.tg.stopCLI()
         self.sender.terminate()
         self.receiver.stop()
-
+    
+        self.sender.safe_quit()
 
     def exit(self):
         if self.conf['general']['notification']:

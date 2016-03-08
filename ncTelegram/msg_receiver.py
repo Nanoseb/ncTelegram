@@ -27,6 +27,8 @@ class MessageReceiver(threading.Thread):
 
             if msg['event'] == "message":
 
+                if msg['date'] < self.Telegram_ui.boot_time:
+                    continue
 
                 # get chan cmd
                 msg_type = msg['receiver']['type']
