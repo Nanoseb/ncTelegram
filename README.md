@@ -37,7 +37,7 @@ $ pip3 install --user pytg==0.4.5
 
 If you want notifications and inline images:
 ```
-# dnf install caca-utils libnotify
+# dnf install libnotify caca-utils
 ```
 
 And ncTelegram:
@@ -60,7 +60,7 @@ $ pip3 install --user pytg==0.4.5
 
 And if you want notifications and inline images:
 ```
-# apt-get install caca-utils libnotify
+# apt-get install libnotify caca-utils
 ```
 
 Finnaly ncTelegram:
@@ -78,7 +78,7 @@ An example of configuration file can be found in `/etc/ncTelegram.conf`, copy it
 ```
 $ cp /etc/ncTelegram.conf ~/.ncTelegram.conf
 ```
-Be sure that the path of `telegram-cli` and the public key in the configuration file are correct.
+Be sure that the path of `telegram-cli` and the public key are set correctly.
 
 
 #### Tips
@@ -91,9 +91,10 @@ Be sure that the path of `telegram-cli` and the public key in the configuration 
 
 - use `ctrl+o` to open the last file sent to the current chan
 
+- to send files you can simply drag and drop them into your terminal or send as a message their path between single quotes (')
+
 - you can navigate in the chan list with `ctrl+p` and `ctrl+n`
 
 - select `Download message buffer` to navigate more quickly between chan
 
 - vim like keymap is also available, use `hjkl` to navigate between lists, use `i` to select the text area and `esc` to leave it
-
