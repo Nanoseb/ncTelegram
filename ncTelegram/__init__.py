@@ -71,6 +71,7 @@ class Telegram_ui:
 
         self.start_Telegram()
         self.last_online = 1
+        self.online_status = {}
 
         palette_init = [('status_bar', self.conf['style']['status_bar_fg'], self.conf['style']['status_bar_bg']),
                         ('date', self.conf['style']['date'], ''),
@@ -122,6 +123,11 @@ class Telegram_ui:
         self.me = self.sender.get_self()
         self.lock_receiver = False
         self.main_loop.run()
+
+    def update_online_status(self, when, status, cmd):
+        self.online_status[cmd] = (when, status)
+        if cmd == self.current_chan['cmd']:
+            self.msg_send_widget.update_status_bar()
 
 
     def display_notif(self, msg):

@@ -38,7 +38,13 @@ class ChanWidget(urwid.ListBox):
         # adding of 'cmd' to the chan list 'cmd' = unique identifier of chan and users
         for i in range(len(self.chans)):
             chan = self.chans[i]
-            self.chans[i]['cmd'] = chan['type'] + "#" + str(chan['id'])
+            cmd = chan['type'] + "#" + str(chan['id'])
+            self.chans[i]['cmd'] = cmd
+            if chan['type'] == 'user':
+                if 'when' in chan:
+                    self.Telegram_ui.online_status[cmd] = (chan['when'], False)
+                else:
+                    self.Telegram_ui.online_status[cmd] = ('?', False)
 
 
         self.update_chan_list()
@@ -73,7 +79,7 @@ class ChanWidget(urwid.ListBox):
             else:
                 label = "➜➜ " + label
 
-            if cmd in self.msg_chan:
+            if cmd in self.msg_chan and self.msg_chan[cmd] != 0:
                 label = label + ' [' + str(self.msg_chan[cmd]) + ']'
 
             if print_name == self.Telegram_ui.current_chan['print_name']:
@@ -117,13 +123,16 @@ class ChanWidget(urwid.ListBox):
 
         self.focus_position = current_pos
 
-    def add_msg(self, cmd):
+    def add_msg(self, cmd, incr):
         """ unread message count incrementation
         """
-        if cmd in self.msg_chan:
-            self.msg_chan[cmd] = self.msg_chan[cmd] + 1
+        if incr:
+            if cmd in self.msg_chan:
+                self.msg_chan[cmd] = self.msg_chan[cmd] + 1
+            else:
+                self.msg_chan[cmd] = 1
         else:
-            self.msg_chan[cmd] = 1
+            self.msg_chan[cmd] = 0
 
         self.Telegram_ui.print_title()
 
@@ -151,9 +160,14 @@ class ChanWidget(urwid.ListBox):
         prev_msg = self.Telegram_ui.msg_send_widget.widgetEdit.get_edit_text()
         self.Telegram_ui.msg_send_widget.buffer_writing_text[prev_cmd] = prev_msg
         
+        if not self.Telegram_ui.NINJA_MODE:
+            dst = self.Telegram_ui.current_chan['print_name']
+            self.Telegram_ui.sender.send_typing_abort(dst)
+
+
         self.Telegram_ui.current_chan = chan
 
-        current_cmd = chan['cmd'] 
+        current_cmd = chan['cmd']
 
 
         self.Telegram_ui.last_media = {}
@@ -163,7 +177,7 @@ class ChanWidget(urwid.ListBox):
         # deletion of unread count for the new chan
         if current_cmd in self.msg_chan:
             del self.msg_chan[current_cmd]
-            self.Telegram_ui.print_title()
+        self.Telegram_ui.print_title()
         
         # call to refresh the current chan of the chan list
         self.update_chan_list()

@@ -28,6 +28,8 @@ class MessageReceiver(threading.Thread):
             if msg['event'] == "message":
 
                 if msg['date'] < self.Telegram_ui.boot_time:
+                    self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
+                    self.Telegram_ui.chan_widget.get_new_chan_list()
                     continue
 
                 # get chan cmd
@@ -43,12 +45,13 @@ class MessageReceiver(threading.Thread):
                 if msg_cmd == current_cmd:
                     if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
                         self.Telegram_ui.msg_widget.print_msg(msg)
+                        self.Telegram_ui.chan_widget.add_msg(msg_cmd, False)
                 else:
                     if msg_cmd in self.Telegram_ui.msg_buffer:
                         if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
-                            self.Telegram_ui.chan_widget.add_msg(msg_cmd)
+                            self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
                     else:
-                        self.Telegram_ui.chan_widget.add_msg(msg_cmd)
+                        self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
 
                 # check if the message is not already printed (by get history)
                 if msg_cmd in self.Telegram_ui.msg_buffer and \
@@ -66,11 +69,10 @@ class MessageReceiver(threading.Thread):
                 # refresh of the screen
                 self.Telegram_ui.main_loop.draw_screen()
 
-            elif msg['event'] == 'online-status' and current_cmd == 'user#'+str(msg['user']['id']):
+            elif msg['event'] == 'online-status':
                 when = msg['when']
                 status = msg['online']
-
-                self.Telegram_ui.msg_send_widget.update_online(when, status)
+                self.Telegram_ui.update_online_status(when, status, 'user#'+str(msg['user']['id']))
 
 
 

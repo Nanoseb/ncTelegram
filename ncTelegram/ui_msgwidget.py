@@ -117,18 +117,19 @@ class MessageWidget(urwid.ListBox):
             self.delete_separator()
         current_cmd = self.Telegram_ui.current_chan['cmd']
 
-        if not self.Telegram_ui.NINJA_MODE: # and (int(time.time()) - self.Telegram_ui.last_online) > 5:
+        if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan: 
             # mark messages as read
             current_print_name = self.Telegram_ui.current_chan['print_name']
             self.Telegram_ui.sender.mark_read(current_print_name)
             self.Telegram_ui.sender.status_online()
             self.Telegram_ui.sender.status_offline()
-            self.Telegram_ui.last_online = int(time.time())
-    
+
+
         self.separator_pos = self.pos
 
         if current_cmd in self.Telegram_ui.chan_widget.msg_chan:
             self.separator_pos -= self.Telegram_ui.chan_widget.msg_chan[current_cmd]
+            del self.Telegram_ui.chan_widget.msg_chan[current_cmd]
 
         self.pos = self.pos +1
         self.msg_list.insert(self.separator_pos, urwid.AttrMap(urwid.Divider('-'), 'separator'))

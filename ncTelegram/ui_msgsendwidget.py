@@ -10,7 +10,6 @@ class MessageSendWidget(urwid.Filler):
     def __init__(self, Telegram_ui):
         self.Telegram_ui = Telegram_ui
         self.updateLockedauto = False
-        self.current_status = ('?', False)
         self.username_list = []
         self.buffer_writing_text = {}
 
@@ -50,7 +49,8 @@ class MessageSendWidget(urwid.Filler):
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " members ]"
         else:
             text = ' [ ' + chan_name + ' ]'
-            (when, status) = self.current_status
+            current_cmd = self.Telegram_ui.current_chan['cmd']
+            (when, status) = self.Telegram_ui.online_status[current_cmd]
 
             if status:
                 text = text + ' --- [ Online ]'
@@ -60,7 +60,7 @@ class MessageSendWidget(urwid.Filler):
                 current_date = time.strftime('%d/%m/%Y', time.localtime(int(time.time())))
                 pattern = '%Y-%m-%d %H:%M:%S'
                 when_epoch = int(time.mktime(time.strptime(when, pattern)))
-                when_date = time.strftime('%d/%m/%Y', time.localtime(when_epoch))
+                when_date = time.strftime(self.Telegram_ui.DATE_FORMAT, time.localtime(when_epoch))
                 when_hour = time.strftime('%H:%M', time.localtime(when_epoch))
 
                 if when_date == current_date:
@@ -69,11 +69,10 @@ class MessageSendWidget(urwid.Filler):
                     text = text + ' --- [ last seen ' + when_date + ' at ' + when_hour + ' ]'
 
         self.status_bar.set_text(text)
-
-
-    def update_online(self, when, status):
-        self.current_status = (when, status)
-        self.update_status_bar()
+        try:
+            self.Telegram_ui.main_loop.draw_screen()
+        except:
+            pass
 
 
     def autocomplete(self):
