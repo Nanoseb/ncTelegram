@@ -27,10 +27,6 @@ class MessageReceiver(threading.Thread):
 
             if msg['event'] == "message":
 
-                if msg['date'] < self.Telegram_ui.boot_time:
-                    self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
-                    self.Telegram_ui.chan_widget.get_new_chan_list()
-                    continue
 
                 # get chan cmd
                 msg_type = msg['receiver']['type']
@@ -38,6 +34,13 @@ class MessageReceiver(threading.Thread):
                     msg_cmd = msg['sender']['cmd']
                 else:
                     msg_cmd = msg['receiver']['cmd']
+
+
+                if msg['date'] < self.Telegram_ui.boot_time:
+                    self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
+                    self.Telegram_ui.chan_widget.update_chan_list()
+                    self.Telegram_ui.main_loop.draw_screen()
+                    continue
 
                 msg_id = msg['id']
 

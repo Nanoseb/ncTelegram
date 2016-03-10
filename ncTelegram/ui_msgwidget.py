@@ -130,6 +130,8 @@ class MessageWidget(urwid.ListBox):
         if current_cmd in self.Telegram_ui.chan_widget.msg_chan:
             self.separator_pos -= self.Telegram_ui.chan_widget.msg_chan[current_cmd]
             del self.Telegram_ui.chan_widget.msg_chan[current_cmd]
+            self.Telegram_ui.chan_widget.update_chan_list()
+            self.Telegram_ui.print_title()
 
         self.pos = self.pos +1
         self.msg_list.insert(self.separator_pos, urwid.AttrMap(urwid.Divider('-'), 'separator'))
