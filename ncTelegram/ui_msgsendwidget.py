@@ -57,7 +57,7 @@ class MessageSendWidget(urwid.Filler):
             elif when == '?':
                 text = text + ' --- [ Offline ]'
             else:
-                current_date = time.strftime('%d/%m/%Y', time.localtime(int(time.time())))
+                current_date = time.strftime(self.Telegram_ui.DATE_FORMAT, time.localtime(int(time.time())))
                 pattern = '%Y-%m-%d %H:%M:%S'
                 when_epoch = int(time.mktime(time.strptime(when, pattern)))
                 when_date = time.strftime(self.Telegram_ui.DATE_FORMAT, time.localtime(when_epoch))
@@ -134,6 +134,7 @@ class MessageSendWidget(urwid.Filler):
                 self.Telegram_ui.sender.status_offline()
                 self.Telegram_ui.sender.mark_read(dst)
 
+            # Send file
             msg = re.sub(r'\s+$', '', msg)
             if msg.startswith("'") and msg.endswith("'") and\
                     os.path.isfile(msg[1:][:-1]):
