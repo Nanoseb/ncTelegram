@@ -27,12 +27,13 @@ class MessageWidget(urwid.ListBox):
 
         self.prev_date = 1
 
+
         # deletion of previous messages
-        self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
+        self.msg_list = [] # urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
         super().__init__(self.msg_list)
 
         current_cmd = self.Telegram_ui.current_chan['cmd']
-        self.pos = 1
+        self.pos = 0
 
         if current_cmd not in self.Telegram_ui.msg_buffer:
 
@@ -129,6 +130,8 @@ class MessageWidget(urwid.ListBox):
 
         if current_cmd in self.Telegram_ui.chan_widget.msg_chan:
             self.separator_pos -= self.Telegram_ui.chan_widget.msg_chan[current_cmd]
+            if self.separator_pos <= 0:
+                self.separator_pos = 1
             del self.Telegram_ui.chan_widget.msg_chan[current_cmd]
             self.Telegram_ui.chan_widget.update_chan_list()
             self.Telegram_ui.print_title()

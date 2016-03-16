@@ -186,7 +186,7 @@ class Telegram_ui:
 
     def open_file(self, path):
         if self.conf['general']['open_file'] and path != None:
-            subprocess.Popen(['xdg-open', path], stderr=subprocess.DEVNULL)
+            subprocess.Popen(['xdg-open', path], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
 
     def start_Telegram(self):

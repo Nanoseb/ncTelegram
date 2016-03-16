@@ -147,7 +147,7 @@ class MessageSendWidget(urwid.Filler):
                     self.Telegram_ui.sender.send_document(dst, msg[1:][:-1])
 
             else:
-                self.Telegram_ui.sender.send_msg(dst, msg)
+                self.Telegram_ui.sender.send_msg(dst, msg, enable_preview=True)
 
             self.widgetEdit.set_edit_text("")
 
