@@ -203,11 +203,36 @@ class Telegram_ui:
 
     def stop_Telegram(self):
         self.sender.status_offline()
+
         #self.tg.stopCLI()
-        self.sender.terminate()
+        # Because of a bug in pytg, this is stopCLI without the line "self._proc.communicate('quit\n')"
+
+        self.sender.terminate() # not let the cli end close first -> avoid bind: port already in use.
         self.receiver.stop()
-    
+
         self.sender.safe_quit()
+        if self.tg._check_stopped(): return None
+
+        self.sender.quit()
+        if self.tg._check_stopped(): return None
+
+        self.sender.stop() # quit and safe quit are done, we don't need the sender any longer.
+
+        if self.tg._check_stopped(): return None
+
+        if self.tg._check_stopped(): return None
+
+        self.tg._proc.terminate()
+        if self.tg._check_stopped(): return None
+
+        self.tg._proc.kill()
+        if self.tg._check_stopped(): return None
+
+        self.tg._proc.wait()
+        self.tg._check_stopped()
+
+
+
 
     def exit(self):
         if self.conf['general']['notification']:
