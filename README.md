@@ -5,6 +5,7 @@ A curse Telegram client developed in Python with the urwid library.
   <img src="http://pix.toile-libre.org/upload/original/1457204711.png" alt="screenshot of ncTelegram"/>
 </p>
 
+
 ## Dependencies
 
 * [Telegram-cli](https://github.com/vysheng/tg)
@@ -98,3 +99,8 @@ Be sure that the path of `telegram-cli` and the public key are set correctly.
 - select `Download message buffer` to navigate more quickly between chan
 
 - vim like keymap is also available, use `hjkl` to navigate between lists, use `i` to select the text area and `esc` to leave it
+
+
+#### Troubleshooting
+
+If `nctelegram` crashes, first report the issue with the backtrace ;), and before restarting it check if `telegram-cli` is still running, if so kill it first.
