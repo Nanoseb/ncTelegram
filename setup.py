@@ -11,6 +11,7 @@ setup(name='ncTelegram',
     packages=['ncTelegram'],
     scripts=['nctelegram'],
     data_files=[('/etc', ['ncTelegram.conf']),
-               ('/usr/share/ncTelegram', ['t_logo.png']),]
+               ('/usr/share/ncTelegram', ['t_logo.png']),],
+    install_requires=["pytg==0.4.5"]
 
      )

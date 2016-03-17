@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
+import subprocess
 import os.path
 import configparser
 
@@ -60,6 +61,11 @@ if config_full['general']['notification']:
     except:
         config_full['general']['notification'] = False
 
+if config_full['general']['inline_image']:
+    try:
+        subprocess.call(['img2txt', '-h'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    except:
+        config_full['general']['inline_image'] = False
 
 ncTelegram.Telegram_ui(config_full)
 

@@ -32,8 +32,6 @@ Everything is in the repos:
 
 ```
 # dnf install telegram-cli python-urwid
-
-$ pip3 install --user pytg==0.4.5
 ```
 
 If you want notifications and inline images:
@@ -43,9 +41,7 @@ If you want notifications and inline images:
 
 And ncTelegram:
 ```
-$ git clone https://github.com/Nanoseb/ncTelegram.git
-$ cd ncTelegram
-# python3 setup.py install
+# pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
 ```
 
 ### For Debian/ubuntu/...
@@ -55,8 +51,6 @@ To install telegram-cli just follow its [readme](https://github.com/vysheng/tg).
 And then:
 ```
 # apt-get install python3-urwid 
-
-$ pip3 install --user pytg==0.4.5
 ```
 
 And if you want notifications and inline images:
@@ -66,9 +60,7 @@ And if you want notifications and inline images:
 
 Finnaly ncTelegram:
 ```
-$ git clone https://github.com/Nanoseb/ncTelegram.git
-$ cd ncTelegram
-# python3 setup.py install
+# pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
 ```
 
 ## Usage
