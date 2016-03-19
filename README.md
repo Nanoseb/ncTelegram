@@ -22,11 +22,6 @@ You can use the pkgbuild from [aur](https://aur.archlinux.org/packages/nctelegra
 $ yaourt -S nctelegram-git
 ```
 
-And install pytg with pip:
-```
-$ pip install --user pytg==0.4.5
-```
-
 ### For Fedora
 Everything is in the repos:
 
