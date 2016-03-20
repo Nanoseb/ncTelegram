@@ -8,12 +8,7 @@ import time
 
 import urwid
 
-try:
-    from pytg import Telegram
-except:
-    print("pytg needed, can be installed with:")
-    print("$ pip3 install --user pytg==0.4.5")
-    sys.exit(1)
+from pytg import Telegram
 
 try:
     import gi
@@ -72,6 +67,7 @@ class Telegram_ui:
         self.start_Telegram()
         self.last_online = 1
         self.online_status = {}
+        self.read_status = {}
 
         palette_init = [('status_bar', self.conf['style']['status_bar_fg'], self.conf['style']['status_bar_bg']),
                         ('date', self.conf['style']['date'], ''),
@@ -126,6 +122,11 @@ class Telegram_ui:
 
     def update_online_status(self, when, status, cmd):
         self.online_status[cmd] = (when, status)
+        if cmd == self.current_chan['cmd']:
+            self.msg_send_widget.update_status_bar()
+
+    def update_read_status(self, cmd, bool):
+        self.read_status[cmd] = bool        
         if cmd == self.current_chan['cmd']:
             self.msg_send_widget.update_status_bar()
 

@@ -43,13 +43,13 @@ class MessageSendWidget(urwid.Filler):
     def update_status_bar(self):
         chan_name = self.Telegram_ui.current_chan['print_name'].replace('_', ' ')
         chan_type = self.Telegram_ui.current_chan['type']
+        current_cmd = self.Telegram_ui.current_chan['cmd']
 
         if chan_type == 'chat':
             chan_num = self.Telegram_ui.current_chan['members_num']
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " members ]"
         else:
             text = ' [ ' + chan_name + ' ]'
-            current_cmd = self.Telegram_ui.current_chan['cmd']
             (when, status) = self.Telegram_ui.online_status[current_cmd]
 
             if status:
@@ -67,6 +67,10 @@ class MessageSendWidget(urwid.Filler):
                     text = text + ' --- [ last seen at ' + when_hour + ' ]'
                 else:
                     text = text + ' --- [ last seen ' + when_date + ' at ' + when_hour + ' ]'
+
+        if current_cmd in self.Telegram_ui.read_status and self.Telegram_ui.read_status[current_cmd]:
+            text = text + '  ✓'
+
 
         self.status_bar.set_text(text)
         try:

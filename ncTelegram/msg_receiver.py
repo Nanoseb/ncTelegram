@@ -69,13 +69,31 @@ class MessageReceiver(threading.Thread):
                             "@" + self.Telegram_ui.me['username'] in msg['text']:
                     self.Telegram_ui.display_notif(msg)
 
+                self.Telegram_ui.update_read_status(msg_cmd, False)
                 # refresh of the screen
                 self.Telegram_ui.main_loop.draw_screen()
+
+
 
             elif msg['event'] == 'online-status':
                 when = msg['when']
                 status = msg['online']
                 self.Telegram_ui.update_online_status(when, status, 'user#'+str(msg['user']['id']))
+
+
+
+            elif msg['event'] == 'read':
+                if 'receiver' in msg:
+                    cmd = msg['receiver']['cmd']
+                else:
+                    cmd = 'user#' + msg['from']['id']
+                self.Telegram_ui.update_read_status(cmd, True)
+
+
+
+                
+
+
 
 
 
