@@ -102,7 +102,7 @@ class MessageWidget(urwid.ListBox):
         size_name = 9
 
         message_meta = urwid.Text([('hour', hour),
-                                   (color, '{0: >9}'.format(sender[0:size_name])),
+                                   (urwid.AttrSpec(color, 'default'), '{0: >9}'.format(sender[0:size_name])),
                                    ('separator', " │ ")])
 
         message_text = urwid.Text(text)
@@ -264,16 +264,15 @@ def translate_color(raw_text):
         bgcolor = table[bg]
 
         if fg < 0:
-            attribut = 'b'+bgcolor
-        elif bg < 0:
-            attribut = fgcolor
-        else:
-            attribut = fgcolor + bgcolor
+            fgcolor = ''
+        if bg < 0:
+            bgcolor = ''
 
         if list_attr == [0]:
-            attribut = ''
+            fgcolor = ''
+            bgcolor = ''
 
-        formated_text.append((attribut, text))
+        formated_text.append((urwid.AttrSpec(fgcolor, bgcolor), text))
 
     return formated_text
 

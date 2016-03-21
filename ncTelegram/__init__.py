@@ -23,35 +23,6 @@ from .ui_msgsendwidget import MessageSendWidget
 from .msg_receiver import MessageReceiver
 
 
-def gen_palette():
-    table = ['black',
-             'dark red',
-             'dark green',
-             'brown',
-             'dark blue',
-             'dark magenta',
-             'dark cyan',
-             'light gray',
-             'dark gray',
-             'light red',
-             'light green',
-             'yellow',
-             'light blue',
-             'light magenta',
-             'light cyan',
-             'white']
-    ans = []
-    for fg in table:
-        ans.append((fg, fg, ''))
-        for bg in table:
-            ans.append((fg+bg, fg, bg))
-
-    for bg in table:
-        ans.append(('b'+bg, '', bg))
-
-    return ans
-
-
 
 class Telegram_ui:
     def __init__(self, conf):
@@ -69,14 +40,13 @@ class Telegram_ui:
         self.online_status = {}
         self.read_status = {}
 
-        palette_init = [('status_bar', self.conf['style']['status_bar_fg'], self.conf['style']['status_bar_bg']),
-                        ('date', self.conf['style']['date'], ''),
-                        ('hour', self.conf['style']['hour'], ''),
-                        ('separator', self.conf['style']['separator'], ''),
-                        ('reversed', 'standout', ''),
-                        ('cur_chan', self.conf['style']['cur_chan'], '')]
-                   
-        palette = palette_init + gen_palette()
+        palette = [('status_bar', self.conf['style']['status_bar_fg'], self.conf['style']['status_bar_bg']),
+                   ('date', self.conf['style']['date'], ''),
+                   ('hour', self.conf['style']['hour'], ''),
+                   ('separator', self.conf['style']['separator'], ''),
+                   ('reversed', 'standout', ''),
+                   ('cur_chan', self.conf['style']['cur_chan'], '')]
+
 
         # Notification
         if self.conf['general']['notification']:
