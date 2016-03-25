@@ -60,21 +60,21 @@ class MessageWidget(urwid.ListBox):
 
 
         if 'text' in msg:
-            text = msg['text']
+            text = [msg['text']]
         else:
             if 'action' in msg:
-                text = '➜ ' + msg['action']['type'].replace('_',' ')
+                text = ['➜ ' + msg['action']['type'].replace('_',' ')]
 
             if 'media' in msg:
                 self.Telegram_ui.last_media = msg
-                text = "➜ " + msg['media']['type']
+                text = ["➜ " + msg['media']['type']]
                 if 'caption' in msg['media']:
-                    text = text + " " + msg['media']['caption']
-        
+                    text = text + [" " + msg['media']['caption']]
+
                 if self.Telegram_ui.INLINE_IMAGE:
                     image = self.get_inline_img(msg)
                     if image != None:
-                        text = [text + u'\n'] + self.get_inline_img(msg)
+                        text = text + ['\n'] + self.get_inline_img(msg)
 
 
         if 'from' in msg:
@@ -83,6 +83,23 @@ class MessageWidget(urwid.ListBox):
         else:
             sender = msg['sender']['first_name']
             sender_id = msg['sender']['id']
+
+
+        if 'reply_id' in msg:
+            msg_reply = self.Telegram_ui.sender.message_get(msg['reply_id'])
+
+            if 'from' in msg_reply:
+                sender_reply = msg_reply['from']['first_name']
+            else:
+                sender_reply = msg_reply['sender']['first_name']
+
+            if 'text' in msg_reply:
+                plus = ''
+                if len(msg_reply['text']) > 40:
+                    plus = '...'
+                text = [(urwid.AttrSpec('light gray', '') ,
+                         'reply to ➜  ' + sender_reply + ' : ' + msg_reply['text'][:40] + plus + '\n')]+ text
+
 
             
 
@@ -236,7 +253,7 @@ def translate_color(raw_text):
     formated_text = []
     raw_text = raw_text.decode("utf-8")
 
-    for at in raw_text.split(u"\x1b["):
+    for at in raw_text.split("\x1b["):
         try:
             attr, text = at.split("m",1)
         except:
