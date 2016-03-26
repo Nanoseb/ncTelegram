@@ -77,7 +77,7 @@ Be sure that the path of `telegram-cli` and the public key are set correctly.
 
 - press `esc` twice to draw a separator at the end of the message list
 
-- use `ctrl+o` to open the last file sent to the current chan
+- use `ctrl+o` to open the last file sent to the current chan or url
 
 - to send files you can simply drag and drop them into your terminal or send as a message their path between single quotes (')
 

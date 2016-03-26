@@ -5,12 +5,14 @@ import sys
 import subprocess
 import time
 import urwid
+import re
 
 
 
 # widget used to print the message list
 class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
+        self.urlregex = re.compile("""((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))""")
         self.msgs = []
         self.img_buffer = {}
         self.separator_pos = -1
@@ -61,13 +63,19 @@ class MessageWidget(urwid.ListBox):
 
         if 'text' in msg:
             text = [msg['text']]
+            urls = self.urlregex.findall(text[0])
+            
+            if urls:
+                self.Telegram_ui.last_media = { 'url': urls[0][0]}
+                text = text
+
         else:
             if 'action' in msg:
-                text = ['➜ ' + msg['action']['type'].replace('_',' ')]
+                text = [(urwid.AttrSpec('light gray', ''), '➜ ' + msg['action']['type'].replace('_',' '))]
 
             if 'media' in msg:
                 self.Telegram_ui.last_media = msg
-                text = ["➜ " + msg['media']['type']]
+                text = [(urwid.AttrSpec('light gray', ''), "➜ " + msg['media']['type'])]
                 if 'caption' in msg['media']:
                     text = text + [" " + msg['media']['caption']]
 
@@ -90,15 +98,32 @@ class MessageWidget(urwid.ListBox):
 
             if 'from' in msg_reply:
                 sender_reply = msg_reply['from']['first_name']
+                sender_reply_id = msg_reply['from']['id']
             else:
                 sender_reply = msg_reply['sender']['first_name']
+                sender_reply_id = msg_reply['sender']['id']
 
+            color_reply = self.get_name_color(sender_reply_id)
             if 'text' in msg_reply:
                 plus = ''
                 if len(msg_reply['text']) > 40:
                     plus = '...'
-                text = [(urwid.AttrSpec('light gray', '') ,
-                         'reply to ➜  ' + sender_reply + ' : ' + msg_reply['text'][:40] + plus + '\n')]+ text
+                text = [(urwid.AttrSpec('light gray', ''), 'reply to ➜  '),
+                        (urwid.AttrSpec(color_reply, '') , sender_reply),
+                        ': ' + msg_reply['text'][:40] + plus + '\n'] + text
+            else:
+                text = [(urwid.AttrSpec('light gray', ''), 'reply to ➜  '),
+                        (urwid.AttrSpec(color_reply, '') , sender_reply),
+                        '\n'] + text
+
+
+
+
+
+        if 'fwd_from' in msg:
+            color_fwd = self.get_name_color(msg['fwd_from']['id'])
+            text = [(urwid.AttrSpec('light gray', ''), 'forwarded from '),
+                    (urwid.AttrSpec(color_fwd, ''), msg['fwd_from']['first_name'] + '\n')] + text
 
 
             

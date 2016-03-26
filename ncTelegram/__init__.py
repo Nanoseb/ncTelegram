@@ -142,18 +142,24 @@ class Telegram_ui:
 
 
     def download_media(self, msg):
-        mtype = msg['media']['type']
-        mid = msg['id']
-
-        if mtype == 'photo':
-            file = self.sender.load_photo(mid)['result']
-
-        elif mtype == 'document':
-            file = self.sender.load_document(mid)['result']
+        if 'url' in msg:
+            if not msg['url'].startswith('http'):
+                return 'http://' + msg['url']
+            else:
+                return msg['url']
         else:
-            file = None
+            mtype = msg['media']['type']
+            mid = msg['id']
 
-        return file
+            if mtype == 'photo':
+                file = self.sender.load_photo(mid)['result']
+
+            elif mtype == 'document':
+                file = self.sender.load_document(mid)['result']
+            else:
+                file = None
+
+            return file
 
     def open_file(self, path):
         if self.conf['general']['open_file'] and path != None:
@@ -203,8 +209,6 @@ class Telegram_ui:
         self.tg._check_stopped()
 
 
-
-
     def exit(self):
         if self.conf['general']['notification']:
             Notify.uninit()
@@ -229,8 +233,8 @@ class Telegram_ui:
         elif key == self.conf['keymap']['open_file'] and \
                 self.last_media != {} and \
                 self.conf['general']['open_file']:
-            path = self.download_media(self.last_media)
-            self.open_file(path)
+             path = self.download_media(self.last_media)
+             self.open_file(path)
 
         elif key == self.conf['keymap']['insert_text']:
             self.main_columns.focus_position = 2
