@@ -6,6 +6,7 @@ import subprocess
 import time
 import urwid
 import re
+import urllib.request
 
 
 
@@ -15,6 +16,7 @@ class MessageWidget(urwid.ListBox):
         self.urlregex = re.compile("""((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))""")
         self.msgs = []
         self.img_buffer = {}
+        self.url_buffer = {}
         self.separator_pos = -1
         self.updateLocked = False
         self.Telegram_ui = Telegram_ui
@@ -66,23 +68,39 @@ class MessageWidget(urwid.ListBox):
             urls = self.urlregex.findall(text[0])
             
             if urls:
-                self.Telegram_ui.last_media = { 'url': urls[0][0]}
-                text = text
+                url = urls[0][0]
+                if not url.startswith('http'):
+                    url = 'http://' + url
 
-        else:
-            if 'action' in msg:
-                text = [(urwid.AttrSpec('light gray', ''), '➜ ' + msg['action']['type'].replace('_',' '))]
+                self.Telegram_ui.last_media = {'url': url}
 
-            if 'media' in msg:
-                self.Telegram_ui.last_media = msg
-                text = [(urwid.AttrSpec('light gray', ''), "➜ " + msg['media']['type'])]
-                if 'caption' in msg['media']:
-                    text = text + [" " + msg['media']['caption']]
+                if url in self.url_buffer:
+                    text = text + ['\n ➜ ' + self.url_buffer[url]]
+                elif date > self.Telegram_ui.boot_time:
+                    try:
+                        resource = urllib.request.urlopen(url)
+                        page = resource.read().decode(resource.headers.get_content_charset())
+                        title = re.search('<title>(.*?)</title>', page, re.IGNORECASE|re.DOTALL).group(1)
+                        self.url_buffer[url] = title
+                        text = text + ['\n  ➜  ' + title]
+                    except:
+                        self.url_buffer[url] = ''
+                 
+                
+        elif 'action' in msg:
+            text = [(urwid.AttrSpec('light gray', ''), '➜ ' + msg['action']['type'].replace('_',' '))]
 
-                if self.Telegram_ui.INLINE_IMAGE:
-                    image = self.get_inline_img(msg)
-                    if image != None:
-                        text = text + ['\n'] + self.get_inline_img(msg)
+
+        elif 'media' in msg:
+            self.Telegram_ui.last_media = msg
+            text = [(urwid.AttrSpec('light gray', ''), "➜ " + msg['media']['type'])]
+            if 'caption' in msg['media']:
+                text = text + [" " + msg['media']['caption']]
+
+            if self.Telegram_ui.INLINE_IMAGE:
+                image = self.get_inline_img(msg)
+                if image != None:
+                    text = text + ['\n'] + self.get_inline_img(msg)
 
 
         if 'from' in msg:

@@ -143,10 +143,7 @@ class Telegram_ui:
 
     def download_media(self, msg):
         if 'url' in msg:
-            if not msg['url'].startswith('http'):
-                return 'http://' + msg['url']
-            else:
-                return msg['url']
+            return msg['url']
         else:
             mtype = msg['media']['type']
             mid = msg['id']
