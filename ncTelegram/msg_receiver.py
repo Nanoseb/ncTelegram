@@ -68,7 +68,6 @@ class MessageReceiver(threading.Thread):
                     self.Telegram_ui.display_notif(msg)
 
 
-                # TO CHECK ###################################################
                 #notif on reply
                 if 'reply_id' in msg and 'text' in msg:
                     msg_reply = self.Telegram_ui.sender.message_get(msg['reply_id'])
@@ -77,8 +76,6 @@ class MessageReceiver(threading.Thread):
                             ('sender' in msg_reply and\
                              msg_reply['sender']['id'] == self.Telegram_ui.me['id']):
                         self.Telegram_ui.display_notif(msg)
-                # TO CHECK ###################################################
-
 
 
 

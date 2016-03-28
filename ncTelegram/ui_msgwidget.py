@@ -44,7 +44,8 @@ class MessageWidget(urwid.ListBox):
             current_print_name = self.Telegram_ui.current_chan['print_name']
 
             # hack to fix empty message bug (from telegram-cli probably)
-            self.Telegram_ui.sender.history(current_print_name, 100)
+            #self.Telegram_ui.sender.history(current_print_name, 100)
+
             msgList = self.Telegram_ui.sender.history(current_print_name, 100)
             
             self.Telegram_ui.msg_buffer[current_cmd] = msgList
