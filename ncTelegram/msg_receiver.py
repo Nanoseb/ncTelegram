@@ -66,8 +66,20 @@ class MessageReceiver(threading.Thread):
 
                 # notif on hl
                 if 'text' in msg and 'username' in self.Telegram_ui.me and \
-                            "@" + self.Telegram_ui.me['username'] in msg['text']:
+                        "@" + self.Telegram_ui.me['username'] in msg['text']:
                     self.Telegram_ui.display_notif(msg)
+
+                #notif on reply
+                if 'reply_id' in msg and 'text' in msg:
+                    msg_reply = self.Telegram_ui.sender.message_get(msg['reply_id'])
+                    if ('from' in msg_reply and\
+                            msg_reply['from']['id'] == self.Telegram_ui.me['id']) or \
+                            ('sender' in msg_reply and\
+                             msg_reply['sender']['id'] == self.Telegram_ui.me['id']):
+                        self.Telegram_ui.display_notif(msg)
+
+
+
 
                 self.Telegram_ui.update_read_status(msg_cmd, False)
                 # refresh of the screen
