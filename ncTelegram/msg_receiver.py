@@ -23,17 +23,16 @@ class MessageReceiver(threading.Thread):
         while True:
             msg = (yield)
 
-            current_cmd = self.Telegram_ui.current_chan['cmd']
+            current_cmd = self.Telegram_ui.current_chan['id']
 
             if msg['event'] == "message":
 
 
-                # get chan cmd
                 msg_type = msg['receiver']['type']
                 if msg_type == 'user' and not msg['own']:
-                    msg_cmd = msg['sender']['cmd']
+                    msg_cmd = msg['sender']['id']
                 else:
-                    msg_cmd = msg['receiver']['cmd']
+                    msg_cmd = msg['receiver']['id']
 
 
                 if msg['date'] < self.Telegram_ui.boot_time:
@@ -46,19 +45,18 @@ class MessageReceiver(threading.Thread):
 
                 # handeling of unread count, message print, and buffer fill
                 if msg_cmd == current_cmd:
-                    if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
+                    try:
                         self.Telegram_ui.msg_widget.print_msg(msg)
-                        self.Telegram_ui.chan_widget.add_msg(msg_cmd, False)
+                    except:
+                        fichier_log = open('/home/seb/log.tele', "a")
+                        fichier_log.write(str(msg) + u'\n')
+                        fichier_log.close()
+                    self.Telegram_ui.chan_widget.add_msg(msg_cmd, False)
                 else:
-                    if msg_cmd in self.Telegram_ui.msg_buffer:
-                        if msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
-                            self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
-                    else:
-                        self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
+                    self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
 
                 # check if the message is not already printed (by get history)
-                if msg_cmd in self.Telegram_ui.msg_buffer and \
-                        msg_id > self.Telegram_ui.msg_buffer[msg_cmd][-1]['id']:
+                if msg_cmd in self.Telegram_ui.msg_buffer:
                     self.Telegram_ui.msg_buffer[msg_cmd].append(msg)
 
 
@@ -69,6 +67,8 @@ class MessageReceiver(threading.Thread):
                         "@" + self.Telegram_ui.me['username'] in msg['text']:
                     self.Telegram_ui.display_notif(msg)
 
+
+                # TO CHECK ###################################################
                 #notif on reply
                 if 'reply_id' in msg and 'text' in msg:
                     msg_reply = self.Telegram_ui.sender.message_get(msg['reply_id'])
@@ -77,6 +77,7 @@ class MessageReceiver(threading.Thread):
                             ('sender' in msg_reply and\
                              msg_reply['sender']['id'] == self.Telegram_ui.me['id']):
                         self.Telegram_ui.display_notif(msg)
+                # TO CHECK ###################################################
 
 
 
@@ -90,25 +91,16 @@ class MessageReceiver(threading.Thread):
             elif msg['event'] == 'online-status':
                 when = msg['when']
                 status = msg['online']
-                self.Telegram_ui.update_online_status(when, status, 'user#'+str(msg['user']['id']))
+                self.Telegram_ui.update_online_status(when, status, msg['user']['id'])
 
 
 
             elif msg['event'] == 'read':
                 if 'receiver' in msg:
-                    cmd = msg['receiver']['cmd']
+                    cmd = msg['receiver']['id']
                 else:
-                    cmd = 'user#' + msg['from']['id']
-                self.Telegram_ui.update_read_status(cmd, True)
-
-
-
-                
-
-
-
-
-
+                    cmd = msg['from']['id']
+                    self.Telegram_ui.update_read_status(cmd, True)
 
 
 

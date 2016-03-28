@@ -92,12 +92,12 @@ class Telegram_ui:
 
     def update_online_status(self, when, status, cmd):
         self.online_status[cmd] = (when, status)
-        if cmd == self.current_chan['cmd']:
+        if cmd == self.current_chan['id']:
             self.msg_send_widget.update_status_bar()
 
     def update_read_status(self, cmd, bool):
         self.read_status[cmd] = bool        
-        if cmd == self.current_chan['cmd']:
+        if cmd == self.current_chan['id']:
             self.msg_send_widget.update_status_bar()
 
 
@@ -106,9 +106,9 @@ class Telegram_ui:
             text = msg['text']
 
             try:
-                sender = msg['peer']['first_name']
+                sender = msg['to']['title'] + ": " + msg['from']['first_name']
             except:
-                sender = msg['receiver']['name'] + ": " + msg['sender']['first_name']
+                sender = msg['from']['first_name']
 
             Notify.Notification.new('', '<b>' + sender + '</b>\n' + text, self.image).show()
 
@@ -125,7 +125,7 @@ class Telegram_ui:
 
         for chan in self.chan_widget.chans:
     
-            cmd = chan['cmd']
+            cmd = chan['id']
             if cmd not in self.msg_buffer:
                 print_name = chan['print_name']
                 self.sender.history(print_name, 100)

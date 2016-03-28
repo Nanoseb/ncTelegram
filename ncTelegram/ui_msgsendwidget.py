@@ -33,7 +33,7 @@ class MessageSendWidget(urwid.Filler):
         self.widgetEdit.set_edit_text('')
         self.username_list = []
 
-        cmd = self.Telegram_ui.current_chan['cmd']
+        cmd = self.Telegram_ui.current_chan['id']
         if cmd in self.buffer_writing_text:
             self.widgetEdit.insert_text(self.buffer_writing_text[cmd])
 
@@ -42,8 +42,8 @@ class MessageSendWidget(urwid.Filler):
 
     def update_status_bar(self):
         chan_name = self.Telegram_ui.current_chan['print_name'].replace('_', ' ')
-        chan_type = self.Telegram_ui.current_chan['type']
-        current_cmd = self.Telegram_ui.current_chan['cmd']
+        chan_type = self.Telegram_ui.current_chan['peer_type']
+        current_cmd = self.Telegram_ui.current_chan['id']
 
         if chan_type == 'chat':
             chan_num = self.Telegram_ui.current_chan['members_num']
@@ -87,7 +87,7 @@ class MessageSendWidget(urwid.Filler):
 
         # check if the list of username is already there
         if self.username_list == []:
-            type_chan = self.Telegram_ui.current_chan['type']
+            type_chan = self.Telegram_ui.current_chan['peer_type']
             print_name_chan = self.Telegram_ui.current_chan['print_name']
 
             # get possible username
@@ -100,11 +100,11 @@ class MessageSendWidget(urwid.Filler):
             elif type_chan == 'user' and 'username' in self.Telegram_ui.current_chan:
                 self.username_list = [self.Telegram_ui.current_chan['username']]
 
-            elif type_chan == 'channel':
-                channel_info = self.Telegram_ui.sender.channel_info(print_name_chan)
-                for user in channel_info['members']:
-                    if 'username' in user:
-                        self.username_list.append(user['username'])
+           # elif type_chan == 'channel':
+           #     channel_info = self.Telegram_ui.sender.channel_info(print_name_chan)
+           #     for user in channel_info['members']:
+           #         if 'username' in user:
+           #             self.username_list.append(user['username'])
 
 
         text = self.widgetEdit.get_edit_text()[1:]

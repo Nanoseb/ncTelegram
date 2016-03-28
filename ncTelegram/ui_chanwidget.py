@@ -32,19 +32,16 @@ class ChanWidget(urwid.ListBox):
                 self.chans = self.Telegram_ui.sender.dialog_list()
                 bool = False
             except:
-                time.sleep(0.3)
+                time.sleep(0.5)
                 pass
 
-        # adding of 'cmd' to the chan list 'cmd' = unique identifier of chan and users
         for i in range(len(self.chans)):
             chan = self.chans[i]
-            cmd = chan['type'] + "#" + str(chan['id'])
-            self.chans[i]['cmd'] = cmd
-            if chan['type'] == 'user':
+            if chan['peer_type'] == 'user':
                 if 'when' in chan:
-                    self.Telegram_ui.online_status[cmd] = (chan['when'], False)
+                    self.Telegram_ui.online_status[chan['id']] = (chan['when'], False)
                 else:
-                    self.Telegram_ui.online_status[cmd] = ('?', False)
+                    self.Telegram_ui.online_status[chan['id']] = ('?', False)
 
 
         self.update_chan_list()
@@ -70,11 +67,11 @@ class ChanWidget(urwid.ListBox):
             pos +=1
             print_name = chan['print_name']
 
-            cmd = chan['cmd']
+            cmd = chan['id']
 
             label = print_name.replace('_', ' ')
 
-            if chan['type'] == 'user':
+            if chan['peer_type'] == 'user':
                 label = "➜  " + label
             else:
                 label = "➜➜ " + label
@@ -111,7 +108,7 @@ class ChanWidget(urwid.ListBox):
         
         # print of buffer button only if needed
         list_buff = [ cmd for cmd in self.Telegram_ui.msg_buffer.keys() ]
-        list_chan = [ chan['cmd'] for chan in self.chans ]
+        list_chan = [ chan['id'] for chan in self.chans ]
 
         list_buff.sort()
         list_chan.sort()
@@ -156,7 +153,7 @@ class ChanWidget(urwid.ListBox):
     def chan_change(self, button, chan):
 
         #save previous messages
-        prev_cmd = self.Telegram_ui.current_chan['cmd']
+        prev_cmd = self.Telegram_ui.current_chan['id']
         prev_msg = self.Telegram_ui.msg_send_widget.widgetEdit.get_edit_text()
         self.Telegram_ui.msg_send_widget.buffer_writing_text[prev_cmd] = prev_msg
         
@@ -167,7 +164,7 @@ class ChanWidget(urwid.ListBox):
 
         self.Telegram_ui.current_chan = chan
 
-        current_cmd = chan['cmd']
+        current_cmd = chan['id']
 
 
         self.Telegram_ui.last_media = {}

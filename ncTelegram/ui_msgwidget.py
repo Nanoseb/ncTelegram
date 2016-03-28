@@ -36,7 +36,7 @@ class MessageWidget(urwid.ListBox):
         self.msg_list = [] # urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
         super().__init__(self.msg_list)
 
-        current_cmd = self.Telegram_ui.current_chan['cmd']
+        current_cmd = self.Telegram_ui.current_chan['id']
         self.pos = 0
 
         if current_cmd not in self.Telegram_ui.msg_buffer:
@@ -105,21 +105,23 @@ class MessageWidget(urwid.ListBox):
 
         if 'from' in msg:
             sender = msg['from']['first_name']
-            sender_id = msg['from']['id']
+            sender_id = msg['from']['peer_id']
         else:
             sender = msg['sender']['first_name']
-            sender_id = msg['sender']['id']
+            sender_id = msg['sender']['peer_id']
+            
 
+        color = self.get_name_color(sender_id)
 
         if 'reply_id' in msg:
             msg_reply = self.Telegram_ui.sender.message_get(msg['reply_id'])
 
             if 'from' in msg_reply:
                 sender_reply = msg_reply['from']['first_name']
-                sender_reply_id = msg_reply['from']['id']
+                sender_reply_id = msg_reply['from']['peer_id']
             else:
                 sender_reply = msg_reply['sender']['first_name']
-                sender_reply_id = msg_reply['sender']['id']
+                sender_reply_id = msg_reply['sender']['peer_id']
 
             color_reply = self.get_name_color(sender_reply_id)
             if 'text' in msg_reply:
@@ -135,14 +137,10 @@ class MessageWidget(urwid.ListBox):
                         '\n'] + text
 
 
-
-
-
         if 'fwd_from' in msg:
-            color_fwd = self.get_name_color(msg['fwd_from']['id'])
+            color_fwd = self.get_name_color(msg['fwd_from']['peer_id'])
             text = [(urwid.AttrSpec('light gray', ''), 'forwarded from '),
                     (urwid.AttrSpec(color_fwd, ''), msg['fwd_from']['first_name'] + '\n')] + text
-
 
             
 
@@ -157,7 +155,6 @@ class MessageWidget(urwid.ListBox):
             self.prev_date = cur_date
 
         hour = time.strftime(' %H:%M ', time.localtime(date))
-        color = self.get_name_color(sender_id)
 
         size_name = 9
 
@@ -176,7 +173,7 @@ class MessageWidget(urwid.ListBox):
     def draw_separator(self):
         if self.separator_pos != -1:
             self.delete_separator()
-        current_cmd = self.Telegram_ui.current_chan['cmd']
+        current_cmd = self.Telegram_ui.current_chan['id']
 
         if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan: 
             # mark messages as read
@@ -222,13 +219,12 @@ class MessageWidget(urwid.ListBox):
                       'light cyan',
                       'light gray',
                       ]
-
         color = id % len(list_color)
         return list_color[color]
 
 
     def get_inline_img(self, msg):
-        cmd = self.Telegram_ui.current_chan['cmd']
+        cmd = self.Telegram_ui.current_chan['id']
         mid = msg['id']
         key = cmd + str(mid)
         if key in self.img_buffer:
