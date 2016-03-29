@@ -105,10 +105,11 @@ class Telegram_ui:
         if self.conf['general']['notification']:
             text = msg['text']
 
-            try:
-                sender = msg['to']['title'] + ": " + msg['from']['first_name']
-            except:
-                sender = msg['from']['first_name']
+            if msg['receiver']['type'] == 'user':
+                sender = msg['sender']['first_name']
+            else:
+                sender = msg['receiver']['name'] + ": " + msg['sender']['first_name']
+
 
             Notify.Notification.new('', '<b>' + sender + '</b>\n' + text, self.image).show()
 
