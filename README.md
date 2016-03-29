@@ -36,7 +36,7 @@ If you want notifications and inline images:
 
 And ncTelegram:
 ```
-# pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
+# pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/0.9.2.tar.gz
 ```
 
 ### For Debian/ubuntu/...
