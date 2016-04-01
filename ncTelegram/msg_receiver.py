@@ -97,7 +97,8 @@ class MessageReceiver(threading.Thread):
                     cmd = msg['receiver']['id']
                 else:
                     cmd = msg['from']['id']
-                    self.Telegram_ui.update_read_status(cmd, True)
+                self.Telegram_ui.update_read_status(cmd, True)
+
 
 
 
