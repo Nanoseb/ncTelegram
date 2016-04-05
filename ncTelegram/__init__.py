@@ -150,10 +150,10 @@ class Telegram_ui:
             mid = msg['id']
 
             if mtype == 'photo':
-                file = self.sender.load_photo(mid)['result']
+                file = self.sender.load_photo(mid)
 
             elif mtype == 'document':
-                file = self.sender.load_document(mid)['result']
+                file = self.sender.load_document(mid)
             else:
                 file = None
 
