@@ -48,7 +48,7 @@ class MessageSendWidget(urwid.Filler):
         if chan_type == 'chat':
             chan_num = self.Telegram_ui.current_chan['members_num']
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " members ]"
-        else:
+        elif chan_type == 'user':
             text = ' [ ' + chan_name + ' ]'
             (when, status) = self.Telegram_ui.online_status[current_cmd]
 
@@ -67,6 +67,10 @@ class MessageSendWidget(urwid.Filler):
                     text = text + ' --- [ last seen at ' + when_hour + ' ]'
                 else:
                     text = text + ' --- [ last seen ' + when_date + ' at ' + when_hour + ' ]'
+        elif chan_type == 'channel':
+            chan_num = self.Telegram_ui.current_chan['participants_count']
+            text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " participants ]"
+
 
         if current_cmd in self.Telegram_ui.read_status and self.Telegram_ui.read_status[current_cmd]:
             text = text + '  ✓'
@@ -100,7 +104,8 @@ class MessageSendWidget(urwid.Filler):
             elif type_chan == 'user' and 'username' in self.Telegram_ui.current_chan:
                 self.username_list = [self.Telegram_ui.current_chan['username']]
 
-           # elif type_chan == 'channel':
+            elif type_chan == 'channel':
+                return
            #     channel_info = self.Telegram_ui.sender.channel_info(print_name_chan)
            #     for user in channel_info['members']:
            #         if 'username' in user:
@@ -125,10 +130,14 @@ class MessageSendWidget(urwid.Filler):
         dst = self.Telegram_ui.current_chan['print_name']
 
         if not self.Telegram_ui.NINJA_MODE:
-            if len(self.widgetEdit.get_edit_text()) == 1:
-                self.Telegram_ui.sender.send_typing(dst)
-            elif len(self.widgetEdit.get_edit_text()) == 0:
-                self.Telegram_ui.sender.send_typing_abort(dst)
+            # try/expect needed when user lack of priviledge on channels
+            try:
+                if len(self.widgetEdit.get_edit_text()) == 1:
+                    self.Telegram_ui.sender.send_typing(dst)
+                elif len(self.widgetEdit.get_edit_text()) == 0:
+                    self.Telegram_ui.sender.send_typing_abort(dst)
+            except:
+                pass
 
         if key == 'enter':
             msg = self.widgetEdit.get_edit_text()
@@ -145,13 +154,17 @@ class MessageSendWidget(urwid.Filler):
 
                 self.widgetEdit.insert_text(" Please wait...")
                 self.Telegram_ui.main_loop.draw_screen()
-                if self.Telegram_ui.is_image(msg[1:][:-1]):
-                    self.Telegram_ui.sender.send_photo(dst, msg[1:][:-1])
-                else:
-                    self.Telegram_ui.sender.send_document(dst, msg[1:][:-1])
-
+                # try/expect needed when user lack of priviledge on channels
+                try: 
+                    self.Telegram_ui.sender.send_file(dst, msg[1:][:-1])
+                except:
+                    pass
             else:
-                self.Telegram_ui.sender.send_msg(dst, msg, enable_preview=True)
+                # try/expect needed when user lack of priviledge on channels
+                try:
+                    self.Telegram_ui.sender.send_msg(dst, msg, enable_preview=True)
+                except:
+                    pass
 
             self.widgetEdit.set_edit_text("")
 

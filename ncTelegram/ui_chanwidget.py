@@ -73,8 +73,10 @@ class ChanWidget(urwid.ListBox):
 
             if chan['peer_type'] == 'user':
                 label = "➜  " + label
-            else:
+            elif chan['peer_type'] == 'chat':
                 label = "➜➜ " + label
+            elif chan['peer_type'] == 'channel':
+                label = "⤨  " + label
 
             if cmd in self.msg_chan and self.msg_chan[cmd] != 0:
                 label = label + ' [' + str(self.msg_chan[cmd]) + ']'
@@ -159,7 +161,11 @@ class ChanWidget(urwid.ListBox):
         
         if not self.Telegram_ui.NINJA_MODE:
             dst = self.Telegram_ui.current_chan['print_name']
-            self.Telegram_ui.sender.send_typing_abort(dst)
+            # try/expect needed when user lack of priviledge on channels
+            try:
+                self.Telegram_ui.sender.send_typing_abort(dst)
+            except:
+                pass
 
 
         self.Telegram_ui.current_chan = chan

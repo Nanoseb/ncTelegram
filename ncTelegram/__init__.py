@@ -129,7 +129,6 @@ class Telegram_ui:
             cmd = chan['id']
             if cmd not in self.msg_buffer:
                 print_name = chan['print_name']
-                #self.sender.history(print_name, 100)
                 self.msg_buffer[cmd] = self.sender.history(print_name, 100)
 
         self.chan_widget.update_chan_list()
@@ -165,7 +164,7 @@ class Telegram_ui:
 
 
     def start_Telegram(self):
-        # Liaison avec telegram-cli
+        # link with telegram-cli
         PATH_TELEGRAM = self.conf['general']['path_telegram']
         PATH_PUBKEY = self.conf['general']['path_pubkey']
 

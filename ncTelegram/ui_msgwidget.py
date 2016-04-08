@@ -105,7 +105,10 @@ class MessageWidget(urwid.ListBox):
 
 
         if 'from' in msg:
-            sender = msg['from']['first_name']
+            if 'first_name' in msg['from']:
+                sender = msg['from']['first_name']
+            else:
+                sender = msg['from']['title']
             sender_id = msg['from']['peer_id']
         else:
             sender = msg['sender']['first_name']
