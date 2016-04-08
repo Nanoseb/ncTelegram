@@ -148,14 +148,7 @@ class Telegram_ui:
             mtype = msg['media']['type']
             mid = msg['id']
 
-            if mtype == 'photo':
-                file = self.sender.load_photo(mid)
-
-            elif mtype == 'document':
-                file = self.sender.load_document(mid)
-            else:
-                file = None
-
+            file = self.sender.load_file(mid)
             return file
 
     def open_file(self, path):

@@ -98,19 +98,20 @@ class MessageSendWidget(urwid.Filler):
             if type_chan == 'chat':
                 chat_info = self.Telegram_ui.sender.chat_info(print_name_chan)
                 for user in chat_info['members']:
-                    if 'username' in user:
+                    if 'username' in user and user['username'] != None:
                         self.username_list.append(user['username'])
 
             elif type_chan == 'user' and 'username' in self.Telegram_ui.current_chan:
                 self.username_list = [self.Telegram_ui.current_chan['username']]
 
             elif type_chan == 'channel':
-                return
-           #     channel_info = self.Telegram_ui.sender.channel_info(print_name_chan)
-           #     for user in channel_info['members']:
-           #         if 'username' in user:
-           #             self.username_list.append(user['username'])
-
+                try:
+                    members = self.Telegram_ui.sender.channel_get_members(print_name_chan)
+                except:
+                    members = []
+                for user in members:
+                    if 'username' in user and user['username'] != None:
+                        self.username_list.append(user['username'])
 
         text = self.widgetEdit.get_edit_text()[1:]
         text = self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1][1:]
@@ -130,7 +131,7 @@ class MessageSendWidget(urwid.Filler):
         dst = self.Telegram_ui.current_chan['print_name']
 
         if not self.Telegram_ui.NINJA_MODE:
-            # try/expect needed when user lack of priviledge on channels
+            # try/expect needed when user lacks of priviledge on channels
             try:
                 if len(self.widgetEdit.get_edit_text()) == 1:
                     self.Telegram_ui.sender.send_typing(dst)
@@ -154,13 +155,13 @@ class MessageSendWidget(urwid.Filler):
 
                 self.widgetEdit.insert_text(" Please wait...")
                 self.Telegram_ui.main_loop.draw_screen()
-                # try/expect needed when user lack of priviledge on channels
+                # try/expect needed when user lacks of priviledge on channels
                 try: 
                     self.Telegram_ui.sender.send_file(dst, msg[1:][:-1])
                 except:
                     pass
             else:
-                # try/expect needed when user lack of priviledge on channels
+                # try/expect needed when user lacks of priviledge on channels
                 try:
                     self.Telegram_ui.sender.send_msg(dst, msg, enable_preview=True)
                 except:

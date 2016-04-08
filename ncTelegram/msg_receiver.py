@@ -62,11 +62,12 @@ class MessageReceiver(threading.Thread):
 
                 self.Telegram_ui.chan_widget.get_new_chan_list()
 
+
                 # notif on hl
                 if 'text' in msg and 'username' in self.Telegram_ui.me and \
+                        self.Telegram_ui.me['username'] != None and\
                         "@" + self.Telegram_ui.me['username'] in msg['text']:
                     self.Telegram_ui.display_notif(msg)
-
 
                 #notif on reply
                 if 'reply_id' in msg and 'text' in msg:
@@ -80,6 +81,7 @@ class MessageReceiver(threading.Thread):
 
 
                 self.Telegram_ui.update_read_status(msg_cmd, False)
+
                 # refresh of the screen
                 self.Telegram_ui.main_loop.draw_screen()
 
