@@ -69,6 +69,10 @@ class MessageSendWidget(urwid.Filler):
                     text = text + ' --- [ last seen ' + when_date + ' at ' + when_hour + ' ]'
         elif chan_type == 'channel':
             chan_num = self.Telegram_ui.current_chan['participants_count']
+            # fix bug in dialog_list in telegram_cli 
+            if chan_num == 0:
+                chan_num = self.Telegram_ui.sender.channel_info(chan_name.replace(' ','_'))['participants_count']
+                self.Telegram_ui.current_chan['participants_count'] = chan_num 
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " participants ]"
 
 

@@ -12,14 +12,15 @@ class MessageReceiver(threading.Thread):
 
 
     def run(self):
-        while self.Telegram_ui.lock_receiver:
-            time.sleep(1)
-
         self.Telegram_ui.receiver.message(self.get_dump())
 
 
     @coroutine
     def get_dump(self):
+        while self.Telegram_ui.lock_receiver:
+            time.sleep(0.2)
+
+
         while True:
             msg = (yield)
 

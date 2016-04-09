@@ -9,6 +9,7 @@ import time
 import urwid
 
 from pytg import Telegram
+from pytg.receiver import Receiver
 
 try:
     import gi
@@ -68,11 +69,6 @@ class Telegram_ui:
 
         # message writing + status bar widget
         self.msg_send_widget = MessageSendWidget(self)
-
-        # Thread to dump received messages
-        self.msg_dump = MessageReceiver(self)
-        self.msg_dump.daemon = True
-        self.msg_dump.start()
 
         # Right pannel
         self.right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
@@ -148,7 +144,15 @@ class Telegram_ui:
             mtype = msg['media']['type']
             mid = msg['id']
 
-            file = self.sender.load_file(mid)
+            #file = self.sender.load_file(mid)
+            if mtype == 'photo':
+                file = self.sender.load_photo(mid)
+
+            elif mtype == 'document':
+                file = self.sender.load_document(mid)
+            else:
+                file = None
+
             return file
 
     def open_file(self, path):
@@ -161,11 +165,19 @@ class Telegram_ui:
         PATH_TELEGRAM = self.conf['general']['path_telegram']
         PATH_PUBKEY = self.conf['general']['path_pubkey']
 
+        self.receiver = Receiver(port=4458)
+        self.receiver.start()
+
+        # Thread to dump received messages
+        self.msg_dump = MessageReceiver(self)
+        self.msg_dump.daemon = True
+        self.msg_dump.start()
+
         self.tg = Telegram(telegram=PATH_TELEGRAM,
                            pubkey_file=PATH_PUBKEY)
-        self.receiver = self.tg.receiver
+
+        #self.receiver = self.tg.receiver
         self.sender = self.tg.sender
-        self.receiver.start()
 
 
     def stop_Telegram(self):
