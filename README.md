@@ -50,7 +50,7 @@ And then:
 
 And if you want notifications and inline images:
 ```
-# apt-get install libnotify caca-utils
+# apt-get install libnotify-bin caca-utils
 ```
 
 Finnaly ncTelegram:

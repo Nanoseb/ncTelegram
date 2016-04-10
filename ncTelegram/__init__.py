@@ -165,7 +165,7 @@ class Telegram_ui:
         PATH_TELEGRAM = self.conf['general']['path_telegram']
         PATH_PUBKEY = self.conf['general']['path_pubkey']
 
-        self.receiver = Receiver(port=4458)
+        self.receiver = Receiver()
         self.receiver.start()
 
         # Thread to dump received messages
