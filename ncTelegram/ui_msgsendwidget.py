@@ -181,6 +181,14 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'ctrl u':
             self.widgetEdit.set_edit_text("")
 
+        # deletion of the last word
+        #   it deletes the last word of the text area, not the one just before the cursor for now 
+        elif key == 'ctrl w':
+            edit_text = self.widgetEdit.get_edit_text()
+            new_edit_text = ' '.join(edit_text.split(' ')[:-1])
+            self.widgetEdit.set_edit_text(new_edit_text)
+
+
         # gives the focus to the message list
         elif key == 'up' or key == 'page up' or key == 'esc':
             self.Telegram_ui.right_side.focus_position = 0
