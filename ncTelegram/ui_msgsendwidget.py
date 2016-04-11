@@ -13,6 +13,11 @@ class MessageSendWidget(urwid.Filler):
         self.username_list = []
         self.buffer_writing_text = {}
 
+        # handeling navigation in history
+        self.history_own_message = {}
+        self.history_pos = 0
+        self.cur_text = ""
+
         self.status_bar = urwid.Text(('status_bar', ' '), align='left')
         self.attr = urwid.AttrMap(self.status_bar, 'status_bar')
 
@@ -37,6 +42,8 @@ class MessageSendWidget(urwid.Filler):
         if cmd in self.buffer_writing_text:
             self.widgetEdit.insert_text(self.buffer_writing_text[cmd])
 
+        self.history_pos = 0
+        self.cur_text = ""
         self.update_status_bar()
 
 
@@ -86,6 +93,37 @@ class MessageSendWidget(urwid.Filler):
         except:
             pass
 
+
+    def history_prev(self):
+        current_cmd = self.Telegram_ui.current_chan['id']
+        
+        if -self.history_pos == len(self.history_own_message[current_cmd]):
+            return
+
+        if self.history_pos == 0:
+            self.cur_text = self.widgetEdit.get_edit_text()
+
+        self.history_pos -= 1
+        new_text = self.history_own_message[current_cmd][self.history_pos]
+        self.widgetEdit.set_edit_text(new_text)
+
+
+    def history_next(self):
+        current_cmd = self.Telegram_ui.current_chan['id']
+ 
+        if self.history_pos == 0:
+            return
+
+        self.history_pos += 1
+        if self.history_pos == 0:
+            new_text = self.cur_text
+        else:
+            new_text = self.history_own_message[current_cmd][self.history_pos]
+
+        self.widgetEdit.set_edit_text(new_text)
+
+       
+        
 
     def autocomplete(self):
         if self.updateLockedauto:
@@ -171,7 +209,14 @@ class MessageSendWidget(urwid.Filler):
                 except:
                     pass
 
+            current_cmd = self.Telegram_ui.current_chan['id']
+            if current_cmd in self.history_own_message:
+                self.history_own_message[current_cmd].append(msg)
+            else:
+                self.history_own_message[current_cmd] = [msg]
+
             self.widgetEdit.set_edit_text("")
+            self.cur_text = ""
 
         # Autocompletion
         elif key == 'tab' and self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1].startswith("@"):
@@ -195,6 +240,13 @@ class MessageSendWidget(urwid.Filler):
 
         elif key == 'left':
             self.Telegram_ui.main_columns.focus_position = 0
+
+        elif key == 'shift up':
+            self.history_prev()
+
+        elif key == 'shift down':
+            self.history_next()
+
         else:
             return key
         
