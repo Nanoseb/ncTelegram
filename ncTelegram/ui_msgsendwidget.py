@@ -42,6 +42,7 @@ class MessageSendWidget(urwid.Filler):
         if cmd in self.buffer_writing_text:
             self.widgetEdit.insert_text(self.buffer_writing_text[cmd])
 
+        self.history_own_message[cmd] = []
         self.history_pos = 0
         self.cur_text = ""
         self.update_status_bar()
@@ -241,6 +242,7 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'left':
             self.Telegram_ui.main_columns.focus_position = 0
 
+        # navigation in your own history
         elif key == 'shift up':
             self.history_prev()
 
