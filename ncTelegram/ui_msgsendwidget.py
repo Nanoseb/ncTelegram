@@ -178,7 +178,7 @@ class MessageSendWidget(urwid.Filler):
             self.autocomplete()
 
         # deletion of current text
-        elif key == 'ctrl w' or key == 'ctrl k':
+        elif key == 'ctrl u':
             self.widgetEdit.set_edit_text("")
 
         # gives the focus to the message list
