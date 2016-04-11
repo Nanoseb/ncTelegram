@@ -231,9 +231,9 @@ class MessageWidget(urwid.ListBox):
 
 
     def get_inline_img(self, msg):
-        cmd = self.Telegram_ui.current_chan['id']
+        #cmd = self.Telegram_ui.current_chan['id']
         mid = msg['id']
-        key = cmd + str(mid)
+        key = str(mid)
         if key in self.img_buffer:
             return self.img_buffer[key]
         else:

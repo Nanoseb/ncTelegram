@@ -121,11 +121,14 @@ class Telegram_ui:
     def fill_msg_buffer(self, button):
 
         for chan in self.chan_widget.chans:
-    
             cmd = chan['id']
             if cmd not in self.msg_buffer:
                 print_name = chan['print_name']
                 self.msg_buffer[cmd] = self.sender.history(print_name, 100)
+                if self.INLINE_IMAGE:
+                    for msg in self.msg_buffer[cmd]:
+                        if 'media' in msg:
+                            image = self.msg_widget.get_inline_img(msg)
 
         self.chan_widget.update_chan_list()
 
