@@ -63,12 +63,13 @@ class Telegram_ui:
         self.chan_widget = ChanWidget(self)
 
         self.print_title()
-
-        # message list
-        self.msg_widget = MessageWidget(self)
+        self.me = self.sender.get_self()
 
         # message writing + status bar widget
         self.msg_send_widget = MessageSendWidget(self)
+
+        # message list
+        self.msg_widget = MessageWidget(self)
 
         # Right pannel
         self.right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
@@ -82,7 +83,6 @@ class Telegram_ui:
 
         self.main_loop = urwid.MainLoop((self.main_columns), palette, unhandled_input=self.unhandle_key, screen=urwid.raw_display.Screen())
         self.main_loop.screen.set_terminal_properties(colors=256)
-        self.me = self.sender.get_self()
         self.lock_receiver = False
         self.main_loop.run()
 

@@ -42,9 +42,9 @@ class MessageSendWidget(urwid.Filler):
         if cmd in self.buffer_writing_text:
             self.widgetEdit.insert_text(self.buffer_writing_text[cmd])
 
-        self.history_own_message[cmd] = []
+        if not cmd in self.history_own_message:
+            self.history_own_message[cmd] = []
         self.history_pos = 0
-        self.cur_text = ""
         self.update_status_bar()
 
 
@@ -106,7 +106,8 @@ class MessageSendWidget(urwid.Filler):
 
         self.history_pos -= 1
         new_text = self.history_own_message[current_cmd][self.history_pos]
-        self.widgetEdit.set_edit_text(new_text)
+        self.widgetEdit.set_edit_text('')
+        self.widgetEdit.insert_text(new_text)
 
 
     def history_next(self):
@@ -121,7 +122,8 @@ class MessageSendWidget(urwid.Filler):
         else:
             new_text = self.history_own_message[current_cmd][self.history_pos]
 
-        self.widgetEdit.set_edit_text(new_text)
+        self.widgetEdit.set_edit_text('')
+        self.widgetEdit.insert_text(new_text)
 
        
         
