@@ -60,7 +60,7 @@ Finnaly ncTelegram:
 
 ## Usage
 
-Before running `nctelegram` you have to launch `telegram-cli` in order to register you account (phone number and verification code).
+Before the first run of `nctelegram` you have to launch `telegram-cli` in order to register you account (phone number and verification code).
 
 An example of configuration file can be found in `/etc/ncTelegram.conf`, copy it to your personal folder before modifying it: 
 ```
@@ -77,7 +77,7 @@ Be sure that the path of `telegram-cli` and the public key are set correctly.
 
 - press `esc` twice to draw a separator at the end of the message list
 
-- use `ctrl+o` to open the last file sent to the current chan or url
+- use `ctrl+o` to open the last file or url sent to the current chan
 
 - to send files you can simply drag and drop them into your terminal or send as a message their path between single quotes (')
 
@@ -85,8 +85,9 @@ Be sure that the path of `telegram-cli` and the public key are set correctly.
 
 - select `Download message buffer` to navigate more quickly between chan
 
-- vim like keymap is also available, use `hjkl` to navigate between lists, use `i` to select the text area and `esc` to leave it
+- vim like key bindings is also available, use `hjkl` to navigate between lists, use `i` to select the text area and `esc` to leave it
 
+- use shift+up or shift+down to navigate in your own message history
 
 #### Troubleshooting
 

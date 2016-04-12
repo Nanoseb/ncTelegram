@@ -46,12 +46,7 @@ class MessageReceiver(threading.Thread):
 
                 # handeling of unread count, message print, and buffer fill
                 if msg_cmd == current_cmd:
-                    try:
-                        self.Telegram_ui.msg_widget.print_msg(msg)
-                    except:
-                        fichier_log = open('/home/seb/log.tele', "a")
-                        fichier_log.write(str(msg) + u'\n')
-                        fichier_log.close()
+                    self.Telegram_ui.msg_widget.print_msg(msg)
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd, False)
                 else:
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
