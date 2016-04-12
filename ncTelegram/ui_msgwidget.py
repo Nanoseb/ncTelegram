@@ -40,24 +40,14 @@ class MessageWidget(urwid.ListBox):
         self.pos = 0
 
         if current_cmd not in self.Telegram_ui.msg_buffer:
-
             current_print_name = self.Telegram_ui.current_chan['print_name']
-
             msgList = self.Telegram_ui.sender.history(current_print_name, 100)
-            
             self.Telegram_ui.msg_buffer[current_cmd] = msgList
-
-            self.Telegram_ui.msg_send_widget.history_own_message[current_cmd] = []
-            for msg in msgList:
-                if 'text' in msg and msg['from']['id'] == self.Telegram_ui.me['id']:
-                    self.Telegram_ui.msg_send_widget.history_own_message[current_cmd].append(msg['text'])
-
 
         for msg in self.Telegram_ui.msg_buffer[current_cmd]:
             self.print_msg(msg)
 
         self.draw_separator()
-
         self.updateLocked = False
 
 

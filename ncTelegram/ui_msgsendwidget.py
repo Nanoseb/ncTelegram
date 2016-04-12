@@ -44,6 +44,10 @@ class MessageSendWidget(urwid.Filler):
 
         if not cmd in self.history_own_message:
             self.history_own_message[cmd] = []
+            for msg in self.Telegram_ui.msg_buffer[cmd]:
+                if 'text' in msg and msg['from']['id'] == self.Telegram_ui.me['id']:
+                    self.history_own_message[cmd].append(msg['text'])
+
         self.history_pos = 0
         self.update_status_bar()
 
@@ -96,22 +100,22 @@ class MessageSendWidget(urwid.Filler):
 
 
     def history_prev(self):
-        current_cmd = self.Telegram_ui.current_chan['id']
-        
-        if -self.history_pos == len(self.history_own_message[current_cmd]):
+        cmd = self.Telegram_ui.current_chan['id']
+       
+        if -self.history_pos == len(self.history_own_message[cmd]):
             return
 
         if self.history_pos == 0:
             self.cur_text = self.widgetEdit.get_edit_text()
 
         self.history_pos -= 1
-        new_text = self.history_own_message[current_cmd][self.history_pos]
+        new_text = self.history_own_message[cmd][self.history_pos]
         self.widgetEdit.set_edit_text('')
         self.widgetEdit.insert_text(new_text)
 
 
     def history_next(self):
-        current_cmd = self.Telegram_ui.current_chan['id']
+        cmd = self.Telegram_ui.current_chan['id']
  
         if self.history_pos == 0:
             return
@@ -120,7 +124,7 @@ class MessageSendWidget(urwid.Filler):
         if self.history_pos == 0:
             new_text = self.cur_text
         else:
-            new_text = self.history_own_message[current_cmd][self.history_pos]
+            new_text = self.history_own_message[cmd][self.history_pos]
 
         self.widgetEdit.set_edit_text('')
         self.widgetEdit.insert_text(new_text)

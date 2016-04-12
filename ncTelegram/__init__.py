@@ -65,11 +65,11 @@ class Telegram_ui:
         self.print_title()
         self.me = self.sender.get_self()
 
-        # message writing + status bar widget
-        self.msg_send_widget = MessageSendWidget(self)
-
         # message list
         self.msg_widget = MessageWidget(self)
+
+        # message writing + status bar widget
+        self.msg_send_widget = MessageSendWidget(self)
 
         # Right pannel
         self.right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])

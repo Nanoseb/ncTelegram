@@ -172,10 +172,9 @@ class ChanWidget(urwid.ListBox):
 
         current_cmd = chan['id']
 
-
         self.Telegram_ui.last_media = {}
-        self.Telegram_ui.msg_send_widget.update_send_widget()
         self.Telegram_ui.msg_widget.get_history()
+        self.Telegram_ui.msg_send_widget.update_send_widget()
 
         # deletion of unread count for the new chan
         if current_cmd in self.msg_chan:
