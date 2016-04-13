@@ -124,7 +124,10 @@ class Telegram_ui:
             cmd = chan['id']
             if cmd not in self.msg_buffer:
                 print_name = chan['print_name']
-                self.msg_buffer[cmd] = self.sender.history(print_name, 100)
+                try:
+                    self.msg_buffer[cmd] = self.sender.history(print_name, 100)
+                except:
+                    self.msg_buffer[cmd] = []
                 if self.INLINE_IMAGE:
                     for msg in self.msg_buffer[cmd]:
                         if 'media' in msg:

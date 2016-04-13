@@ -41,7 +41,10 @@ class MessageWidget(urwid.ListBox):
 
         if current_cmd not in self.Telegram_ui.msg_buffer:
             current_print_name = self.Telegram_ui.current_chan['print_name']
-            msgList = self.Telegram_ui.sender.history(current_print_name, 100)
+            try:
+                msgList = self.Telegram_ui.sender.history(current_print_name, 100)
+            except:
+                msgList = []
             self.Telegram_ui.msg_buffer[current_cmd] = msgList
 
         for msg in self.Telegram_ui.msg_buffer[current_cmd]:
