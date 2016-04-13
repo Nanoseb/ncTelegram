@@ -1,10 +1,10 @@
 # ncTelegram
-A curse Telegram client developed in Python with the urwid library.
+
+A ncurses Telegram client developed in Python with the urwid library.
 
 <p align="center">
   <img src="http://pix.toile-libre.org/upload/original/1457204711.png" alt="screenshot of ncTelegram"/>
 </p>
-
 
 ## Dependencies
 
@@ -16,79 +16,123 @@ A curse Telegram client developed in Python with the urwid library.
 
 ## Installation
 
-### For archlinux
-You can use the pkgbuild from [aur](https://aur.archlinux.org/packages/nctelegram-git/):
+### Arch Linux:
+
+You can use the pkgbuild from [AUR](https://aur.archlinux.org/packages/nctelegram-git/):
+
 ```
 $ yaourt -S nctelegram-git
+
+OR
+
+$ pacaur -y nctelegram-git
 ```
 
-### For Fedora
-Everything is in the repos:
+### Fedora:
+
+Install dependencies:
 
 ```
-# dnf install telegram-cli python-urwid
+$ dnf install telegram-cli python-urwid
+```
+
+Install ncTelegram through pip:
+```
+$ pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
 ```
 
 If you want notifications and inline images:
+
 ```
-# dnf install libnotify caca-utils
+$ dnf install libnotify caca-utils
 ```
 
-And ncTelegram:
-```
-# pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/0.9.2.tar.gz
-```
-
-### For Debian/ubuntu/...
+### Debian/Ubuntu:
 
 To install telegram-cli just follow its [readme](https://github.com/vysheng/tg).
 
-And then:
+Install urwid:
+
 ```
-# apt-get install python3-urwid 
+$ apt-get install python3-urwid
 ```
 
-And if you want notifications and inline images:
+Install ncTelegram through pip:
+
 ```
-# apt-get install libnotify-bin caca-utils
+$ pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
 ```
 
-Finnaly ncTelegram:
+If you want notifications and inline images:
+
 ```
-# pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
+$ apt-get install libnotify-bin caca-utils
+```
+
+### Crux:
+
+Install repository:
+
+```
+$ wget -O /etc/ports/wildefyr.httpup "https://crux.nu/portdb/?a=getup&q=wildefyr"
+$ ports -u
+```
+
+Install ncTelegram:
+
+```
+$ prt-get depinst nctelegram
+```
+
+If you want notifications and inline images:
+
+```
+$ prt-get depinst libnotify libcaca
 ```
 
 ## Usage
 
-Before the first run of `nctelegram` you have to launch `telegram-cli` in order to register you account (phone number and verification code).
+Before the first run of `nctelegram`, `telegram-cli` must be launched first in
+order to register your account on your machine for the first time. (phone number
+and verification code).
 
-An example of configuration file can be found in `/etc/ncTelegram.conf`, copy it to your personal folder before modifying it: 
+An example of the configuration file can be found in `/etc/ncTelegram.conf`,
+copy it to your personal folder before modifying it:
+
 ```
 $ cp /etc/ncTelegram.conf ~/.ncTelegram.conf
 ```
-Be sure that the path of `telegram-cli` and the public key are set correctly.
 
+Finally, make sure that the path of `telegram-cli` and the public key are set
+correctly in `~/.ncTelegram.conf`.
 
 #### Tips
 
-- press `esc` to leave the text area
+- Press `esc` to leave the text area.
 
-- press `q` to quit the ncTelegram
+- Press `q` to quit the ncTelegram.
 
-- press `esc` twice to draw a separator at the end of the message list
+- Press `esc` twice to draw a separator at the end of the message list.
 
-- use `ctrl+o` to open the last file or url sent to the current chan
+- Use `ctrl+o` to open the last file or url sent to the current channel.
 
-- to send files you can simply drag and drop them into your terminal or send as a message their path between single quotes (')
+- To send files you can simply drag and drop them into your terminal or send as
+a message their path between single quotes (').
 
-- you can navigate in the chan list with `ctrl+p` and `ctrl+n`
+- You can navigate the channel list with `ctrl+p` and `ctrl+n`.
 
-- select `Download message buffer` to navigate more quickly between chan
+- Select `Download message buffer` to navigate quickly between channels.
 
-- vim like key bindings is also available, use `hjkl` to navigate between lists, use `i` to select the text area and `esc` to leave it
+- Vim-like key bindings are also available, use `hjkl` to navigate between
+lists, use `i` to select the text area and `esc` to leave it.
 
-- use shift+up or shift+down to navigate in your own message history
+- Use Shift + Up or Shift + Down to navigate in your own message history.
 
 #### Troubleshooting
 
-If `nctelegram` crashes, first report the issue with the backtrace ;), and before restarting it check if `telegram-cli` is still running, if so kill it first.
+If `nctelegram` crashes, please [report the
+issue](https://github.com/Nanoseb/ncTelegram/issues/new) with a backtrace if
+possible.
+
+Before restarting `nctelegram` again, check if `telegram-cli` is
+still running; if so kill it before restarting `nctelegram`.
