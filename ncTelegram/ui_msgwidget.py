@@ -68,10 +68,11 @@ class MessageWidget(urwid.ListBox):
                 self.Telegram_ui.last_media = {'url': url}
 
                 if url in self.url_buffer:
-                    text = text + ['\n ➜ ' + self.url_buffer[url]]
+                    if self.url_buffer[url]:
+                        text = text + ['\n ➜ ' + self.url_buffer[url]]
                 elif date > self.Telegram_ui.boot_time:
                     try:
-                        resource = urllib.request.urlopen(url)
+                        resource = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla'}))
                         page = resource.read().decode(resource.headers.get_content_charset())
                         title = re.search('<title>(.*?)</title>', page, re.IGNORECASE|re.DOTALL).group(1)
                         self.url_buffer[url] = title
