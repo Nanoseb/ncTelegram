@@ -14,6 +14,7 @@ class NewButton(urwid.Button):
 class ChanWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
         self.chans = []
+        self.secret_chat_list = []
         self.updateLocked = False
         self.current_chan_pos = 0
         self.Telegram_ui = Telegram_ui
@@ -63,7 +64,7 @@ class ChanWidget(urwid.ListBox):
         i = len(self.chans) -1
 
         # build of chan list
-        for chan in self.chans[::-1]:
+        for chan in self.chans[::-1]+self.secret_chat_list:
             pos +=1
             print_name = chan['print_name']
 
@@ -77,6 +78,8 @@ class ChanWidget(urwid.ListBox):
                 label = "➜➜ " + label
             elif chan['peer_type'] == 'channel':
                 label = "⤨  " + label
+            elif chan['peer_type'] == 'encr_chat':
+                label = '⚿   ' + print_name[2:]
 
             if cmd in self.msg_chan and self.msg_chan[cmd] != 0:
                 label = label + ' [' + str(self.msg_chan[cmd]) + ']'
@@ -96,8 +99,45 @@ class ChanWidget(urwid.ListBox):
             current_pos = pos -1
 
 
+#
+#        if not self.secret_chat_list == []:
+#            pos +=1
+#            self.chan_list.insert(pos, urwid.AttrMap(urwid.Divider('─'), 'separator'))
+#            for chan in self.secret_chat_list:
+#                pos +=1
+#                print_name = chan['print_name']
+#
+#                cmd = chan['id']
+#                label = '⚿   ' + print_name.replace('_', ' ')[2:]
+#
+#                if cmd in self.msg_chan and self.msg_chan[cmd] != 0:
+#                    label = label + ' [' + str(self.msg_chan[cmd]) + ']'
+#
+#
+#                if print_name == self.Telegram_ui.current_chan['print_name']:
+#                    button = NewButton(('cur_chan', label), self.chan_change, chan)
+#                    current_pos = pos
+#                    self.current_chan_pos = i
+#                else:
+#                    button = NewButton(label, self.chan_change, chan)
+#
+
+
+
+
+
         pos +=1
         self.chan_list.insert(pos, urwid.AttrMap(urwid.Divider('─'), 'separator'))
+
+
+        if self.Telegram_ui.current_chan['peer_type'] == 'user':
+            pos += 1
+            current_printname = self.Telegram_ui.current_chan['print_name']
+            current_fstname = self.Telegram_ui.current_chan['first_name']
+            button = NewButton('⚿  Create secret chat with '+ current_fstname, self.create_secret_chat, current_printname)
+            self.chan_list.insert(pos, button)
+
+
         #pos += 1
         #self.chan_list.insert(pos, urwid.Text('✚  Create new group chat'))
         #pos += 1
@@ -121,6 +161,15 @@ class ChanWidget(urwid.ListBox):
 
 
         self.focus_position = current_pos
+
+    def create_secret_chat(self, button, print_name):
+        self.Telegram_ui.sender.raw('create_secret_chat ' + print_name)
+
+
+    def add_secret_chat(self, event):
+        self.secret_chat_list.append(event['peer'])
+        self.Telegram_ui.msg_buffer[event['peer']['id']] = []
+
 
     def add_msg(self, cmd, incr):
         """ unread message count incrementation
@@ -158,8 +207,10 @@ class ChanWidget(urwid.ListBox):
         prev_cmd = self.Telegram_ui.current_chan['id']
         prev_msg = self.Telegram_ui.msg_send_widget.widgetEdit.get_edit_text()
         self.Telegram_ui.msg_send_widget.buffer_writing_text[prev_cmd] = prev_msg
-        
-        if not self.Telegram_ui.NINJA_MODE:
+         
+
+        prev_type_chan = self.Telegram_ui.current_chan['peer_type']
+        if not prev_type_chan == 'secr_chat' and not self.Telegram_ui.NINJA_MODE:
             dst = self.Telegram_ui.current_chan['print_name']
             # try/expect needed when user lacks of priviledge on channels
             try:

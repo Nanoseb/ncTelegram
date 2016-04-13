@@ -29,8 +29,11 @@ class MessageReceiver(threading.Thread):
             if msg['event'] == "message":
 
 
+                if not 'receiver' in msg:
+                    continue
+
                 msg_type = msg['receiver']['type']
-                if msg_type == 'user' and not msg['own']:
+                if (msg_type == 'user' or msg_type == 'encr_chat') and not msg['own']:
                     msg_cmd = msg['sender']['id']
                 else:
                     msg_cmd = msg['receiver']['id']
@@ -97,6 +100,11 @@ class MessageReceiver(threading.Thread):
                     cmd = msg['from']['id']
                 self.Telegram_ui.update_read_status(cmd, True)
 
+            
+            elif msg['event'] == 'updates' and msg['updates'] == ['working']:
+                self.Telegram_ui.chan_widget.add_secret_chat(msg)
+                self.Telegram_ui.chan_widget.get_new_chan_list()
+            
 
 
 

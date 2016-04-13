@@ -87,6 +87,9 @@ class MessageSendWidget(urwid.Filler):
                 self.Telegram_ui.current_chan['participants_count'] = chan_num 
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " participants ]"
 
+        elif chan_type == 'encr_chat':
+            text = ' [ ' + chan_name + ' ]'
+
 
         if current_cmd in self.Telegram_ui.read_status and self.Telegram_ui.read_status[current_cmd]:
             text = text + '  ✓'
@@ -161,6 +164,9 @@ class MessageSendWidget(urwid.Filler):
                 for user in members:
                     if 'username' in user and user['username'] != None:
                         self.username_list.append(user['username'])
+            elif type_chan == 'encr_chat' and 'username' in self.Telegram_ui.current_chan['user']:
+                self.username_list = [self.Telegram_ui.current_chan['user']['username']]
+
 
         text = self.widgetEdit.get_edit_text()[1:]
         text = self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1][1:]
@@ -176,11 +182,13 @@ class MessageSendWidget(urwid.Filler):
 
     def keypress(self, size, key):
         key = super(MessageSendWidget, self).keypress(size, key)
-
+        
+        type_chan = self.Telegram_ui.current_chan['peer_type']
         dst = self.Telegram_ui.current_chan['print_name']
 
-        if not self.Telegram_ui.NINJA_MODE:
-            # try/expect needed when user lacks of priviledge on channels
+
+        if not (self.Telegram_ui.NINJA_MODE) and not type_chan == 'secr_chat':
+        # try/expect needed when user lacks of priviledge on channels
             try:
                 if len(self.widgetEdit.get_edit_text()) == 1:
                     self.Telegram_ui.sender.send_typing(dst)
@@ -189,10 +197,12 @@ class MessageSendWidget(urwid.Filler):
             except:
                 pass
 
+
+
         if key == 'enter':
             msg = self.widgetEdit.get_edit_text()
 
-            if not self.Telegram_ui.NINJA_MODE:
+            if not (self.Telegram_ui.NINJA_MODE) and not type_chan == 'secr_chat':
                 self.Telegram_ui.sender.status_online()
                 self.Telegram_ui.sender.status_offline()
                 self.Telegram_ui.sender.mark_read(dst)
