@@ -33,18 +33,18 @@ $ pacaur -y nctelegram-git
 Install dependencies:
 
 ```
-$ dnf install telegram-cli python-urwid
+$ sudo dnf install telegram-cli python-urwid
 ```
 
 Install ncTelegram through pip:
 ```
-$ pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
+$ sudo pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/0.9.2.tar.gz
 ```
 
 If you want notifications and inline images:
 
 ```
-$ dnf install libnotify caca-utils
+$ sudo dnf install libnotify caca-utils
 ```
 
 ### Debian/Ubuntu:
@@ -54,19 +54,19 @@ To install telegram-cli just follow its [readme](https://github.com/vysheng/tg).
 Install urwid:
 
 ```
-$ apt-get install python3-urwid
+$ sudo apt-get install python3-urwid
 ```
 
 Install ncTelegram through pip:
 
 ```
-$ pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
+$ sudo pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
 ```
 
 If you want notifications and inline images:
 
 ```
-$ apt-get install libnotify-bin caca-utils
+$ sudo apt-get install libnotify-bin caca-utils
 ```
 
 ### Crux:

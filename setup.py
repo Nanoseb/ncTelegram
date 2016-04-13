@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='ncTelegram',
-      version='0.9.4',
+      version='0.9.5',
       description='A curse Telegram client',
       license='GPLv3',
       author='Sébastien Lemaire',
