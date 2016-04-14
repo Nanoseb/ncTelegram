@@ -142,8 +142,15 @@ class MessageWidget(urwid.ListBox):
 
         if 'fwd_from' in msg:
             color_fwd = self.get_name_color(msg['fwd_from']['peer_id'])
+            if 'first_name' in msg['fwd_from']:
+                fwd_from_name = msg['fwd_from']['first_name']
+            elif 'print_name' in msg['fwd_from']:
+                fwd_from_name = msg['fwd_from']['print_name'].replace('_',' ')
+            else:
+                fwd_from_name = 'Unknown'
+
             text = [(urwid.AttrSpec('light gray', ''), 'forwarded from '),
-                    (urwid.AttrSpec(color_fwd, ''), msg['fwd_from']['first_name'] + '\n')] + text
+                    (urwid.AttrSpec(color_fwd, ''), fwd_from_name + '\n')] + text
 
             
 
