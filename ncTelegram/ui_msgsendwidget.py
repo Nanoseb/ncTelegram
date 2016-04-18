@@ -238,7 +238,7 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'ctrl w':
             edit_text = self.widgetEdit.get_edit_text()
             new_edit_text = ' '.join(edit_text.split(' ')[:-1])
-            self.widgetEdit.set_edit_text(new_edit_text)
+            self.widgetEdit.set_edit_text(new_edit_text + " ")
 
 
         # gives the focus to the message list

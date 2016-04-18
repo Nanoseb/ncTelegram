@@ -159,7 +159,7 @@ class ChanWidget(urwid.ListBox):
         prev_msg = self.Telegram_ui.msg_send_widget.widgetEdit.get_edit_text()
         self.Telegram_ui.msg_send_widget.buffer_writing_text[prev_cmd] = prev_msg
         
-        if not self.Telegram_ui.NINJA_MODE:
+        if prev_msg and not self.Telegram_ui.NINJA_MODE:
             dst = self.Telegram_ui.current_chan['print_name']
             # try/expect needed when user lacks of priviledge on channels
             try:
