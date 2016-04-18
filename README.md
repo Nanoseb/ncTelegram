@@ -126,7 +126,7 @@ a message their path between single quotes (').
 - Vim-like key bindings are also available, use `hjkl` to navigate between
 lists, use `i` to select the text area and `esc` to leave it.
 
-- Use Shift + Up or Shift + Down to navigate in your own message history.
+- Use `shift + Up` or `shift + Down` to navigate in your own message history.
 
 #### Troubleshooting
 
