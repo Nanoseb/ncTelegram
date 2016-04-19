@@ -2,18 +2,16 @@
 import os
 import sys
 import subprocess
+import psutil
 import os.path
 import configparser
 
 import ncTelegram
-import psutil
 
 
 
-# Check if telegram-cli is already running on the same port
-list_connection = [ i[4] for i in psutil.net_connections() ]
-for connection in list_connection:
-    if connection and connection[1] == 4458:
+for connection in psutil.net_connections():
+    if connection[4] and connection[4][1] == 4458:
         print('telegram-cli is already running, kill it before starting ncTelegram')
         sys.exit(1)
 

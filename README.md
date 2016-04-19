@@ -11,6 +11,7 @@ A ncurses Telegram client developed in Python with the urwid library.
 * [Telegram-cli](https://github.com/vysheng/tg)
 * [urwid](http://urwid.org)
 * [pytg](https://github.com/luckydonald/pytg)
+* python-psutil
 * libnotify (optional)
 * caca-utils (optional)
 
@@ -33,7 +34,7 @@ $ pacaur -y nctelegram-git
 Install dependencies:
 
 ```
-$ sudo dnf install telegram-cli python-urwid
+$ sudo dnf install telegram-cli python3-urwid python3-psutil
 ```
 
 Install ncTelegram through pip:
@@ -54,7 +55,7 @@ To install telegram-cli just follow its [readme](https://github.com/vysheng/tg).
 Install urwid:
 
 ```
-$ sudo apt-get install python3-urwid
+$ sudo apt-get install python3-urwid python3-psutil
 ```
 
 Install ncTelegram through pip:
