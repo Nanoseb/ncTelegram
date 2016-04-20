@@ -37,6 +37,8 @@ class MessageReceiver(threading.Thread):
 
 
                 if msg['date'] < self.Telegram_ui.boot_time:
+                    if not msg['unread']:
+                        continue
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
                     self.Telegram_ui.chan_widget.update_chan_list()
                     self.Telegram_ui.main_loop.draw_screen()
@@ -48,8 +50,15 @@ class MessageReceiver(threading.Thread):
                 if msg_cmd == current_cmd:
                     self.Telegram_ui.msg_widget.print_msg(msg)
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd, False)
+
+                elif ('from' in msg and msg['from']['peer_id'] == self.Telegram_ui.me['id']) or \
+                    ('sender' in msg and msg['sender']['id'] == self.Telegram_ui.me['id']):
+                    if msg_cmd in self.Telegram_ui.chan_widget.msg_chan:
+                        del self.Telegram_ui.chan_widget.msg_chan[msg_cmd]
+                        self.Telegram_ui.print_title()
                 else:
                     self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
+
 
                 # check if the message is not already printed (by get history)
                 if msg_cmd in self.Telegram_ui.msg_buffer:
