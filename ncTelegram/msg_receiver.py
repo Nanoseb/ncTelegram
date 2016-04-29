@@ -53,6 +53,7 @@ class MessageReceiver(threading.Thread):
 
                 elif ('from' in msg and msg['from']['peer_id'] == self.Telegram_ui.me['id']) or \
                     ('sender' in msg and msg['sender']['id'] == self.Telegram_ui.me['id']):
+                    # mark message as read if the message is from you
                     if msg_cmd in self.Telegram_ui.chan_widget.msg_chan:
                         del self.Telegram_ui.chan_widget.msg_chan[msg_cmd]
                         self.Telegram_ui.print_title()

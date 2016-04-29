@@ -45,7 +45,7 @@ class MessageSendWidget(urwid.Filler):
         if not cmd in self.history_own_message:
             self.history_own_message[cmd] = []
             for msg in self.Telegram_ui.msg_buffer[cmd]:
-                if 'text' in msg and msg['from']['id'] == self.Telegram_ui.me['id']:
+                if 'text' in msg and 'from' in msg and msg['from']['id'] == self.Telegram_ui.me['id']:
                     self.history_own_message[cmd].append(msg['text'])
 
         self.history_pos = 0
