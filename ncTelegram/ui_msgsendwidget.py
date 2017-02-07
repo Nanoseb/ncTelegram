@@ -226,7 +226,7 @@ class MessageSendWidget(urwid.Filler):
             self.cur_text = ""
 
         # linebreaks
-        elif key == 'ctrl l':
+        elif key == self.Telegram_ui.conf['keymap']['line_break']:
             self.widgetEdit.insert_text("\n")
 
         # Autocompletion

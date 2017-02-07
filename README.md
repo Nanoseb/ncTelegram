@@ -117,7 +117,7 @@ correctly in `~/.ncTelegram.conf`.
 
 - Use `ctrl+o` to open the last file or url sent to the current channel.
 
-- Use `ctrl+j` to insert a linebreak.
+- Use `ctrl+r` to insert a linebreak.
 
 - To send files you can simply drag and drop them into your terminal or send as
 a message their path between single quotes (').
