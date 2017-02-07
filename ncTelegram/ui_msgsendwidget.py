@@ -226,7 +226,7 @@ class MessageSendWidget(urwid.Filler):
             self.cur_text = ""
 
         # linebreaks
-        elif key == 'ctrl n':
+        elif key == 'ctrl l':
             self.widgetEdit.insert_text("\n")
 
         # Autocompletion
