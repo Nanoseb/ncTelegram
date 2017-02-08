@@ -225,6 +225,10 @@ class MessageSendWidget(urwid.Filler):
             self.widgetEdit.set_edit_text("")
             self.cur_text = ""
 
+        # linebreaks
+        elif key == self.Telegram_ui.conf['keymap']['line_break']:
+            self.widgetEdit.insert_text("\n")
+
         # Autocompletion
         elif key == 'tab' and self.widgetEdit.get_edit_text().rsplit(' ', 1)[-1].startswith("@"):
             self.autocomplete()
