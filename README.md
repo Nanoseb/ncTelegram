@@ -129,6 +129,8 @@ a message their path between single quotes (').
 - Vim-like key bindings are also available, use `hjkl` to navigate between
 lists, use `i` to select the text area and `esc` to leave it.
 
+- You can also use `ctrl+w` to remove words left of the cursor and `ctrl+u` to remove the whole line.
+
 - Use `shift + Up` or `shift + Down` to navigate in your own message history.
 
 #### Troubleshooting
