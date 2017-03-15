@@ -6,6 +6,8 @@ import time
 import re
 import urwid
 
+TEXT_CAPTION = " >> "
+
 class MessageSendWidget(urwid.Filler):
     def __init__(self, Telegram_ui):
         self.Telegram_ui = Telegram_ui
@@ -21,7 +23,7 @@ class MessageSendWidget(urwid.Filler):
         self.status_bar = urwid.Text(('status_bar', ' '), align='left')
         self.attr = urwid.AttrMap(self.status_bar, 'status_bar')
 
-        self.widgetEdit = urwid.Edit(" >> ", "", multiline=False)
+        self.widgetEdit = urwid.Edit(TEXT_CAPTION, "", multiline=False)
 
         self.pile = urwid.Pile([self.attr, self.widgetEdit])
         super().__init__(self.pile)
@@ -237,18 +239,25 @@ class MessageSendWidget(urwid.Filler):
         elif key == 'ctrl u':
             self.widgetEdit.set_edit_text("")
 
-        # deletion of the last word
-        #   it deletes the last word of the text area, not the one just before the cursor for now 
+        # deletion of characters left of the cursor until the next stop character
         elif key == 'ctrl w':
+            STOPCHARACTERS = " -/.,:"
+
             edit_text = self.widgetEdit.get_edit_text()
             edit_text = re.sub(r'\s+$', '', edit_text)
-            new_edit_text = ' '.join(edit_text.split(' ')[:-1])
-            if new_edit_text:
-                self.widgetEdit.set_edit_text(new_edit_text + ' ')
-            else:
-                self.widgetEdit.set_edit_text('')
-            
 
+            # the widget considers the caption when calculating the cursor position
+            cursor_pos = self.widgetEdit.get_cursor_coords((size[0],))[0] - len(TEXT_CAPTION)
+            i = 0
+            c = ""
+            for character in reversed(edit_text[:cursor_pos]):
+                i += 1
+                if character in STOPCHARACTERS:
+                    break
+
+            new_edit_text = edit_text[:cursor_pos - i] + edit_text[cursor_pos:]
+            self.widgetEdit.set_edit_text(new_edit_text)
+            self.widgetEdit.set_edit_pos(cursor_pos - i)
 
         # gives the focus to the message list
         elif key == 'up' or key == 'page up' or key == 'esc':
