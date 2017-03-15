@@ -241,19 +241,18 @@ class MessageSendWidget(urwid.Filler):
 
         # deletion of characters left of the cursor until the next stop character
         elif key == 'ctrl w':
-            STOPCHARACTERS = " -/.,:"
+            STOPCHARACTERS = r'[\s\W]'
 
             edit_text = self.widgetEdit.get_edit_text()
-            edit_text = re.sub(r'\s+$', '', edit_text)
 
             # the widget considers the caption when calculating the cursor position
             cursor_pos = self.widgetEdit.get_cursor_coords((size[0],))[0] - len(TEXT_CAPTION)
             i = 0
-            c = ""
             for character in reversed(edit_text[:cursor_pos]):
-                i += 1
-                if character in STOPCHARACTERS:
+                if i > 0 and re.match(STOPCHARACTERS, character):
                     break
+                else:
+                    i += 1
 
             new_edit_text = edit_text[:cursor_pos - i] + edit_text[cursor_pos:]
             self.widgetEdit.set_edit_text(new_edit_text)
