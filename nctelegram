@@ -59,6 +59,7 @@ config_full['keymap']['open_file'] = config['keymap'].get('open_file', 'ctrl o')
 config_full['keymap']['line_break'] = config['keymap'].get('line_break', 'ctrl r')
 config_full['keymap']['next_chan'] = config['keymap'].get('next_chan', 'ctrl n')
 config_full['keymap']['prev_chan'] = config['keymap'].get('prev_chan', 'ctrl p')
+config_full['keymap']['hide_chanlist'] = config['keymap'].get('hide_chanlist', 'ctrl b')
 
 if not 'DISPLAY' in os.environ:
     config_full['general']['notification'] = False

@@ -231,6 +231,17 @@ class Telegram_ui:
         if key == self.conf['keymap']['quit']:
             self.exit()
 
+        elif key == self.conf['keymap']['hide_chanlist']:
+
+            if 1 == self.main_columns.contents[0][1][1]:    # check if already hidden
+                # hidding
+                self.main_columns.contents[0] = (self.main_columns.contents[0][0],('given', 0, False) )
+                self.main_columns.contents[1] = (self.main_columns.contents[1][0],('given', 0, False) )
+            else:
+                self.main_columns.contents[0] = (self.main_columns.contents[0][0],('weight', 1, True) )
+                self.main_columns.contents[1] = (self.main_columns.contents[1][0],('given', 1, False) )
+
+
         elif key == 'esc':
             self.msg_widget.draw_separator()
 
