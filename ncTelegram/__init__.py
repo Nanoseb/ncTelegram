@@ -46,7 +46,9 @@ class Telegram_ui:
                    ('hour', self.conf['style']['hour'], ''),
                    ('separator', self.conf['style']['separator'], ''),
                    ('reversed', 'standout', ''),
-                   ('cur_chan', self.conf['style']['cur_chan'], '')]
+                   ('cur_chan', self.conf['style']['cur_chan'], ''),
+                   ('user_color', self.conf['style']['user_color'], ''),
+                   ]
 
 
         # Notification

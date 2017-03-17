@@ -47,6 +47,7 @@ config_full['style']['date'] = config['style'].get('date', 'light green')
 config_full['style']['hour'] = config['style'].get('hour', 'dark gray')
 config_full['style']['separator'] = config['style'].get('separator', 'dark gray')
 config_full['style']['cur_chan'] = config['style'].get('cur_chan', 'light green')
+config_full['style']['user_color'] = config['style'].get('user_color', 'light green')
 
 config_full['keymap']['left'] = config['keymap'].get('left', 'h')
 config_full['keymap']['right'] = config['keymap'].get('right', 'l')
