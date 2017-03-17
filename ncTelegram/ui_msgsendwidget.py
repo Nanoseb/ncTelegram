@@ -176,10 +176,21 @@ class MessageSendWidget(urwid.Filler):
                 break
 
 
+    def resize_zone(self, size):
+
+        rows_needed = int((len(self.widgetEdit.get_edit_text()) +  len(TEXT_CAPTION)) / size[0]) +2
+        if rows_needed > 10:
+            rows_needed = 10
+        if rows_needed != size[1]:
+            self.Telegram_ui.right_side.contents[1] = (self.Telegram_ui.right_side.contents[1][0],('given', rows_needed))
+
+
     def keypress(self, size, key):
         key = super(MessageSendWidget, self).keypress(size, key)
 
         dst = self.Telegram_ui.current_chan['print_name']
+
+
 
         if not self.Telegram_ui.NINJA_MODE:
             # try/expect needed when user lacks of priviledge on channels
@@ -273,7 +284,9 @@ class MessageSendWidget(urwid.Filler):
             self.history_next()
 
         else:
+            self.resize_zone(size)
             return key
+         
         
 
 # vim: ai ts=4 sw=4 et sts=4
