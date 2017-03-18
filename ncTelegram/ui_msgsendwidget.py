@@ -6,6 +6,8 @@ import time
 import re
 import urwid
 
+from .threading_request import ThreadingRequest
+
 TEXT_CAPTION = " >> "
 
 class MessageSendWidget(urwid.Filler):
@@ -206,9 +208,8 @@ class MessageSendWidget(urwid.Filler):
             msg = self.widgetEdit.get_edit_text()
 
             if not self.Telegram_ui.NINJA_MODE:
-                self.Telegram_ui.sender.status_online()
-                self.Telegram_ui.sender.status_offline()
-                self.Telegram_ui.sender.mark_read(dst)
+                update_status = ThreadingRequest(self.Telegram_ui, 'mark_read')
+                update_status.start()
 
             # Send file
             msg = re.sub(r'\s+$', '', msg)

@@ -5,6 +5,7 @@ import os
 import sys
 import subprocess
 import time
+import threading
 
 import urwid
 
@@ -22,7 +23,7 @@ from .ui_chanwidget import ChanWidget
 from .ui_msgwidget import MessageWidget
 from .ui_msgsendwidget import MessageSendWidget
 from .msg_receiver import MessageReceiver
-
+from .threading_request import ThreadingRequest
 
 
 class Telegram_ui:
@@ -40,6 +41,7 @@ class Telegram_ui:
         self.last_online = 1
         self.online_status = {}
         self.read_status = {}
+        self.buffer_downloading = True
 
         palette = [('status_bar', self.conf['style']['status_bar_fg'], self.conf['style']['status_bar_bg']),
                    ('date', self.conf['style']['date'], ''),
@@ -89,6 +91,9 @@ class Telegram_ui:
         self.main_loop = urwid.MainLoop((self.main_columns), palette, unhandled_input=self.unhandle_key, screen=urwid.raw_display.Screen())
         self.main_loop.screen.set_terminal_properties(colors=256)
         self.lock_receiver = False
+
+        self.fill_msg_buffer()
+
         self.main_loop.run()
 
     def update_online_status(self, when, status, cmd):
@@ -123,22 +128,10 @@ class Telegram_ui:
             sys.stdout.write("\x1b]2;ncTelegram (" + str(total_msg_waiting) + ")\x07")
 
 
-    def fill_msg_buffer(self, button):
+    def fill_msg_buffer(self):
+        fill_buffer = ThreadingRequest(self, 'fill_buffer')
+        fill_buffer.start()
 
-        for chan in self.chan_widget.chans:
-            cmd = chan['id']
-            if cmd not in self.msg_buffer:
-                print_name = chan['print_name']
-                try:
-                    self.msg_buffer[cmd] = self.sender.history(print_name, 100)
-                except:
-                    self.msg_buffer[cmd] = []
-                if self.INLINE_IMAGE:
-                    for msg in self.msg_buffer[cmd]:
-                        if 'media' in msg:
-                            image = self.msg_widget.get_inline_img(msg)
-
-        self.chan_widget.update_chan_list()
 
     def is_image(self, path):
         return not path == None and (path.endswith('png') \
@@ -268,5 +261,6 @@ class Telegram_ui:
             self.main_columns.focus_position = 2
             self.right_side.focus_position = 1
             self.msg_send_widget.widgetEdit.insert_text("'")
+
 
 # vim: ai ts=4 sw=4 et sts=4

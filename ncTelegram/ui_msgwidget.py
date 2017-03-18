@@ -9,6 +9,7 @@ import re
 import urllib.request
 
 
+from .threading_request import ThreadingRequest
 
 # widget used to print the message list
 class MessageWidget(urwid.ListBox):
@@ -218,10 +219,8 @@ class MessageWidget(urwid.ListBox):
 
         if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan: 
             # mark messages as read
-            current_print_name = self.Telegram_ui.current_chan['print_name']
-            self.Telegram_ui.sender.mark_read(current_print_name)
-            self.Telegram_ui.sender.status_online()
-            self.Telegram_ui.sender.status_offline()
+            update_status = ThreadingRequest(self.Telegram_ui, 'mark_read')
+            update_status.start()
 
 
         self.separator_pos = self.pos

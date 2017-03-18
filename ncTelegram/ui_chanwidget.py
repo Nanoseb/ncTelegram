@@ -18,6 +18,7 @@ class ChanWidget(urwid.ListBox):
         self.current_chan_pos = 0
         self.Telegram_ui = Telegram_ui
         self.msg_chan = {}        #unread count by chan
+        self.buffer_downloaded = False
         self.get_new_chan_list()
 
     def get_new_chan_list(self):
@@ -109,16 +110,9 @@ class ChanWidget(urwid.ListBox):
 
         
         # print of buffer button only if needed
-        list_buff = [ cmd for cmd in self.Telegram_ui.msg_buffer.keys() ]
-        list_chan = [ chan['id'] for chan in self.chans ]
-
-        list_buff.sort()
-        list_chan.sort()
-        if list_buff != list_chan :
+        if self.Telegram_ui.buffer_downloading:
             pos += 1
-            button = NewButton('⬇  Download message buffer', self.Telegram_ui.fill_msg_buffer)
-            self.chan_list.insert(pos, button)
-
+            self.chan_list.insert(pos, urwid.Text('... Buffer downloading'))
 
         self.focus_position = current_pos
 
