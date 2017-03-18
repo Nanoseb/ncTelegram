@@ -15,6 +15,7 @@ class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
         self.urlregex = re.compile("""((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))""")
         self.msgs = []
+        self.prev_date = {}
         self.img_buffer = {}
         self.url_buffer = {}
         self.separator_pos = -1
@@ -29,14 +30,15 @@ class MessageWidget(urwid.ListBox):
         self.updateLocked = True
         self.separator_pos = -1
 
-        self.prev_date = 1
+        current_cmd = self.Telegram_ui.current_chan['id']
+        if current_cmd not in self.prev_date:
+            self.prev_date[current_cmd] = 1
 
 
         # deletion of previous messages
         self.msg_list = [] # urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
         super().__init__(self.msg_list)
 
-        current_cmd = self.Telegram_ui.current_chan['id']
         self.pos = 0
 
         if current_cmd not in self.Telegram_ui.msg_buffer:
@@ -47,17 +49,35 @@ class MessageWidget(urwid.ListBox):
                 msgList = []
             self.Telegram_ui.msg_buffer[current_cmd] = msgList
 
+        if current_cmd not in self.Telegram_ui.msg_archive:
+            self.Telegram_ui.msg_archive[current_cmd] = []
+        else:
+            self.print_msg_archive()
+
+
         for msg in self.Telegram_ui.msg_buffer[current_cmd]:
             self.print_msg(msg)
+        
+        # messages have been printed, deletion form buffer (they are in archive now)
+        self.Telegram_ui.msg_buffer[current_cmd] = []
 
+        
         self.draw_separator()
         self.updateLocked = False
+
+    def print_msg_archive(self):
+        current_cmd = self.Telegram_ui.current_chan['id']
+        for msg in self.Telegram_ui.msg_archive[current_cmd]:
+            self.msg_list.insert(self.pos +1, msg)
+            self.focus_position = self.pos
+            self.pos = self.pos +1
 
 
     def print_msg(self, msg):
 
         date = msg['date']
 
+        current_cmd = self.Telegram_ui.current_chan['id']
 
         if 'text' in msg:
             text = [msg['text']]
@@ -68,7 +88,7 @@ class MessageWidget(urwid.ListBox):
                 if not url.startswith('http'):
                     url = 'http://' + url
 
-                self.Telegram_ui.last_media = {'url': url}
+                self.Telegram_ui.last_media[current_cmd] = {'url': url}
 
                 if url in self.url_buffer:
                     if self.url_buffer[url]:
@@ -89,7 +109,7 @@ class MessageWidget(urwid.ListBox):
 
 
         elif 'media' in msg:
-            self.Telegram_ui.last_media = msg
+            self.Telegram_ui.last_media[current_cmd] = msg
             text = [(urwid.AttrSpec('light gray', ''), "➜ " + msg['media']['type'])]
             if 'caption' in msg['media']:
                 text = text + [" " + msg['media']['caption']]
@@ -156,13 +176,13 @@ class MessageWidget(urwid.ListBox):
 
         cur_date = time.strftime('│ ' + self.Telegram_ui.DATE_FORMAT + ' │', time.localtime(date))
 
-        if cur_date != self.prev_date:
+        if cur_date != self.prev_date[current_cmd]:
             fill = '─'*(len(cur_date) - 2)
             date_text = '┌' + fill + '┐\n' + cur_date + '\n└' + fill + '┘'
             self.msg_list.insert(self.pos + 1, urwid.Text(('date', date_text), align='center'))
             self.focus_position = self.pos
             self.pos = self.pos +1
-            self.prev_date = cur_date
+            self.prev_date[current_cmd] = cur_date
 
         hour = time.strftime(' %H:%M ', time.localtime(date))
 
@@ -173,8 +193,13 @@ class MessageWidget(urwid.ListBox):
                                    ('separator', " │ ")])
 
         message_text = urwid.Text(text)
-        self.msg_list.insert(self.pos +1,
-                             urwid.Columns([(size_name +10, message_meta), message_text]))
+        message_to_display = urwid.Columns([(size_name +10, message_meta), message_text])
+        self.msg_list.insert(self.pos +1, message_to_display)
+                             
+
+
+        
+        self.Telegram_ui.msg_archive[current_cmd].append(message_to_display)
 
         self.focus_position = self.pos
         self.pos = self.pos +1

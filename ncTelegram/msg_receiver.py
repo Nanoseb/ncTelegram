@@ -62,7 +62,7 @@ class MessageReceiver(threading.Thread):
 
 
                 # check if the message is not already printed (by get history)
-                if msg_cmd in self.Telegram_ui.msg_buffer:
+                if msg_cmd in self.Telegram_ui.msg_buffer and msg_cmd != current_cmd:
                     self.Telegram_ui.msg_buffer[msg_cmd].append(msg)
 
 

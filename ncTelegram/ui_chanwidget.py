@@ -172,7 +172,8 @@ class ChanWidget(urwid.ListBox):
 
         current_cmd = chan['id']
 
-        self.Telegram_ui.last_media = {}
+        if current_cmd not in self.Telegram_ui.last_media:
+            self.Telegram_ui.last_media[current_cmd] = {}
         self.Telegram_ui.msg_widget.get_history()
         self.Telegram_ui.msg_send_widget.update_send_widget()
 

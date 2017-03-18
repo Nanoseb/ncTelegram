@@ -60,7 +60,10 @@ class Telegram_ui:
         self.last_media = {}
 
         # message buffer init
+        # msg_buffer is where incomming message go before they have been printed
         self.msg_buffer = {}
+        # msg_archive is where messages go once they are processed and have the proper layout (urwid list)
+        self.msg_archive = {}
 
         self.chan_widget = ChanWidget(self)
 
@@ -252,9 +255,9 @@ class Telegram_ui:
             self.chan_widget.go_next_chan()
 
         elif key == self.conf['keymap']['open_file'] and \
-                self.last_media != {} and \
-                self.conf['general']['open_file']:
-             path = self.download_media(self.last_media)
+                self.last_media[self.current_chan['id']] != {} and \
+                        self.conf['general']['open_file']:
+             path = self.download_media(self.last_media[self.current_chan['id']])
              self.open_file(path)
 
         elif key == self.conf['keymap']['insert_text']:
