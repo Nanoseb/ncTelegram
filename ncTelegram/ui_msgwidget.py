@@ -73,7 +73,7 @@ class MessageWidget(urwid.ListBox):
             self.pos = self.pos +1
 
 
-    def print_msg(self, msg):
+    def print_msg(self, msg, at_begining=False):
 
         date = msg['date']
 
@@ -179,7 +179,11 @@ class MessageWidget(urwid.ListBox):
         if cur_date != self.prev_date[current_cmd]:
             fill = '─'*(len(cur_date) - 2)
             date_text = '┌' + fill + '┐\n' + cur_date + '\n└' + fill + '┘'
-            self.msg_list.insert(self.pos + 1, urwid.Text(('date', date_text), align='center'))
+            
+            date_to_display = urwid.Text(('date', date_text), align='center')
+            self.msg_list.insert(self.pos + 1, date_to_display)
+            self.Telegram_ui.msg_archive[current_cmd].insert(self.pos +1, date_to_display)
+
             self.focus_position = self.pos
             self.pos = self.pos +1
             self.prev_date[current_cmd] = cur_date
@@ -194,12 +198,14 @@ class MessageWidget(urwid.ListBox):
 
         message_text = urwid.Text(text)
         message_to_display = urwid.Columns([(size_name +10, message_meta), message_text])
-        self.msg_list.insert(self.pos +1, message_to_display)
-                             
+        if at_begining:
+            print_position = 0
+        else:
+            print_position = self.pos +1
 
+        self.msg_list.insert(print_position, message_to_display)
+        self.Telegram_ui.msg_archive[current_cmd].insert(print_position, message_to_display)
 
-        
-        self.Telegram_ui.msg_archive[current_cmd].append(message_to_display)
 
         self.focus_position = self.pos
         self.pos = self.pos +1
