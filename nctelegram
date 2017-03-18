@@ -12,8 +12,8 @@ import ncTelegram
 
 for connection in psutil.net_connections():
     if connection[4] and connection[4][1] == 4458:
-        print('telegram-cli is already running, kill it before starting ncTelegram')
-        sys.exit(1)
+        print('WARNING: telegram-cli seems to be already running, if you experience connection issues make sure you kill it before restarting ncTelegram')
+#         sys.exit(1)
 
 
 
