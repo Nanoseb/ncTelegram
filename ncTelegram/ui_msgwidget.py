@@ -265,7 +265,11 @@ class MessageWidget(urwid.ListBox):
                       'light cyan',
                       'light gray',
                       ]
-        list_color = [ c for c in list_color if c != user_color ]
+
+        user_color_list = user_color.split(',')
+        user_color = [ c for c in user_color_list if not 'underline' in c and not 'bold' in c]
+
+        list_color = [ c for c in list_color if c not in user_color ]
         color = id % len(list_color)
         return list_color[color]
 
