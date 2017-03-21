@@ -117,7 +117,7 @@ class MessageWidget(urwid.ListBox):
             if self.Telegram_ui.INLINE_IMAGE:
                 image = self.get_inline_img(msg)
                 if image != None:
-                    text = text + ['\n'] + self.get_inline_img(msg)
+                    text = text + ['\n'] + image
 
 
         if 'from' in msg:
