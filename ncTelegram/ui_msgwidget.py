@@ -248,7 +248,7 @@ class MessageWidget(urwid.ListBox):
     def get_name_color(self, id):
         user_color = self.Telegram_ui.conf['style']['user_color']
  
-        if id == self.Telegram_ui.me['id']:
+        if id == self.Telegram_ui.me['peer_id']:
             return user_color
 
         list_color = ['dark red',
