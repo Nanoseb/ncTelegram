@@ -16,12 +16,10 @@ for connection in psutil.net_connections():
 #         sys.exit(1)
 
 
-
-userconf = os.path.expanduser("~")+'/.ncTelegram.conf'
-if os.path.isfile(userconf):
-    conffile = userconf
-else:
-    conffile = '/etc/ncTelegram.conf'
+confPriorityList = ['ncTelegram.conf', os.path.expanduser("~")+'/.ncTelegram.conf', '/etc/ncTelegram.conf']
+for conffile in confPriorityList:
+    if os.path.isfile(conffile):
+        break
 
 config = configparser.ConfigParser()
 config.read(conffile)
@@ -36,6 +34,7 @@ config_full['general']['path_telegram'] = config['general'].get('path_telegram',
 config_full['general']['path_pubkey'] = config['general'].get('path_pubkey', "/etc/telegram-cli/server.pub")
 config_full['general']['notification'] = config['general'].getboolean('notification', True)
 config_full['general']['ninja_mode'] = config['general'].getboolean('ninja_mode', False)
+
 config_full['general']['inline_image'] = config['general'].getboolean('inline_image', True)
 config_full['general']['open_file'] = config['general'].getboolean('open_file', True)
 config_full['general']['date_format'] = config['general'].get('date_format', "%x", raw=True)
