@@ -10,6 +10,7 @@ import urllib.request
 
 
 
+
 # widget used to print the message list
 class MessageWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
@@ -247,31 +248,19 @@ class MessageWidget(urwid.ListBox):
 
     def get_name_color(self, id):
         user_color = self.Telegram_ui.conf['style']['user_color']
- 
+        users_color = self.Telegram_ui.conf['style']['users_color']
+
         if id == self.Telegram_ui.me['peer_id']:
             return user_color
 
-        list_color = ['dark red',
-                      'dark blue',
-                      'dark cyan',
-                      'dark green',
-                      'dark magenta',
-                      'brown',
-                      'light magenta',
-                      'light green',
-                      'yellow',
-                      'light blue',
-                      'light red',
-                      'light cyan',
-                      'light gray',
-                      ]
+        user_color_list = map(lambda x : x.strip(), user_color.split(','))
+        users_color_list = map(lambda x : x.strip(), users_color.split(','))
 
-        user_color_list = user_color.split(',')
         user_color = [ c for c in user_color_list if not 'underline' in c and not 'bold' in c][0]
+        users_color = [ c for c in users_color_list if c not in user_color ]
 
-        list_color = [ c for c in list_color if c not in user_color ]
-        color = id % len(list_color)
-        return list_color[color]
+        color = id % len(users_color)
+        return users_color[color]
 
 
     def get_inline_img(self, msg):
@@ -318,28 +307,26 @@ class MessageWidget(urwid.ListBox):
 
 
 
-
-
+color_list = ['black',
+              'dark red',
+              'dark green',
+              'brown',
+              'dark blue',
+              'dark magenta',
+              'dark cyan',
+              'light gray',
+              'dark gray',
+              'light red',
+              'light green',
+              'yellow',
+              'light blue',
+              'light magenta',
+              'light cyan',
+              'white']
 
 
 # Translate raw_text (ansi sequence) to something readable by urwid (attribut and text)
 def translate_color(raw_text):
-    table = ['black',
-             'dark red',
-             'dark green',
-             'brown',
-             'dark blue',
-             'dark magenta',
-             'dark cyan',
-             'light gray',
-             'dark gray',
-             'light red',
-             'light green',
-             'yellow',
-             'light blue',
-             'light magenta',
-             'light cyan',
-             'white']
     formated_text = []
     raw_text = raw_text.decode("utf-8")
 
@@ -367,8 +354,8 @@ def translate_color(raw_text):
             elif elem >= 100 and elem <= 104:
                 bg = bg + 8
             
-        fgcolor = table[fg]
-        bgcolor = table[bg]
+        fgcolor = color_list[fg]
+        bgcolor = color_list[bg]
 
         if fg < 0:
             fgcolor = ''

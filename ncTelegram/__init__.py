@@ -47,9 +47,8 @@ class Telegram_ui:
                    ('separator', self.conf['style']['separator'], ''),
                    ('reversed', 'standout', ''),
                    ('cur_chan', self.conf['style']['cur_chan'], ''),
-                   ('user_color', self.conf['style']['user_color'], ''),
+                   ('user_color', self.conf['style']['user_color'], '')
                    ]
-
 
         # Notification
         if self.conf['general']['notification']:
