@@ -141,10 +141,16 @@ class MessageWidget(urwid.ListBox):
             msg_reply = self.Telegram_ui.sender.message_get(msg['reply_id'])
 
             if 'from' in msg_reply:
-                sender_reply = msg_reply['from']['first_name']
+                if 'first_name' in msg_reply['from']:
+                    sender_reply = msg_reply['from']['first_name']
+                else:
+                    sender_reply = msg_reply['from']['name']
                 sender_reply_id = msg_reply['from']['peer_id']
             else:
-                sender_reply = msg_reply['sender']['first_name']
+                if 'first_name' in msg_reply['sender']:
+                    sender_reply = msg_reply['sender']['first_name']
+                else:
+                    sender_reply = msg_reply['sender']['name']
                 sender_reply_id = msg_reply['sender']['peer_id']
 
             color_reply = self.get_name_color(sender_reply_id)
