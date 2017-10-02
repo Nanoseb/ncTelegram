@@ -26,12 +26,12 @@ class ThreadingRequest(threading.Thread):
 
         self.Telegram_ui.buffer_downloading = True
 
-        for chan in self.Telegram_ui.chan_widget.chans:
+        for chan in self.Telegram_ui.chan_widget.chans[::-1]:
             cmd = chan['id']
             if cmd not in self.Telegram_ui.msg_buffer:
                 print_name = chan['print_name']
                 try:
-                    self.Telegram_ui.msg_buffer[cmd] = self.Telegram_ui.sender.history(print_name, 100)
+                    self.Telegram_ui.msg_buffer[cmd] = self.Telegram_ui.sender.history(print_name, 50)
                 except:
                     self.Telegram_ui.msg_buffer[cmd] = []
                 if self.Telegram_ui.INLINE_IMAGE:
