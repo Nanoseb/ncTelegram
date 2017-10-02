@@ -39,7 +39,7 @@ $ sudo dnf install telegram-cli python3-urwid python3-psutil
 
 Install ncTelegram through pip:
 ```
-$ sudo pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/0.9.2.tar.gz
+$ sudo pip3 install --upgrade https://github.com/Nanoseb/ncTelegram/archive/master.tar.gz
 ```
 
 If you want notifications and inline images:
