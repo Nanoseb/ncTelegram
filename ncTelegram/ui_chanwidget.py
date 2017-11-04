@@ -29,9 +29,10 @@ class ChanWidget(urwid.ListBox):
         while bool:
             try:
                 #list of chans
-                self.chans = self.Telegram_ui.sender.dialog_list()
+                self.chans = self.Telegram_ui.tg_client.dialog_list()
                 bool = False
-            except:
+            except Exception as e:
+                print("Warning ! exception", e)
                 time.sleep(0.5)
                 pass
 

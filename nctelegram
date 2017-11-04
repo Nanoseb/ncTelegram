@@ -10,12 +10,7 @@ import ncTelegram
 
 
 
-for connection in psutil.net_connections():
-    if connection[4] and connection[4][1] == 4458:
-        print('WARNING: telegram-cli seems to be already running, if you experience connection issues make sure you kill it before restarting ncTelegram')
-#         sys.exit(1)
-
-
+# Loading options
 confPriorityList = ['ncTelegram.conf', os.path.expanduser("~")+'/.ncTelegram.conf', '/etc/ncTelegram.conf']
 for conffile in confPriorityList:
     if os.path.isfile(conffile):
@@ -30,8 +25,10 @@ config_full['general'] = {}
 config_full['style'] = {}
 config_full['keymap'] = {}
 
-config_full['general']['path_telegram'] = config['general'].get('path_telegram', "/usr/bin/telegram-cli")
-config_full['general']['path_pubkey'] = config['general'].get('path_pubkey', "/etc/telegram-cli/server.pub")
+config_full['general']['phone_number'] = config['general'].get('phone_number', None)
+config_full['general']['user_login'] = config['general'].get('user_login', None)
+config_full['general']['api_hash'] = config['general'].get('api_hash', None)
+config_full['general']['api_id'] = config['general'].get('api_id', None)
 config_full['general']['notification'] = config['general'].getboolean('notification', True)
 config_full['general']['ninja_mode'] = config['general'].getboolean('ninja_mode', False)
 

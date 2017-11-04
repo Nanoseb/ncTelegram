@@ -8,9 +8,6 @@ import time
 
 import urwid
 
-from pytg import Telegram
-from pytg.receiver import Receiver
-
 try:
     import gi
     gi.require_version('Notify', '0.7')
@@ -21,7 +18,7 @@ except:
 from .ui_chanwidget import ChanWidget
 from .ui_msgwidget import MessageWidget
 from .ui_msgsendwidget import MessageSendWidget
-from .msg_receiver import MessageReceiver
+from .tg_client import TgClient
 
 
 
@@ -29,7 +26,7 @@ class Telegram_ui:
     def __init__(self, conf):
         self.lock_receiver = True
         self.conf = conf
-        
+
         self.boot_time = int(time.time())
         # Just shortcut for some configurations :
         self.DATE_FORMAT = self.conf['general']['date_format']
@@ -55,21 +52,21 @@ class Telegram_ui:
             Notify.init("ncTelegram")
             self.image = '/usr/share/ncTelegram/t_logo.png'
 
-        self.current_chan = []
+        self.current_chan = {}
         self.last_media = {}
 
         # message buffer init
-        # msg_buffer is where incomming message go before they have been printed
+        # msg_buffer is where incoming messages go before they have been printed
         self.msg_buffer = {}
         # msg_archive is where messages go once they are processed and have the proper layout (urwid list)
         self.msg_archive = {}
 
         self.chan_widget = ChanWidget(self)
+        print("Chan widget ok!")
 
         self.print_title()
         self.me = self.sender.get_self()
 
-        # message list
         self.msg_widget = MessageWidget(self)
 
         # message writing + status bar widget
@@ -85,7 +82,8 @@ class Telegram_ui:
                                            (1, vert_separator),
                                            ('weight', 5, self.right_side)])
 
-        self.main_loop = urwid.MainLoop((self.main_columns), palette, unhandled_input=self.unhandle_key, screen=urwid.raw_display.Screen())
+        self.main_loop = urwid.MainLoop((self.main_columns), palette,
+                unhandled_input=self.unhandle_key, screen=urwid.raw_display.Screen())
         self.main_loop.screen.set_terminal_properties(colors=256)
         self.lock_receiver = False
         self.main_loop.run()
@@ -96,7 +94,7 @@ class Telegram_ui:
             self.msg_send_widget.update_status_bar()
 
     def update_read_status(self, cmd, bool):
-        self.read_status[cmd] = bool        
+        self.read_status[cmd] = bool
         if cmd == self.current_chan['id']:
             self.msg_send_widget.update_status_bar()
 
@@ -171,54 +169,13 @@ class Telegram_ui:
 
 
     def start_Telegram(self):
-        # link with telegram-cli
-        PATH_TELEGRAM = self.conf['general']['path_telegram']
-        PATH_PUBKEY = self.conf['general']['path_pubkey']
-
-        self.receiver = Receiver()
-        self.receiver.start()
-
         # Thread to dump received messages
-        self.msg_dump = MessageReceiver(self)
-        self.msg_dump.daemon = True
-        self.msg_dump.start()
-
-        self.tg = Telegram(telegram=PATH_TELEGRAM,
-                           pubkey_file=PATH_PUBKEY)
-
-        #self.receiver = self.tg.receiver
-        self.sender = self.tg.sender
+        print("Gonna build msg_receiver")
+        self.tg_client = TgClient(self)
 
 
     def stop_Telegram(self):
-        self.sender.status_offline()
-
-        #self.tg.stopCLI()
-        # Because of a bug in pytg, this is stopCLI without the line "self._proc.communicate('quit\n')"
-
-        self.sender.terminate() # not let the cli end close first -> avoid bind: port already in use.
-        self.receiver.stop()
-
-        self.sender.safe_quit()
-        if self.tg._check_stopped(): return None
-
-        self.sender.quit()
-        if self.tg._check_stopped(): return None
-
-        self.sender.stop() # quit and safe quit are done, we don't need the sender any longer.
-
-        if self.tg._check_stopped(): return None
-
-        if self.tg._check_stopped(): return None
-
-        self.tg._proc.terminate()
-        if self.tg._check_stopped(): return None
-
-        self.tg._proc.kill()
-        if self.tg._check_stopped(): return None
-
-        self.tg._proc.wait()
-        self.tg._check_stopped()
+        self.tg.disconnect()
 
 
     def exit(self):
