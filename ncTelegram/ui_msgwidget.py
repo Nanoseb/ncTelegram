@@ -60,7 +60,7 @@ class MessageWidget(urwid.ListBox):
             self.print_msg_archive()
 
 
-        for msg in self.Telegram_ui.msg_buffer[current_cmd]:
+        for msg in reversed(self.Telegram_ui.msg_buffer[current_cmd]):
             self.print_msg(msg)
 
         # messages have been printed, deletion form buffer (they are in archive now)
