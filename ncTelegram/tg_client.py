@@ -9,6 +9,11 @@ from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedErr
 import telethon.tl.types as ttt
 from telethon.utils import get_display_name
 
+
+API_ID = "77412"
+API_HASH = "9aefe703d2d5d93af30471621a550b8b"
+
+
 def get_print_name(entity):
     """
     Safely transforms an entity into a chat title
@@ -31,17 +36,16 @@ def get_print_name(entity):
 class TgClient(TelegramClient):
     def __init__(self, Telegram_ui):
         self.Telegram_ui = Telegram_ui
-        session_user_id = Telegram_ui.conf['general']['user_login']
-        api_id = Telegram_ui.conf['general']['api_id']
-        api_hash = Telegram_ui.conf['general']['api_hash']
-        user_phone = Telegram_ui.conf['general']['phone_number']
+        api_id = API_ID
+        api_hash = API_HASH
         super().__init__(
-            session_user_id, api_id, api_hash,
+            "ncTelegram", api_id, api_hash,
             connection_mode=ConnectionMode.TCP_ABRIDGED,
             proxy=None, # TODO: add proxy objects
             update_workers=1,
             )
         print('Connecting to Telegram servers...')
+
         if not self.connect():
             print('Initial connection failed. Retrying...')
             if not self.connect():
@@ -50,6 +54,7 @@ class TgClient(TelegramClient):
         if not self.is_user_authorized():
             # TODO: BUG, if the connection is half finished,
             # the file exists but is invalid
+            user_phone = input("Enter your phone number: ")
             self.send_code_request(user_phone)
             try:
                 self.sign_in(user_phone, input('Enter code: '))
