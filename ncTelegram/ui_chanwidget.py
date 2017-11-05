@@ -3,6 +3,9 @@
 
 import urwid
 import time
+import telethon.tl.types as ttt
+
+from .tg_client import get_print_name
 
 class NewButton(urwid.Button):
     def __init__(self, caption, callback,arg=None):
@@ -13,7 +16,7 @@ class NewButton(urwid.Button):
 
 class ChanWidget(urwid.ListBox):
     def __init__(self, Telegram_ui):
-        self.chans = []
+        self.chans = {}
         self.updateLocked = False
         self.current_chan_pos = 0
         self.Telegram_ui = Telegram_ui
@@ -21,6 +24,10 @@ class ChanWidget(urwid.ListBox):
         self.get_new_chan_list()
 
     def get_new_chan_list(self):
+        """
+        Fetches the dialogs list.
+        Locks the updates while doing so, if it cans.
+        """
         if self.updateLocked:
             return
 
@@ -28,66 +35,74 @@ class ChanWidget(urwid.ListBox):
         bool = True
         while bool:
             try:
-                #list of chans
-                self.chans = self.Telegram_ui.tg_client.dialog_list()
+                # list of pairs (dialog, entity)
+                # TODO: find a better limit, or download dialogs with a limit
+                self.chans = list(zip(*self.Telegram_ui.tg_client.dialog_list(limit=20)))
                 bool = False
             except Exception as e:
                 print("Warning ! exception", e)
                 time.sleep(0.5)
-                pass
 
-        for i in range(len(self.chans)):
-            chan = self.chans[i]
-            if chan['peer_type'] == 'user':
-                if 'when' in chan:
-                    self.Telegram_ui.online_status[chan['id']] = (chan['when'], False)
+        # Setting up the user online time
+        user = self.Telegram_ui.tg_client.get_me()
+        for dialog, entity in self.chans:
+            if isinstance(dialog.peer, ttt.PeerUser) and dialog.peer.user_id == user.id:
+                id = user.id
+                if isinstance(entity.status, ttt.UserStatusOnline):
+                    # TODO : put something else as an online time
+                    self.Telegram_ui.online_status[id] = (user.status.expires, False)
+                elif isinstance(entity.status, ttt.UserStatusOffline):
+                    self.Telegram_ui.online_status[id] = (user.status.was_online, False)
                 else:
-                    self.Telegram_ui.online_status[chan['id']] = ('?', False)
-
+                    self.Telegram_ui.online_status[id] = ('?', False)
 
         self.update_chan_list()
         self.updateLocked = False
 
 
     def update_chan_list(self):
+        """
+        Updates the urwid dialog list
+        """
 
         # refresh of chan list
         self.chan_list = urwid.SimpleFocusListWalker([urwid.AttrMap(urwid.Text("Chan list:"), 'status_bar')])
         super().__init__(self.chan_list)
 
 
-        if self.Telegram_ui.current_chan == []:
+        if not self.Telegram_ui.current_chan:
             self.Telegram_ui.current_chan = self.chans[-1]
 
         pos = self.focus_position
-        
+
         i = len(self.chans) -1
 
         # build of chan list
-        for chan in self.chans[::-1]:
+        for dialog, entity in reversed(self.chans):
             pos +=1
-            print_name = chan['print_name']
 
-            cmd = chan['id']
+            print_name = get_print_name(entity)
+
+            cmd = entity.id
 
             label = print_name.replace('_', ' ')
 
-            if chan['peer_type'] == 'user':
+            if isinstance(dialog.peer, ttt.PeerUser):
                 label = "➜  " + label
-            elif chan['peer_type'] == 'chat':
+            elif isinstance(dialog.peer, ttt.PeerChat):
                 label = "➜➜ " + label
-            elif chan['peer_type'] == 'channel':
+            elif isinstance(dialog.peer, ttt.PeerChannel):
                 label = "⤨  " + label
 
             if cmd in self.msg_chan and self.msg_chan[cmd] != 0:
                 label = label + ' [' + str(self.msg_chan[cmd]) + ']'
 
-            if print_name == self.Telegram_ui.current_chan['print_name']:
-                button = NewButton(('cur_chan', label), self.chan_change, chan)
+            if print_name == get_print_name(self.Telegram_ui.current_chan[1]):
+                button = NewButton(('cur_chan', label), self.chan_change, (dialog, entity))
                 current_pos = pos
                 self.current_chan_pos = i
             else:
-                button = NewButton(label, self.chan_change, chan)
+                button = NewButton(label, self.chan_change, (dialog, entity))
 
             self.chan_list.insert(pos, button)
             i -= 1
@@ -108,10 +123,9 @@ class ChanWidget(urwid.ListBox):
         #pos += 1
         #self.chan_list.insert(pos, urwid.AttrMap(urwid.Divider('─'), 'separator'))
 
-        
         # print of buffer button only if needed
         list_buff = [ cmd for cmd in self.Telegram_ui.msg_buffer.keys() ]
-        list_chan = [ chan['id'] for chan in self.chans ]
+        list_chan = [ chan[1].id for chan in self.chans ]
 
         list_buff.sort()
         list_chan.sort()
@@ -140,13 +154,13 @@ class ChanWidget(urwid.ListBox):
     def go_next_chan(self):
         self.current_chan_pos -= 1
         if self.current_chan_pos < 0:
-            nb_chan = len(self.chans) 
+            nb_chan = len(self.chans)
             self.current_chan_pos = nb_chan -1
         self.chan_change('bu', self.chans[self.current_chan_pos])
 
 
     def go_prev_chan(self):
-        nb_chan = len(self.chans) 
+        nb_chan = len(self.chans)
         self.current_chan_pos += 1
         if self.current_chan_pos > nb_chan -1:
             self.current_chan_pos = 0
@@ -159,7 +173,7 @@ class ChanWidget(urwid.ListBox):
         prev_cmd = self.Telegram_ui.current_chan['id']
         prev_msg = self.Telegram_ui.msg_send_widget.widgetEdit.get_edit_text()
         self.Telegram_ui.msg_send_widget.buffer_writing_text[prev_cmd] = prev_msg
-        
+
         if prev_msg and not self.Telegram_ui.NINJA_MODE:
             dst = self.Telegram_ui.current_chan['print_name']
             # try/expect needed when user lacks of priviledge on channels
@@ -182,7 +196,7 @@ class ChanWidget(urwid.ListBox):
         if current_cmd in self.msg_chan:
             del self.msg_chan[current_cmd]
         self.Telegram_ui.print_title()
-        
+
         # call to refresh the current chan of the chan list
         self.update_chan_list()
 

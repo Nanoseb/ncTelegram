@@ -8,7 +8,7 @@ import urwid
 import re
 import urllib.request
 
-
+from .tg_client import get_print_name
 
 
 # widget used to print the message list
@@ -31,7 +31,7 @@ class MessageWidget(urwid.ListBox):
         self.updateLocked = True
         self.separator_pos = -1
 
-        current_cmd = self.Telegram_ui.current_chan['id']
+        current_cmd = self.Telegram_ui.current_chan[1].id
         if current_cmd not in self.prev_date:
             self.prev_date[current_cmd] = 1
 
@@ -43,7 +43,7 @@ class MessageWidget(urwid.ListBox):
         self.pos = 0
 
         if current_cmd not in self.Telegram_ui.msg_buffer:
-            current_print_name = self.Telegram_ui.current_chan['print_name']
+            current_print_name = get_print_name(self.Telegram_ui.current_chan[1])
             try:
                 msgList = self.Telegram_ui.sender.history(current_print_name, 100)
             except:
@@ -221,7 +221,7 @@ class MessageWidget(urwid.ListBox):
     def draw_separator(self):
         if self.separator_pos != -1:
             self.delete_separator()
-        current_cmd = self.Telegram_ui.current_chan['id']
+        current_cmd = self.Telegram_ui.current_chan[1].id
 
         if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan: 
             # mark messages as read

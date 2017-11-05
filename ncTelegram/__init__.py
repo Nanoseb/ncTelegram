@@ -33,7 +33,9 @@ class Telegram_ui:
         self.NINJA_MODE = self.conf['general']['ninja_mode']
         self.INLINE_IMAGE = self.conf['general']['inline_image']
 
-        self.start_Telegram()
+        print("Gonna build msg_receiver")
+        self.tg_client = TgClient(self)
+
         self.last_online = 1
         self.online_status = {}
         self.read_status = {}
@@ -65,7 +67,7 @@ class Telegram_ui:
         print("Chan widget ok!")
 
         self.print_title()
-        self.me = self.sender.get_self()
+        self.me = self.tg_client.get_me()
 
         self.msg_widget = MessageWidget(self)
 
@@ -168,10 +170,6 @@ class Telegram_ui:
             subprocess.Popen(['xdg-open', path], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
 
-    def start_Telegram(self):
-        # Thread to dump received messages
-        print("Gonna build msg_receiver")
-        self.tg_client = TgClient(self)
 
 
     def stop_Telegram(self):

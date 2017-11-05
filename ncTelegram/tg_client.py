@@ -9,6 +9,25 @@ from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedErr
 import telethon.tl.types as ttt
 from telethon.utils import get_display_name
 
+def get_print_name(entity):
+    """
+    Safely transforms an entity into a chat title
+    """
+    if isinstance(entity, ttt.User):
+        if entity.username:
+            return entity.username
+        elif entity.first_name and entity.last_name:
+            return entity.first_name + " " + entity.last_name
+        elif entity.first_name or entity.last_name:
+            return entity.first_name or entity.last_name
+        else:
+            return entity.id
+    elif isinstance(entity, ttt.Channel):
+        return entity.title
+    elif isinstance(entity, ttt.Chat):
+        return entity.title
+    raise NotImplementedError("Missing case for entity", str(entity))
+
 class TgClient(TelegramClient):
     def __init__(self, Telegram_ui):
         self.Telegram_ui = Telegram_ui
@@ -19,7 +38,7 @@ class TgClient(TelegramClient):
         super().__init__(
             session_user_id, api_id, api_hash,
             connection_mode=ConnectionMode.TCP_ABRIDGED,
-            proxy=None, # TODO: ajouter la possibilité de mettre un proxy ?
+            proxy=None, # TODO: add proxy objects
             update_workers=1,
             )
         print('Connecting to Telegram servers...')
@@ -43,6 +62,13 @@ class TgClient(TelegramClient):
         # TODO : mettre le fichier de session dans un vrai dossier
         print("Connected !")
         self.add_update_handler(self.update_handler)
+
+    def dialog_list(self,*args, **kwargs):
+        # Renvoie une paire (dialogs, entities)
+        # dialogs est la liste des "discussions" (type Dialog)
+        # entities est l'entité liée à la discussion (type User, type Channel, …)
+        return self.get_dialogs(*args, **kwargs)
+
 
 
     def update_handler(self, update_object):

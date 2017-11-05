@@ -5,6 +5,9 @@ import os.path
 import time
 import re
 import urwid
+import telethon.tl.types as ttt
+
+from .tg_client import get_print_name
 
 TEXT_CAPTION = " >> "
 
@@ -40,7 +43,7 @@ class MessageSendWidget(urwid.Filler):
         self.widgetEdit.set_edit_text('')
         self.username_list = []
 
-        cmd = self.Telegram_ui.current_chan['id']
+        cmd = self.Telegram_ui.current_chan[1].id
         if cmd in self.buffer_writing_text:
             self.widgetEdit.insert_text(self.buffer_writing_text[cmd])
 
@@ -55,15 +58,17 @@ class MessageSendWidget(urwid.Filler):
 
 
     def update_status_bar(self):
-        chan_name = self.Telegram_ui.current_chan['print_name'].replace('_', ' ')
-        chan_type = self.Telegram_ui.current_chan['peer_type']
-        current_cmd = self.Telegram_ui.current_chan['id']
+        chan_name = get_print_name(self.Telegram_ui.current_chan[1]).replace('_', ' ')
+        print(*self.Telegram_ui.current_chan)
+        chan_type = type(self.Telegram_ui.current_chan[0].peer)
+        current_cmd = self.Telegram_ui.current_chan[1].id
 
-        if chan_type == 'chat':
+        if chan_type == ttt.PeerChat:
             chan_num = self.Telegram_ui.current_chan['members_num']
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " members ]"
-        elif chan_type == 'user':
+        elif chan_type == ttt.PeerUser:
             text = ' [ ' + chan_name + ' ]'
+            print(self.Telegram_ui.online_status)
             (when, status) = self.Telegram_ui.online_status[current_cmd]
 
             if status:
@@ -81,12 +86,12 @@ class MessageSendWidget(urwid.Filler):
                     text = text + ' --- [ last seen at ' + when_hour + ' ]'
                 else:
                     text = text + ' --- [ last seen ' + when_date + ' at ' + when_hour + ' ]'
-        elif chan_type == 'channel':
+        elif chan_type == ttt.PeerChannel:
             chan_num = self.Telegram_ui.current_chan['participants_count']
-            # fix bug in dialog_list in telegram_cli 
+            # fix bug in dialog_list in telegram_cli
             if chan_num == 0:
                 chan_num = self.Telegram_ui.sender.channel_info(chan_name.replace(' ','_'))['participants_count']
-                self.Telegram_ui.current_chan['participants_count'] = chan_num 
+                self.Telegram_ui.current_chan['participants_count'] = chan_num
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " participants ]"
 
 
@@ -103,7 +108,7 @@ class MessageSendWidget(urwid.Filler):
 
     def history_prev(self):
         cmd = self.Telegram_ui.current_chan['id']
-       
+
         if -self.history_pos == len(self.history_own_message[cmd]):
             return
 
@@ -118,7 +123,7 @@ class MessageSendWidget(urwid.Filler):
 
     def history_next(self):
         cmd = self.Telegram_ui.current_chan['id']
- 
+
         if self.history_pos == 0:
             return
 
@@ -131,8 +136,8 @@ class MessageSendWidget(urwid.Filler):
         self.widgetEdit.set_edit_text('')
         self.widgetEdit.insert_text(new_text)
 
-       
-        
+
+
 
     def autocomplete(self):
         if self.updateLockedauto:
@@ -218,7 +223,7 @@ class MessageSendWidget(urwid.Filler):
                 self.widgetEdit.insert_text(" Please wait...")
                 self.Telegram_ui.main_loop.draw_screen()
                 # try/expect needed when user lacks of priviledge on channels
-                try: 
+                try:
                     self.Telegram_ui.sender.send_file(dst, msg[1:][:-1])
                 except:
                     pass
@@ -286,7 +291,7 @@ class MessageSendWidget(urwid.Filler):
         else:
             self.resize_zone(size)
             return key
-         
-        
+
+
 
 # vim: ai ts=4 sw=4 et sts=4
