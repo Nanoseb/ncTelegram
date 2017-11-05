@@ -5,6 +5,7 @@ import os
 import sys
 import subprocess
 import time
+import logging
 
 import urwid
 
@@ -20,7 +21,7 @@ from .ui_msgwidget import MessageWidget
 from .ui_msgsendwidget import MessageSendWidget
 from .tg_client import TgClient
 
-
+logging.basicConfig(filename='logger.log', level=logging.DEBUG)
 
 class Telegram_ui:
     def __init__(self, conf):
@@ -63,7 +64,6 @@ class Telegram_ui:
         self.msg_archive = {}
 
         self.chan_widget = ChanWidget(self)
-        print("Chan widget ok!")
 
         self.print_title()
         self.me = self.tg_client.get_me()

@@ -4,6 +4,7 @@
 from time import sleep
 from getpass import getpass
 import sys
+import logging
 
 from telethon import TelegramClient, ConnectionMode
 from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
@@ -118,8 +119,7 @@ class TgClient(TelegramClient):
             return
 
         current_cmd = self.Telegram_ui.current_chan[1].id
-        print("Got update :")
-        print(update_object)
+        logging.getLogger().debug("Got update %s", update_object)
 
         if isinstance(update_object, ttt.UpdateNewMessage):
             # TODO: differenciate sender == me
@@ -215,7 +215,7 @@ class TgClient(TelegramClient):
             self.Telegram_ui.update_read_status(cmd, True)
 
         else:
-            print("Unhandled update type", update_object, file=sys.stderr)
+            logging.getLogger().warning("Unhandled update type %s", update_object)
 
 
 # vim: ai ts=4 sw=4 et sts=4

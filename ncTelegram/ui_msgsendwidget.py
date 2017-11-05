@@ -4,6 +4,8 @@ import os
 import os.path
 import time
 import re
+import logging
+
 import urwid
 import telethon.tl.types as ttt
 
@@ -63,8 +65,9 @@ class MessageSendWidget(urwid.Filler):
         current_cmd = self.Telegram_ui.current_chan[1].id
 
         if chan_type == ttt.PeerChat:
-            chan_num = self.Telegram_ui.current_chan['members_num']
-            text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " members ]"
+            # TODO: find a members_num equivalent
+            #chan_num = self.Telegram_ui.current_chan['members_num']
+            text = ' [ ' + chan_name + " ]" #" --- [ " + str(chan_num) + " members ]"
         elif chan_type == ttt.PeerUser:
             text = ' [ ' + chan_name + ' ]'
             when, status = self.Telegram_ui.online_status[current_cmd]
@@ -105,7 +108,7 @@ class MessageSendWidget(urwid.Filler):
         try:
             self.Telegram_ui.main_loop.draw_screen()
         except Exception as e:
-            print("Warning ! Got exception",e)
+            logging.getLogger().warning("Couldn't call draw_screen", exc_info=True)
 
 
     def history_prev(self):
@@ -166,7 +169,8 @@ class MessageSendWidget(urwid.Filler):
                 try:
                     members = self.Telegram_ui.tg_client.channel_get_members(print_name_chan)
                 except Exception as e:
-                    print("Warning ! Got exception",e)
+                    logging.getLogger().warning("Couldn't get members in channel",
+                            exc_info=True)
                     members = []
                 for user in members:
                     if 'username' in user and user['username'] != None:
@@ -208,7 +212,7 @@ class MessageSendWidget(urwid.Filler):
                 elif len(self.widgetEdit.get_edit_text()) == 0:
                     self.Telegram_ui.tg_client.send_typing_abort(dst)
             except Exception as e:
-                print("Warning !! Got exception", e)
+                logging.getLogger.warning("Couldn't send typing notification", exc_info=True)
 
         if key == 'enter':
             msg = self.widgetEdit.get_edit_text()
@@ -229,13 +233,13 @@ class MessageSendWidget(urwid.Filler):
                 try:
                     self.Telegram_ui.tg_client.send_file(dst, msg[1:][:-1])
                 except Exception as e:
-                    print("Warning! Got exception", e)
+                    logging.getLogger().warning("Couldn't send file", exc_info=True)
             else:
                 # try/expect needed when user lacks of priviledge on channels
                 try:
                     self.Telegram_ui.tg_client.send_message(dst, msg, link_preview=True)
                 except Exception as e:
-                    print("Warning! Got exception", e)
+                    logging.getLogger().warning("Couldn't send message", exc_info=True)
 
             current_cmd = self.Telegram_ui.current_chan[1].id
             if current_cmd in self.history_own_message:

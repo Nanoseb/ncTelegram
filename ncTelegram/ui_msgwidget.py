@@ -7,6 +7,7 @@ import time
 import urwid
 import re
 import urllib.request
+import logging
 
 from .tg_client import get_print_name
 
@@ -47,7 +48,7 @@ class MessageWidget(urwid.ListBox):
             try:
                 msgList = self.Telegram_ui.tg_client.history(current_print_name, 100)
             except Exception as e:
-                print("Warning ! Got exception", e)
+                logging.getLogger().warning("Couldn't fetch history", exc_info=True)
                 msgList = []
             self.Telegram_ui.msg_buffer[current_cmd] = msgList
 
@@ -102,8 +103,9 @@ class MessageWidget(urwid.ListBox):
                         title = re.search('<title>(.*?)</title>', page, re.IGNORECASE|re.DOTALL).group(1)
                         self.url_buffer[url] = title
                         text = text + ['\n  ➜  ' + title]
-                    except:
-                        print("Warning ! Got exception", e)
+                    except Exception as e:
+                        logging.getLogger().warning("Couldn't fetch resource",
+                                exc_info=True)
                         self.url_buffer[url] = ''
 
 
@@ -286,8 +288,8 @@ class MessageWidget(urwid.ListBox):
                     text = translate_color(raw_text)
                     self.img_buffer[key] = text
                     return text
-                except:
-                    print("Warning ! Got exception", e)
+                except Exception as e:
+                    logging.getLogger().warning("Couldn't fetch image", exc_info=True)
                     return None
 
 
@@ -342,7 +344,8 @@ def translate_color(raw_text):
     for at in raw_text.split("\x1b["):
         try:
             attr, text = at.split("m",1)
-        except:
+        except Exception as e:
+            logging.getLogger().warning("Couldn't split", exc_info=True)
             attr = '0'
             text = at.split("m",1)
 
