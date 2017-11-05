@@ -65,3 +65,6 @@ aur/
 
 # vim
 .*.swp
+
+# telegram session files
+*.session
