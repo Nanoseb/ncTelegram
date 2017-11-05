@@ -99,7 +99,7 @@ class MessageWidget(urwid.ListBox):
                 if url in self.url_buffer:
                     if self.url_buffer[url]:
                         text = text + ['\n ➜ ' + self.url_buffer[url]]
-                elif date > self.Telegram_ui.boot_time:
+                elif date.timestamp() > self.Telegram_ui.boot_time:
                     try:
                         resource = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla'}))
                         page = resource.read().decode(resource.headers.get_content_charset())
