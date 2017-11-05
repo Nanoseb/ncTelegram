@@ -95,7 +95,7 @@ class MessageSendWidget(urwid.Filler):
             #    chan_num = self.Telegram_ui.tg_client.channel_info(chan_name.replace(' ','_'))['participants_count']
             #    self.Telegram_ui.current_chan['participants_count'] = chan_num
 
-            print(*self.Telegram_ui.current_chan)
+            #print(*self.Telegram_ui.current_chan)
             # fix bug in dialog_list in telegram_cli
             text = ' [ ' + chan_name + " ] --- [ " #+ str(chan_num) + " participants ]"
 

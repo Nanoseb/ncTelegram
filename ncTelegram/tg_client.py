@@ -113,6 +113,9 @@ class TgClient(TelegramClient):
         """
         # TODO: invoke() the right method
 
+    def history(self, entity, *args, **kwargs):
+        return self.get_message_history(entity, *args, **kwargs)[1]
+
     def update_handler(self, update_object):
         if self.Telegram_ui.lock_receiver:
             print("Warning, receiver locked")
@@ -129,7 +132,7 @@ class TgClient(TelegramClient):
             #else:
             #    msg_cmd = msg['receiver']['id']
             msg = update_object.message
-            msg_cmd = msg.id
+            msg_cmd = msg
 
             if msg.date.timestamp() < self.Telegram_ui.boot_time:
                 if not msg.media_unread: # TODO: recheck cette condition

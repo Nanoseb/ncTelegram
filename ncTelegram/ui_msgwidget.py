@@ -11,6 +11,8 @@ import logging
 
 from .tg_client import get_print_name
 
+from telethon.tl.functions.messages import GetMessagesRequest
+
 
 # widget used to print the message list
 class MessageWidget(urwid.ListBox):
@@ -44,9 +46,9 @@ class MessageWidget(urwid.ListBox):
         self.pos = 0
 
         if current_cmd not in self.Telegram_ui.msg_buffer:
-            current_print_name = get_print_name(self.Telegram_ui.current_chan[1])
+            current_entity = self.Telegram_ui.current_chan[1]
             try:
-                msgList = self.Telegram_ui.tg_client.history(current_print_name, 100)
+                msgList = self.Telegram_ui.tg_client.history(current_entity, limit=20)
             except Exception as e:
                 logging.getLogger().warning("Couldn't fetch history", exc_info=True)
                 msgList = []
@@ -78,12 +80,13 @@ class MessageWidget(urwid.ListBox):
 
     def print_msg(self, msg, at_begining=False):
 
-        date = msg['date']
+        logging.getLogger().info("Got a %s", msg)
+        date = msg.date
 
-        current_cmd = self.Telegram_ui.current_chan['id']
+        current_cmd = self.Telegram_ui.current_chan[1].id
 
-        if 'text' in msg:
-            text = [msg['text']]
+        if msg.message:
+            text = [msg.message]
             urls = self.urlregex.findall(text[0])
 
             if urls:
@@ -109,83 +112,89 @@ class MessageWidget(urwid.ListBox):
                         self.url_buffer[url] = ''
 
 
-        elif 'action' in msg:
-            text = [(urwid.AttrSpec('light gray', ''), '➜ ' + msg['action']['type'].replace('_',' '))]
+        # TODO: decide if it's still applicable
+        #elif 'action' in msg:
+        #    text = [(urwid.AttrSpec('light gray', ''), '➜ ' + msg['action']['type'].replace('_',' '))]
 
 
-        elif 'media' in msg:
+        elif msg.media:
             self.Telegram_ui.last_media[current_cmd] = msg
-            text = [(urwid.AttrSpec('light gray', ''), "➜ " + msg['media']['type'])]
-            if 'caption' in msg['media']:
-                text = text + [" " + msg['media']['caption']]
+            text = [(urwid.AttrSpec('light gray', ''), "➜ " + str(type(msg.media)))]
+            # TODO: update code
+            #if 'caption' in msg['media']:
+            #    text = text + [" " + msg['media']['caption']]
 
-            if self.Telegram_ui.INLINE_IMAGE:
-                image = self.get_inline_img(msg)
-                if image != None:
-                    text = text + ['\n'] + image
+            #if self.Telegram_ui.INLINE_IMAGE:
+            #    image = self.get_inline_img(msg)
+            #    if image != None:
+            #        text = text + ['\n'] + image
 
 
-        if 'from' in msg:
-            if 'first_name' in msg['from']:
-                sender = msg['from']['first_name']
-            else:
-                sender = msg['from']['title']
-            sender_id = msg['from']['peer_id']
-        else:
-            if 'first_name' in msg['sender']:
-                sender = msg['sender']['first_name']
-            else:
-                sender = msg['sender']['title']
-            sender_id = msg['sender']['peer_id']
+        if msg.from_id:
+            from_peer = self.Telegram_ui.tg_client.get_entity(msg.from_id)
+            sender = get_print_name(from_peer)
+            sender_id = msg.from_id
+        # TODO: see if it's still applicable
+        #else:
+        #    if 'first_name' in msg['sender']:
+        #        sender = msg['sender']['first_name']
+        #    else:
+        #        sender = msg['sender']['title']
+        #    sender_id = msg['sender']['peer_id']
 
 
         color = self.get_name_color(sender_id)
 
-        if 'reply_id' in msg:
-            msg_reply = self.Telegram_ui.tg_client.message_get(msg['reply_id'])
+        # Is the message an answer to another message ?
+        #if msg.reply_to_msg_id:
+            # TODO: wrong behaviour
+            #msg_reply = GetMessagesRequest(msg.reply_to_msg_id)
+            #msg_reply = self.Telegram_ui.tg_client(msg_reply)
+            # TODO: old code to update
+            #if 'from' in msg_reply:
+            #    if 'first_name' in msg_reply['from']:
+            #        sender_reply = msg_reply['from']['first_name']
+            #    else:
+            #        sender_reply = msg_reply['from']['name']
+            #    sender_reply_id = msg_reply['from']['peer_id']
+            #else:
+            #    if 'first_name' in msg_reply['sender']:
+            #        sender_reply = msg_reply['sender']['first_name']
+            #    else:
+            #        sender_reply = msg_reply['sender']['name']
+            #    sender_reply_id = msg_reply['sender']['peer_id']
 
-            if 'from' in msg_reply:
-                if 'first_name' in msg_reply['from']:
-                    sender_reply = msg_reply['from']['first_name']
-                else:
-                    sender_reply = msg_reply['from']['name']
-                sender_reply_id = msg_reply['from']['peer_id']
-            else:
-                if 'first_name' in msg_reply['sender']:
-                    sender_reply = msg_reply['sender']['first_name']
-                else:
-                    sender_reply = msg_reply['sender']['name']
-                sender_reply_id = msg_reply['sender']['peer_id']
-
-            color_reply = self.get_name_color(sender_reply_id)
-            if 'text' in msg_reply:
-                plus = ''
-                if len(msg_reply['text']) > 40:
-                    plus = '...'
-                text = [(urwid.AttrSpec('light gray', ''), 'reply to ➜  '),
-                        (urwid.AttrSpec(color_reply, '') , sender_reply),
-                        ': ' + msg_reply['text'][:40] + plus + '\n'] + text
-            else:
-                text = [(urwid.AttrSpec('light gray', ''), 'reply to ➜  '),
-                        (urwid.AttrSpec(color_reply, '') , sender_reply),
-                        '\n'] + text
-
-
-        if 'fwd_from' in msg:
-            color_fwd = self.get_name_color(msg['fwd_from']['peer_id'])
-            if 'first_name' in msg['fwd_from']:
-                fwd_from_name = msg['fwd_from']['first_name']
-            elif 'print_name' in msg['fwd_from']:
-                fwd_from_name = msg['fwd_from']['print_name'].replace('_',' ')
-            else:
-                fwd_from_name = 'Unknown'
-
-            text = [(urwid.AttrSpec('light gray', ''), 'forwarded from '),
-                    (urwid.AttrSpec(color_fwd, ''), fwd_from_name + '\n')] + text
+            #color_reply = self.get_name_color(sender_reply_id)
+            #if 'text' in msg_reply:
+            #    plus = ''
+            #    if len(msg_reply['text']) > 40:
+            #        plus = '...'
+            #    text = [(urwid.AttrSpec('light gray', ''), 'reply to ➜  '),
+            #            (urwid.AttrSpec(color_reply, '') , sender_reply),
+            #            ': ' + msg_reply['text'][:40] + plus + '\n'] + text
+            #else:
+            #    text = [(urwid.AttrSpec('light gray', ''), 'reply to ➜  '),
+            #            (urwid.AttrSpec(color_reply, '') , sender_reply),
+            #            '\n'] + text
 
 
+        # TODO: missing get_message function
+        #if 'fwd_from' in msg:
+        #    color_fwd = self.get_name_color(msg['fwd_from']['peer_id'])
+        #    if 'first_name' in msg['fwd_from']:
+        #        fwd_from_name = msg['fwd_from']['first_name']
+        #    elif 'print_name' in msg['fwd_from']:
+        #        fwd_from_name = msg['fwd_from']['print_name'].replace('_',' ')
+        #    else:
+        #        fwd_from_name = 'Unknown'
 
-        cur_date = time.strftime('│ ' + self.Telegram_ui.DATE_FORMAT + ' │', time.localtime(date))
+        #    text = [(urwid.AttrSpec('light gray', ''), 'forwarded from '),
+        #            (urwid.AttrSpec(color_fwd, ''), fwd_from_name + '\n')] + text
+
+
+
+        cur_date = time.strftime('│ ' + self.Telegram_ui.DATE_FORMAT + ' │',
+                time.localtime(date.timestamp()))
 
         if cur_date != self.prev_date[current_cmd]:
             fill = '─'*(len(cur_date) - 2)
@@ -199,7 +208,7 @@ class MessageWidget(urwid.ListBox):
             self.pos = self.pos +1
             self.prev_date[current_cmd] = cur_date
 
-        hour = time.strftime(' %H:%M ', time.localtime(date))
+        hour = time.strftime(' %H:%M ', time.localtime(date.timestamp()))
 
         size_name = 9
 
@@ -260,7 +269,7 @@ class MessageWidget(urwid.ListBox):
         user_color = self.Telegram_ui.conf['style']['user_color']
         users_color = self.Telegram_ui.conf['style']['users_color']
 
-        if id == self.Telegram_ui.me['peer_id']:
+        if id == self.Telegram_ui.tg_client.get_me().id:
             return user_color
 
         user_color_list = map(lambda x : x.strip(), user_color.split(','))
