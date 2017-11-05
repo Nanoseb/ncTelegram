@@ -45,8 +45,9 @@ class MessageWidget(urwid.ListBox):
         if current_cmd not in self.Telegram_ui.msg_buffer:
             current_print_name = get_print_name(self.Telegram_ui.current_chan[1])
             try:
-                msgList = self.Telegram_ui.sender.history(current_print_name, 100)
-            except:
+                msgList = self.Telegram_ui.tg_client.history(current_print_name, 100)
+            except Exception as e:
+                print("Warning ! Got exception", e)
                 msgList = []
             self.Telegram_ui.msg_buffer[current_cmd] = msgList
 
@@ -58,16 +59,16 @@ class MessageWidget(urwid.ListBox):
 
         for msg in self.Telegram_ui.msg_buffer[current_cmd]:
             self.print_msg(msg)
-        
+
         # messages have been printed, deletion form buffer (they are in archive now)
         self.Telegram_ui.msg_buffer[current_cmd] = []
 
-        
+
         self.draw_separator()
         self.updateLocked = False
 
     def print_msg_archive(self):
-        current_cmd = self.Telegram_ui.current_chan['id']
+        current_cmd = self.Telegram_ui.current_chan[1].id
         for msg in self.Telegram_ui.msg_archive[current_cmd]:
             self.msg_list.insert(self.pos +1, msg)
             self.focus_position = self.pos
@@ -83,7 +84,7 @@ class MessageWidget(urwid.ListBox):
         if 'text' in msg:
             text = [msg['text']]
             urls = self.urlregex.findall(text[0])
-            
+
             if urls:
                 url = urls[0][0]
                 if not url.startswith('http'):
@@ -102,9 +103,10 @@ class MessageWidget(urwid.ListBox):
                         self.url_buffer[url] = title
                         text = text + ['\n  ➜  ' + title]
                     except:
+                        print("Warning ! Got exception", e)
                         self.url_buffer[url] = ''
-                 
-                
+
+
         elif 'action' in msg:
             text = [(urwid.AttrSpec('light gray', ''), '➜ ' + msg['action']['type'].replace('_',' '))]
 
@@ -133,12 +135,12 @@ class MessageWidget(urwid.ListBox):
             else:
                 sender = msg['sender']['title']
             sender_id = msg['sender']['peer_id']
-            
+
 
         color = self.get_name_color(sender_id)
 
         if 'reply_id' in msg:
-            msg_reply = self.Telegram_ui.sender.message_get(msg['reply_id'])
+            msg_reply = self.Telegram_ui.tg_client.message_get(msg['reply_id'])
 
             if 'from' in msg_reply:
                 if 'first_name' in msg_reply['from']:
@@ -179,14 +181,14 @@ class MessageWidget(urwid.ListBox):
             text = [(urwid.AttrSpec('light gray', ''), 'forwarded from '),
                     (urwid.AttrSpec(color_fwd, ''), fwd_from_name + '\n')] + text
 
-            
+
 
         cur_date = time.strftime('│ ' + self.Telegram_ui.DATE_FORMAT + ' │', time.localtime(date))
 
         if cur_date != self.prev_date[current_cmd]:
             fill = '─'*(len(cur_date) - 2)
             date_text = '┌' + fill + '┐\n' + cur_date + '\n└' + fill + '┘'
-            
+
             date_to_display = urwid.Text(('date', date_text), align='center')
             self.msg_list.insert(self.pos + 1, date_to_display)
             self.Telegram_ui.msg_archive[current_cmd].insert(self.pos +1, date_to_display)
@@ -223,12 +225,12 @@ class MessageWidget(urwid.ListBox):
             self.delete_separator()
         current_cmd = self.Telegram_ui.current_chan[1].id
 
-        if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan: 
+        if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan:
             # mark messages as read
             current_print_name = self.Telegram_ui.current_chan['print_name']
-            self.Telegram_ui.sender.mark_read(current_print_name)
-            self.Telegram_ui.sender.status_online()
-            self.Telegram_ui.sender.status_offline()
+            self.Telegram_ui.tg_client.mark_read(current_print_name)
+            self.Telegram_ui.tg_client.status_online()
+            self.Telegram_ui.tg_client.status_offline()
 
 
         self.separator_pos = self.pos
@@ -285,7 +287,8 @@ class MessageWidget(urwid.ListBox):
                     self.img_buffer[key] = text
                     return text
                 except:
-                    return None 
+                    print("Warning ! Got exception", e)
+                    return None
 
 
     def keypress(self, size, key):
@@ -347,7 +350,7 @@ def translate_color(raw_text):
         list_attr.sort()
         fg = -1
         bg = -1
-       
+
         for elem in list_attr:
             if elem <= 29:
                 pass
@@ -359,7 +362,7 @@ def translate_color(raw_text):
                 fg = fg + 8
             elif elem >= 100 and elem <= 104:
                 bg = bg + 8
-            
+
         fgcolor = color_list[fg]
         bgcolor = color_list[bg]
 

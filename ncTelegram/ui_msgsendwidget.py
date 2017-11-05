@@ -59,7 +59,6 @@ class MessageSendWidget(urwid.Filler):
 
     def update_status_bar(self):
         chan_name = get_print_name(self.Telegram_ui.current_chan[1]).replace('_', ' ')
-        print(*self.Telegram_ui.current_chan)
         chan_type = type(self.Telegram_ui.current_chan[0].peer)
         current_cmd = self.Telegram_ui.current_chan[1].id
 
@@ -68,8 +67,7 @@ class MessageSendWidget(urwid.Filler):
             text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " members ]"
         elif chan_type == ttt.PeerUser:
             text = ' [ ' + chan_name + ' ]'
-            print(self.Telegram_ui.online_status)
-            (when, status) = self.Telegram_ui.online_status[current_cmd]
+            when, status = self.Telegram_ui.online_status[current_cmd]
 
             if status:
                 text = text + ' --- [ Online ]'
@@ -87,12 +85,16 @@ class MessageSendWidget(urwid.Filler):
                 else:
                     text = text + ' --- [ last seen ' + when_date + ' at ' + when_hour + ' ]'
         elif chan_type == ttt.PeerChannel:
-            chan_num = self.Telegram_ui.current_chan['participants_count']
+            # TODO: some chats are given as Channel, but
+            # they don't have a participants_count
+            #chan_num = self.Telegram_ui.current_chan['participants_count']
+            #if chan_num == 0:
+            #    chan_num = self.Telegram_ui.tg_client.channel_info(chan_name.replace(' ','_'))['participants_count']
+            #    self.Telegram_ui.current_chan['participants_count'] = chan_num
+
+            print(*self.Telegram_ui.current_chan)
             # fix bug in dialog_list in telegram_cli
-            if chan_num == 0:
-                chan_num = self.Telegram_ui.sender.channel_info(chan_name.replace(' ','_'))['participants_count']
-                self.Telegram_ui.current_chan['participants_count'] = chan_num
-            text = ' [ ' + chan_name + " ] --- [ " + str(chan_num) + " participants ]"
+            text = ' [ ' + chan_name + " ] --- [ " #+ str(chan_num) + " participants ]"
 
 
         if current_cmd in self.Telegram_ui.read_status and self.Telegram_ui.read_status[current_cmd]:
@@ -102,8 +104,8 @@ class MessageSendWidget(urwid.Filler):
         self.status_bar.set_text(text)
         try:
             self.Telegram_ui.main_loop.draw_screen()
-        except:
-            pass
+        except Exception as e:
+            print("Warning ! Got exception",e)
 
 
     def history_prev(self):
@@ -152,7 +154,7 @@ class MessageSendWidget(urwid.Filler):
 
             # get possible username
             if type_chan == 'chat':
-                chat_info = self.Telegram_ui.sender.chat_info(print_name_chan)
+                chat_info = self.Telegram_ui.tg_client.chat_info(print_name_chan)
                 for user in chat_info['members']:
                     if 'username' in user and user['username'] != None:
                         self.username_list.append(user['username'])
@@ -162,8 +164,9 @@ class MessageSendWidget(urwid.Filler):
 
             elif type_chan == 'channel':
                 try:
-                    members = self.Telegram_ui.sender.channel_get_members(print_name_chan)
-                except:
+                    members = self.Telegram_ui.tg_client.channel_get_members(print_name_chan)
+                except Exception as e:
+                    print("Warning ! Got exception",e)
                     members = []
                 for user in members:
                     if 'username' in user and user['username'] != None:
@@ -193,7 +196,7 @@ class MessageSendWidget(urwid.Filler):
     def keypress(self, size, key):
         key = super(MessageSendWidget, self).keypress(size, key)
 
-        dst = self.Telegram_ui.current_chan['print_name']
+        dst = get_print_name(self.Telegram_ui.current_chan[1])
 
 
 
@@ -201,19 +204,19 @@ class MessageSendWidget(urwid.Filler):
             # try/expect needed when user lacks of priviledge on channels
             try:
                 if len(self.widgetEdit.get_edit_text()) == 1:
-                    self.Telegram_ui.sender.send_typing(dst)
+                    self.Telegram_ui.tg_client.send_typing(dst)
                 elif len(self.widgetEdit.get_edit_text()) == 0:
-                    self.Telegram_ui.sender.send_typing_abort(dst)
-            except:
-                pass
+                    self.Telegram_ui.tg_client.send_typing_abort(dst)
+            except Exception as e:
+                print("Warning !! Got exception", e)
 
         if key == 'enter':
             msg = self.widgetEdit.get_edit_text()
 
             if not self.Telegram_ui.NINJA_MODE:
-                self.Telegram_ui.sender.status_online()
-                self.Telegram_ui.sender.status_offline()
-                self.Telegram_ui.sender.mark_read(dst)
+                self.Telegram_ui.tg_client.status_online()
+                self.Telegram_ui.tg_client.status_offline()
+                self.Telegram_ui.tg_client.mark_read(dst)
 
             # Send file
             msg = re.sub(r'\s+$', '', msg)
@@ -224,17 +227,17 @@ class MessageSendWidget(urwid.Filler):
                 self.Telegram_ui.main_loop.draw_screen()
                 # try/expect needed when user lacks of priviledge on channels
                 try:
-                    self.Telegram_ui.sender.send_file(dst, msg[1:][:-1])
-                except:
-                    pass
+                    self.Telegram_ui.tg_client.send_file(dst, msg[1:][:-1])
+                except Exception as e:
+                    print("Warning! Got exception", e)
             else:
                 # try/expect needed when user lacks of priviledge on channels
                 try:
-                    self.Telegram_ui.sender.send_msg(dst, msg, enable_preview=True)
-                except:
-                    pass
+                    self.Telegram_ui.tg_client.send_message(dst, msg, link_preview=True)
+                except Exception as e:
+                    print("Warning! Got exception", e)
 
-            current_cmd = self.Telegram_ui.current_chan['id']
+            current_cmd = self.Telegram_ui.current_chan[1].id
             if current_cmd in self.history_own_message:
                 self.history_own_message[current_cmd].append(msg)
             else:

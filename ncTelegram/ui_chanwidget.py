@@ -43,16 +43,15 @@ class ChanWidget(urwid.ListBox):
                 print("Warning ! exception", e)
                 time.sleep(0.5)
 
-        # Setting up the user online time
-        user = self.Telegram_ui.tg_client.get_me()
+        # Setting up the users online time
         for dialog, entity in self.chans:
-            if isinstance(dialog.peer, ttt.PeerUser) and dialog.peer.user_id == user.id:
-                id = user.id
+            if isinstance(dialog.peer, ttt.PeerUser):# and dialog.peer.user_id == user.id:
+                id = entity.id
                 if isinstance(entity.status, ttt.UserStatusOnline):
                     # TODO : put something else as an online time
-                    self.Telegram_ui.online_status[id] = (user.status.expires, False)
+                    self.Telegram_ui.online_status[id] = (str(entity.status.expires), False)
                 elif isinstance(entity.status, ttt.UserStatusOffline):
-                    self.Telegram_ui.online_status[id] = (user.status.was_online, False)
+                    self.Telegram_ui.online_status[id] = (str(entity.status.was_online), False)
                 else:
                     self.Telegram_ui.online_status[id] = ('?', False)
 
@@ -170,7 +169,7 @@ class ChanWidget(urwid.ListBox):
     def chan_change(self, button, chan):
 
         #save previous messages
-        prev_cmd = self.Telegram_ui.current_chan['id']
+        prev_cmd = self.Telegram_ui.current_chan[1].id
         prev_msg = self.Telegram_ui.msg_send_widget.widgetEdit.get_edit_text()
         self.Telegram_ui.msg_send_widget.buffer_writing_text[prev_cmd] = prev_msg
 
@@ -178,14 +177,14 @@ class ChanWidget(urwid.ListBox):
             dst = self.Telegram_ui.current_chan['print_name']
             # try/expect needed when user lacks of priviledge on channels
             try:
-                self.Telegram_ui.sender.send_typing_abort(dst)
-            except:
-                pass
+                self.Telegram_ui.tg_client.send_typing_abort(dst)
+            except Exception as e:
+                print("Warning ! Got a", e)
 
 
         self.Telegram_ui.current_chan = chan
 
-        current_cmd = chan['id']
+        current_cmd = chan[1].id
 
         if current_cmd not in self.Telegram_ui.last_media:
             self.Telegram_ui.last_media[current_cmd] = {}

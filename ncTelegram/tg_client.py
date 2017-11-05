@@ -3,6 +3,7 @@
 
 from time import sleep
 from getpass import getpass
+import sys
 
 from telethon import TelegramClient, ConnectionMode
 from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
@@ -75,57 +76,83 @@ class TgClient(TelegramClient):
         return self.get_dialogs(*args, **kwargs)
 
 
+    def send_typing(self, *args, **kwargs):
+        """
+        Send "XXX is typing" notification
+        """
+        # TODO: invoke() the right method
+
+    def send_typing_abort(self, *args, **kwargs):
+        """
+        Stops "XXX is typing" notification
+        """
+        # TODO: invoke() the right method
+
+    def status_online(self, *args, **kwargs):
+        """
+        Sends a "XXX is online" notification
+        """
+        # TODO: invoke() the right method
+
+    def status_offline(self, *args, **kwargs):
+        """
+        Sends a "XXX is offline" notification
+        """
+        # TODO: invoke() the right method
+
+    def mark_read(self, *args, **kwargs):
+        """
+        Marks messages as read
+        """
+        # TODO: invoke() the right method
+
+    def send_file(self, *args, **kwargs):
+        """
+        Send a file
+        """
+        # TODO: invoke() the right method
 
     def update_handler(self, update_object):
         if self.Telegram_ui.lock_receiver:
             print("Warning, receiver locked")
             return
 
-        print("Got a…", type(update_object))
+        current_cmd = self.Telegram_ui.current_chan[1].id
+        print("Got update :")
+        print(update_object)
 
-        # Fetching the updates
-        # (either a list of updates or an update)
-        if isinstance(update_object, ttt.Updates):
-            updates = [u for u in update_object.updates]
-        elif isinstance(update_object, ttt.UpdateShort):
-            updates = [update_object]
-        else:
-            print("Warning : this should not happen!")
+        if isinstance(update_object, ttt.UpdateNewMessage):
+            # TODO: differenciate sender == me
+            #msg_type = msg['receiver']['type']
+            #if msg_type == 'user' and not msg['own']:
+            #    msg_cmd = msg['sender']['id']
+            #else:
+            #    msg_cmd = msg['receiver']['id']
+            msg = update_object.message
+            msg_cmd = msg.id
 
-        current_cmd = self.Telegram_ui.current_chan['id']
-        print("current_cmd is", current_cmd)
-
-        if msg['event'] == "message":
-
-
-            msg_type = msg['receiver']['type']
-            if msg_type == 'user' and not msg['own']:
-                msg_cmd = msg['sender']['id']
-            else:
-                msg_cmd = msg['receiver']['id']
-
-
-            if msg['date'] < self.Telegram_ui.boot_time:
-                if not msg['unread']:
+            if msg.date.timestamp() < self.Telegram_ui.boot_time:
+                if not msg.media_unread: # TODO: recheck cette condition
                     return
                 self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
                 self.Telegram_ui.chan_widget.update_chan_list()
                 self.Telegram_ui.main_loop.draw_screen()
                 return
 
-            msg_id = msg['id']
+            msg_id = msg.id
 
-            # handeling of unread count, message print, and buffer fill
+            # handling of unread count, message print, and buffer fill
             if msg_cmd == current_cmd:
                 self.Telegram_ui.msg_widget.print_msg(msg)
                 self.Telegram_ui.chan_widget.add_msg(msg_cmd, False)
 
-            elif ('from' in msg and msg['from']['peer_id'] == self.Telegram_ui.me['id']) or \
-                ('sender' in msg and msg['sender']['id'] == self.Telegram_ui.me['id']):
-                # mark message as read if the message is from you
-                if msg_cmd in self.Telegram_ui.chan_widget.msg_chan:
-                    del self.Telegram_ui.chan_widget.msg_chan[msg_cmd]
-                    self.Telegram_ui.print_title()
+            # TODO: handle this case
+            #elif ('from' in msg and msg['from']['peer_id'] == self.Telegram_ui.me['id']) or \
+            #    ('sender' in msg and msg['sender']['id'] == self.Telegram_ui.me['id']):
+            #    # mark message as read if the message is from you
+            #    if msg_cmd in self.Telegram_ui.chan_widget.msg_chan:
+            #        del self.Telegram_ui.chan_widget.msg_chan[msg_cmd]
+            #        self.Telegram_ui.print_title()
             else:
                 self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
 
@@ -146,7 +173,7 @@ class TgClient(TelegramClient):
 
             #notif on reply
             if 'reply_id' in msg and 'text' in msg:
-                msg_reply = self.Telegram_ui.sender.message_get(msg['reply_id'])
+                msg_reply = self.Telegram_ui.tg_client.message_get(msg['reply_id'])
                 if ('from' in msg_reply and\
                         msg_reply['from']['id'] == self.Telegram_ui.me['id']) or \
                         ('sender' in msg_reply and\
@@ -162,21 +189,33 @@ class TgClient(TelegramClient):
 
 
 
-        elif msg['event'] == 'online-status':
-            when = msg['when']
-            status = msg['online']
-            self.Telegram_ui.update_online_status(when, status, msg['user']['id'])
-
-
-
-        elif msg['event'] == 'read':
-            if 'receiver' in msg:
-                cmd = msg['receiver']['id']
+        elif isinstance(update_object, ttt.UpdateUserStatus):
+            status = update_object.status
+            if isinstance(status, ttt.UserStatusOnline):
+                when = str(status.expires)
+                status = True
+            elif isinstance(status, ttt.UserStatusOffline):
+                when = str(status.was_online)
+                status = False
             else:
-                cmd = msg['from']['id']
+                raise NotImplementedError("Missing case for update", update_object)
+            self.Telegram_ui.update_online_status(when, status, update_object.user_id)
+
+
+
+        elif isinstance(update_object, ttt.UpdateReadHistoryInbox):
+            peer = update_object.peer
+            if isinstance(peer, ttt.PeerChannel):
+                cmd = peer.channel_id
+            elif isinstance(peer, ttt.PeerChat):
+                cmd = peer.chat_id
+            else:
+                assert isinstance(peer, ttt.PeerUser)
+                cmd = peer.user_id
             self.Telegram_ui.update_read_status(cmd, True)
 
-
+        else:
+            print("Unhandled update type", update_object, file=sys.stderr)
 
 
 # vim: ai ts=4 sw=4 et sts=4

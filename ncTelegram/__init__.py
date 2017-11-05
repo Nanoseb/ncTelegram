@@ -33,7 +33,6 @@ class Telegram_ui:
         self.NINJA_MODE = self.conf['general']['ninja_mode']
         self.INLINE_IMAGE = self.conf['general']['inline_image']
 
-        print("Gonna build msg_receiver")
         self.tg_client = TgClient(self)
 
         self.last_online = 1
@@ -92,7 +91,7 @@ class Telegram_ui:
 
     def update_online_status(self, when, status, cmd):
         self.online_status[cmd] = (when, status)
-        if cmd == self.current_chan['id']:
+        if cmd == self.current_chan[1].id:
             self.msg_send_widget.update_status_bar()
 
     def update_read_status(self, cmd, bool):
@@ -129,8 +128,9 @@ class Telegram_ui:
             if cmd not in self.msg_buffer:
                 print_name = chan['print_name']
                 try:
-                    self.msg_buffer[cmd] = self.sender.history(print_name, 100)
-                except:
+                    self.msg_buffer[cmd] = self.tg_client.history(print_name, 100)
+                except Exception as e:
+                    print("Warning ! Got exception", e)
                     self.msg_buffer[cmd] = []
                 if self.INLINE_IMAGE:
                     for msg in self.msg_buffer[cmd]:
@@ -173,13 +173,14 @@ class Telegram_ui:
 
 
     def stop_Telegram(self):
-        self.tg.disconnect()
+        self.tg_client.disconnect()
 
 
     def exit(self):
         if self.conf['general']['notification']:
             Notify.uninit()
-        sys.stdout.write("\x1b]2;\x07")
+        # TODO: remove the comment (but it erases error messages)
+        #sys.stdout.write("\x1b]2;\x07")
         self.stop_Telegram()
         raise urwid.ExitMainLoop
 
