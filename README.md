@@ -34,7 +34,7 @@ $ pacaur -y nctelegram-git
 Install dependencies:
 
 ```
-$ sudo dnf install telegram-cli python3-urwid python3-psutil
+$ sudo dnf install telegram-cli python3-urwid python3-psutil python3-pip
 ```
 
 Install ncTelegram through pip:
