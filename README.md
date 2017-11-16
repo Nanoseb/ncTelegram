@@ -55,7 +55,7 @@ To install telegram-cli just follow its [readme](https://github.com/vysheng/tg).
 Install urwid:
 
 ```
-$ sudo apt-get install python3-urwid python3-psutil
+$ sudo apt-get install python3-urwid python3-psutil python3-pip
 ```
 
 Install ncTelegram through pip:
