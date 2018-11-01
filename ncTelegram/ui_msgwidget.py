@@ -40,7 +40,7 @@ class MessageWidget(urwid.ListBox):
 
 
         # deletion of previous messages
-        self.msg_list = [] # urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
+        self.msg_list = urwid.SimpleFocusListWalker([urwid.Text(('top', " "), align='left')])
         super().__init__(self.msg_list)
 
         self.pos = 0
