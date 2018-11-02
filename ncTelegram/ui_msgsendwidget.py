@@ -37,15 +37,17 @@ class MessageSendWidget(urwid.Filler):
 
 
     def update_send_widget(self):
-        if 'when' in self.Telegram_ui.current_chan:
-            self.current_status = (self.Telegram_ui.current_chan['when'], False)
-        else:
-            self.current_status = ('?', False)
+        # TODO: fix
+        #if 'when' in self.Telegram_ui.current_chan:
+        #    self.current_status = (self.Telegram_ui.current_chan['when'], False)
+        #else:
+        #    self.current_status = ('?', False)
+        self.current_status = ('?', False)
 
         self.widgetEdit.set_edit_text('')
         self.username_list = []
 
-        cmd = self.Telegram_ui.current_chan[1].id
+        cmd = self.Telegram_ui.current_chan.id
         if cmd in self.buffer_writing_text:
             self.widgetEdit.insert_text(self.buffer_writing_text[cmd])
 
@@ -60,10 +62,11 @@ class MessageSendWidget(urwid.Filler):
 
 
     def update_status_bar(self):
-        chan_name = get_print_name(self.Telegram_ui.current_chan[1]).replace('_', ' ')
-        chan_type = type(self.Telegram_ui.current_chan[0].peer)
-        current_cmd = self.Telegram_ui.current_chan[1].id
+        chan_name = self.Telegram_ui.current_chan.name
+        chan_type = type(self.Telegram_ui.current_chan.entity)
+        current_cmd = self.Telegram_ui.current_chan.entity.id
 
+        text = "<could not fetch text>"
         if chan_type == ttt.PeerChat:
             # TODO: find a members_num equivalent
             #chan_num = self.Telegram_ui.current_chan['members_num']
@@ -200,7 +203,7 @@ class MessageSendWidget(urwid.Filler):
     def keypress(self, size, key):
         key = super(MessageSendWidget, self).keypress(size, key)
 
-        dst = get_print_name(self.Telegram_ui.current_chan[1])
+        dst = get_print_name(self.Telegram_ui.current_chan.entity)
 
 
 
@@ -241,7 +244,7 @@ class MessageSendWidget(urwid.Filler):
                 except Exception as e:
                     logging.getLogger().warning("Couldn't send message", exc_info=True)
 
-            current_cmd = self.Telegram_ui.current_chan[1].id
+            current_cmd = self.Telegram_ui.current_chan.entity.id
             if current_cmd in self.history_own_message:
                 self.history_own_message[current_cmd].append(msg)
             else:

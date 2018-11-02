@@ -38,15 +38,16 @@ class ChanWidget(urwid.ListBox):
             try:
                 # list of pairs (dialog, entity)
                 # TODO: find a better limit, or download dialogs with a limit
-                self.chans = list(zip(*self.Telegram_ui.tg_client.dialog_list(limit=20)))
+                self.chans = self.Telegram_ui.tg_client.dialog_list(limit=10)
                 bool = False
             except Exception as e:
                 logging.getLogger().warning("Couldn't download chans list", exc_info=True)
                 time.sleep(0.5)
 
         # Setting up the users online time
-        for dialog, entity in self.chans:
-            if isinstance(dialog.peer, ttt.PeerUser):# and dialog.peer.user_id == user.id:
+        for dialog in self.chans:
+            entity = dialog.entity
+            if isinstance(entity, ttt.PeerUser):# and dialog.peer.user_id == user.id:
                 id = entity.id
                 if isinstance(entity.status, ttt.UserStatusOnline):
                     # TODO : put something else as an online time
@@ -78,7 +79,8 @@ class ChanWidget(urwid.ListBox):
         i = len(self.chans) -1
 
         # build of chan list
-        for dialog, entity in reversed(self.chans):
+        for dialog in self.chans:
+            entity = dialog.entity
             pos +=1
 
             print_name = get_print_name(entity)
@@ -87,17 +89,17 @@ class ChanWidget(urwid.ListBox):
 
             label = print_name.replace('_', ' ')
 
-            if isinstance(dialog.peer, ttt.PeerUser):
+            if isinstance(entity, ttt.PeerUser):
                 label = "➜  " + label
-            elif isinstance(dialog.peer, ttt.PeerChat):
+            elif isinstance(entity, ttt.PeerChat):
                 label = "➜➜ " + label
-            elif isinstance(dialog.peer, ttt.PeerChannel):
+            elif isinstance(entity, ttt.PeerChannel):
                 label = "⤨  " + label
 
             if cmd in self.msg_chan and self.msg_chan[cmd] != 0:
                 label = label + ' [' + str(self.msg_chan[cmd]) + ']'
 
-            if print_name == get_print_name(self.Telegram_ui.current_chan[1]):
+            if print_name == self.Telegram_ui.current_chan.name:
                 button = NewButton(('cur_chan', label), self.chan_change, (dialog, entity))
                 current_pos = pos
                 self.current_chan_pos = i
@@ -125,7 +127,7 @@ class ChanWidget(urwid.ListBox):
 
         # print of buffer button only if needed
         list_buff = [ cmd for cmd in self.Telegram_ui.msg_buffer.keys() ]
-        list_chan = [ chan[1].id for chan in self.chans ]
+        list_chan = [ chan.id for chan in self.chans ]
 
         list_buff.sort()
         list_chan.sort()
@@ -170,7 +172,7 @@ class ChanWidget(urwid.ListBox):
     def chan_change(self, button, chan):
 
         #save previous messages
-        prev_cmd = self.Telegram_ui.current_chan[1].id
+        prev_cmd = self.Telegram_ui.current_chan.entity.id
         prev_msg = self.Telegram_ui.msg_send_widget.widgetEdit.get_edit_text()
         self.Telegram_ui.msg_send_widget.buffer_writing_text[prev_cmd] = prev_msg
 

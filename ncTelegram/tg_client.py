@@ -6,7 +6,7 @@ from getpass import getpass
 import sys
 import logging
 
-from telethon import TelegramClient, ConnectionMode
+from telethon import TelegramClient, sync
 from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
 import telethon.tl.types as ttt
 from telethon.utils import get_display_name
@@ -40,40 +40,18 @@ class TgClient(TelegramClient):
         self.Telegram_ui = Telegram_ui
         api_id = API_ID
         api_hash = API_HASH
-        super().__init__(
-            "ncTelegram", api_id, api_hash,
-            connection_mode=ConnectionMode.TCP_ABRIDGED,
-            proxy=None, # TODO: add proxy objects
-            update_workers=1,
-            )
+
+        # TODO: put session in an appropriate folder
+        super().__init__("sessionfile", api_id, api_hash)
         print('Connecting to Telegram servers...')
 
-        if not self.connect():
-            print('Initial connection failed. Retrying...')
-            if not self.connect():
-                print('Could not connect to Telegram servers.')
-                return
-        if not self.is_user_authorized():
-            # TODO: BUG, if the connection is half finished,
-            # the file exists but is invalid
-            user_phone = input("Enter your phone number: ")
-            self.send_code_request(user_phone)
-            try:
-                self.sign_in(user_phone, input('Enter code: '))
-            except PhoneNumberUnoccupiedError:
-                print("Please create an account first")
-                exit()
-            except SessionPasswordNeededError:
-                print("Two factor auth detected ! Please input password")
-                self.sign_in(password=getpass())
-        # TODO : mettre le fichier de session dans un vrai dossier
+        self.start()
+
         print("Connected !")
-        self.add_update_handler(self.update_handler)
+        self.add_event_handler(self.update_handler)
 
     def dialog_list(self,*args, **kwargs):
-        # Renvoie une paire (dialogs, entities)
-        # dialogs est la liste des "discussions" (type Dialog)
-        # entities est l'entité liée à la discussion (type User, type Channel, …)
+        # Return a list of Dialogs
         return self.get_dialogs(*args, **kwargs)
 
 
@@ -114,9 +92,9 @@ class TgClient(TelegramClient):
         # TODO: invoke() the right method
 
     def history(self, entity, *args, **kwargs):
-        return self.get_message_history(entity, *args, **kwargs)[1]
+        return self.get_messages(entity, *args, **kwargs)
 
-    def update_handler(self, update_object):
+    async def update_handler(self, update_object):
         if self.Telegram_ui.lock_receiver:
             print("Warning, receiver locked")
             return

@@ -34,7 +34,10 @@ class MessageWidget(urwid.ListBox):
         self.updateLocked = True
         self.separator_pos = -1
 
-        current_cmd = self.Telegram_ui.current_chan[1].id
+        # TODO: fix…
+        if isinstance(self.Telegram_ui.current_chan, tuple):
+            self.Telegram_ui.current_chan = self.Telegram_ui.current_chan[0]
+        current_cmd = self.Telegram_ui.current_chan.id
         if current_cmd not in self.prev_date:
             self.prev_date[current_cmd] = 1
 
@@ -46,7 +49,7 @@ class MessageWidget(urwid.ListBox):
         self.pos = 0
 
         if current_cmd not in self.Telegram_ui.msg_buffer:
-            current_entity = self.Telegram_ui.current_chan[1]
+            current_entity = self.Telegram_ui.current_chan.entity
             try:
                 msgList = self.Telegram_ui.tg_client.history(current_entity, limit=20)
             except Exception as e:
@@ -83,7 +86,7 @@ class MessageWidget(urwid.ListBox):
         logging.getLogger().info("Got a %s", msg)
         date = msg.date
 
-        current_cmd = self.Telegram_ui.current_chan[1].id
+        current_cmd = self.Telegram_ui.current_chan.id
 
         if msg.message:
             text = [msg.message]
@@ -234,7 +237,7 @@ class MessageWidget(urwid.ListBox):
     def draw_separator(self):
         if self.separator_pos != -1:
             self.delete_separator()
-        current_cmd = self.Telegram_ui.current_chan[1].id
+        current_cmd = self.Telegram_ui.current_chan.id
 
         if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan:
             # mark messages as read
