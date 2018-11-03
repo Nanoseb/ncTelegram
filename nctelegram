@@ -8,7 +8,9 @@ import configparser
 
 import ncTelegram
 
-
+# TODO handle comand line argument:
+# -c configfile
+# --no-img to overwrite some parameters etc.
 
 # Loading options
 confPriorityList = ['ncTelegram.conf', os.path.expanduser("~")+'/.ncTelegram.conf', '/etc/ncTelegram.conf']

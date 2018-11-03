@@ -89,6 +89,7 @@ class ChanWidget(urwid.ListBox):
 
             label = print_name.replace('_', ' ')
 
+            # TODO find better icon? possibility to remove them too?
             if isinstance(entity, ttt.PeerUser):
                 label = "➜  " + label
             elif isinstance(entity, ttt.PeerChat):
@@ -131,6 +132,7 @@ class ChanWidget(urwid.ListBox):
 
         list_buff.sort()
         list_chan.sort()
+        # TODO remove that, better if it is done in the background without the need for this
         if list_buff != list_chan :
             pos += 1
             button = NewButton('⬇  Download message buffer', self.Telegram_ui.fill_msg_buffer)

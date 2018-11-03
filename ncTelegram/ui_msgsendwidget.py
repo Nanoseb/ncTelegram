@@ -148,6 +148,7 @@ class MessageSendWidget(urwid.Filler):
 
 
     def autocomplete(self):
+        # TODO improve autocompletion, it was slow iirc
         if self.updateLockedauto:
             return
 

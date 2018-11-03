@@ -9,6 +9,7 @@ import logging
 
 import urwid
 
+# TODO something cleaner to he here?
 try:
     import gi
     gi.require_version('Notify', '0.7')
@@ -140,6 +141,7 @@ class Telegram_ui:
         self.chan_widget.update_chan_list()
 
     def is_image(self, path):
+        # TODO is that needed? consider file as file if not send as photo is probably better
         return not path == None and (path.endswith('png') \
         or path.endswith('jpg') \
         or path.endswith('jpeg') \
@@ -166,6 +168,7 @@ class Telegram_ui:
             return file
 
     def open_file(self, path):
+        # TODO Not sure that's a good idea in the end, reconsider that, download file somewhere instead of opening it
         if self.conf['general']['open_file'] and path != None:
             subprocess.Popen(['xdg-open', path], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
