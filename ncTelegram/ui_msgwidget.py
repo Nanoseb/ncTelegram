@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import os
 import sys
 import subprocess
@@ -12,6 +11,8 @@ import logging
 from .tg_client import get_print_name
 
 from telethon.tl.functions.messages import GetMessagesRequest
+
+logger = logging.getLogger(__name__)
 
 
 # widget used to print the message list
@@ -53,7 +54,7 @@ class MessageWidget(urwid.ListBox):
             try:
                 msgList = self.Telegram_ui.tg_client.history(current_entity, limit=20)
             except Exception as e:
-                logging.getLogger().warning("Couldn't fetch history", exc_info=True)
+                logger.warning("Couldn't fetch history", exc_info=True)
                 msgList = []
             self.Telegram_ui.msg_buffer[current_cmd] = msgList
 
@@ -83,7 +84,7 @@ class MessageWidget(urwid.ListBox):
 
     def print_msg(self, msg, at_begining=False):
 
-        logging.getLogger().info("Got a %s", msg)
+        logger.info("Got a %s", msg)
         date = msg.date
 
         current_cmd = self.Telegram_ui.current_chan.id
@@ -110,7 +111,7 @@ class MessageWidget(urwid.ListBox):
                         self.url_buffer[url] = title
                         text = text + ['\n  ➜  ' + title]
                     except Exception as e:
-                        logging.getLogger().warning("Couldn't fetch resource",
+                        logger.warning("Couldn't fetch resource",
                                 exc_info=True)
                         self.url_buffer[url] = ''
 
@@ -301,7 +302,7 @@ class MessageWidget(urwid.ListBox):
                     self.img_buffer[key] = text
                     return text
                 except Exception as e:
-                    logging.getLogger().warning("Couldn't fetch image", exc_info=True)
+                    logger.warning("Couldn't fetch image", exc_info=True)
                     return None
 
 
@@ -357,7 +358,7 @@ def translate_color(raw_text):
         try:
             attr, text = at.split("m",1)
         except Exception as e:
-            logging.getLogger().warning("Couldn't split", exc_info=True)
+            logger.warning("Couldn't split", exc_info=True)
             attr = '0'
             text = at.split("m",1)
 

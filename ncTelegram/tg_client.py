@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 from time import sleep
 from getpass import getpass
@@ -14,6 +13,8 @@ from telethon.utils import get_display_name
 
 API_ID = "77412"
 API_HASH = "9aefe703d2d5d93af30471621a550b8b"
+
+logger = logging.getLogger(__name__)
 
 
 def get_print_name(entity):
@@ -96,11 +97,11 @@ class TgClient(TelegramClient):
 
     async def update_handler(self, update_object):
         if self.Telegram_ui.lock_receiver:
-            print("Warning, receiver locked")
+            logger.warning("update_handler called, but receiver locked")
             return
 
         current_cmd = self.Telegram_ui.current_chan[1].id
-        logging.getLogger().debug("Got update %s", update_object)
+        logger.debug("Got update %s", update_object)
 
         if isinstance(update_object, ttt.UpdateNewMessage):
             # TODO: differenciate sender == me
@@ -113,7 +114,7 @@ class TgClient(TelegramClient):
             msg_cmd = msg
 
             if msg.date.timestamp() < self.Telegram_ui.boot_time:
-                if not msg.media_unread: # TODO: recheck cette condition
+                if not msg.media_unread: # TODO: rewrite this check
                     return
                 self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
                 self.Telegram_ui.chan_widget.update_chan_list()
@@ -196,7 +197,7 @@ class TgClient(TelegramClient):
             self.Telegram_ui.update_read_status(cmd, True)
 
         else:
-            logging.getLogger().warning("Unhandled update type %s", update_object)
+            logger.warning("Unhandled update type %s", update_object)
 
 
 # vim: ai ts=4 sw=4 et sts=4

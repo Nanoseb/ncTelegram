@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import urwid
 import time
 import logging
 import telethon.tl.types as ttt
+
+logger = logging.getLogger(__name__)
 
 from .tg_client import get_print_name
 
@@ -41,7 +42,7 @@ class ChanWidget(urwid.ListBox):
                 self.chans = self.Telegram_ui.tg_client.dialog_list(limit=10)
                 bool = False
             except Exception as e:
-                logging.getLogger().warning("Couldn't download chans list", exc_info=True)
+                logger.warning("Couldn't download chans list", exc_info=True)
                 time.sleep(0.5)
 
         # Setting up the users online time
@@ -184,7 +185,7 @@ class ChanWidget(urwid.ListBox):
             try:
                 self.Telegram_ui.tg_client.send_typing_abort(dst)
             except Exception as e:
-                logging.getLogger().warning("Couldn't send typing abort", exc_info=True)
+                logger.warning("Couldn't send typing abort", exc_info=True)
 
 
         self.Telegram_ui.current_chan = chan

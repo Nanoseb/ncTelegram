@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -23,60 +22,76 @@ from .ui_msgsendwidget import MessageSendWidget
 from .tg_client import TgClient
 
 logging.basicConfig(filename='logger.log', level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class Telegram_ui:
     def __init__(self, conf):
+        # Boolean to prevent TgClient's to process updates
         self.lock_receiver = True
+
+        # ncTelegram configuration as a dict
         self.conf = conf
 
+        # Timestamp of start. Should be const
         self.boot_time = int(time.time())
+
         # Just shortcut for some configurations :
         self.DATE_FORMAT = self.conf['general']['date_format']
         self.NINJA_MODE = self.conf['general']['ninja_mode']
         self.INLINE_IMAGE = self.conf['general']['inline_image']
 
+        # Actual telegram client, interacting with telegram's servers
         self.tg_client = TgClient(self)
 
-        self.last_online = 1
+        # ???
         self.online_status = {}
+        # ???
         self.read_status = {}
 
-        palette = [('status_bar', self.conf['style']['status_bar_fg'], self.conf['style']['status_bar_bg']),
-                   ('date', self.conf['style']['date'], ''),
-                   ('hour', self.conf['style']['hour'], ''),
-                   ('separator', self.conf['style']['separator'], ''),
+        style = self.conf['style']
+        palette = [('status_bar', style['status_bar_fg'], style['status_bar_bg']),
+                   ('date', style['date'], ''),
+                   ('hour', style['hour'], ''),
+                   ('separator', style['separator'], ''),
                    ('reversed', 'standout', ''),
-                   ('cur_chan', self.conf['style']['cur_chan'], ''),
-                   ('user_color', self.conf['style']['user_color'], '')
+                   ('cur_chan', style['cur_chan'], ''),
+                   ('user_color', style['user_color'], '')
                    ]
 
-        # Notification
+        # Setup notifications if enabled
         if self.conf['general']['notification']:
             Notify.init("ncTelegram")
             self.image = '/usr/share/ncTelegram/t_logo.png'
 
+        # ???
         self.current_chan = {}
+        # ???
         self.last_media = {}
 
         # message buffer init
         # msg_buffer is where incoming messages go before they have been printed
         self.msg_buffer = {}
-        # msg_archive is where messages go once they are processed and have the proper layout (urwid list)
+
+        # msg_archive is where messages go once they are processed
+        # and have the proper layout (urwid list)
         self.msg_archive = {}
 
-        self.chan_widget = ChanWidget(self)
-
-        self.print_title()
+        # Shortcut to retrieve the client's entity faster
+        # TODO: might miss an update in profile ?
         self.me = self.tg_client.get_me()
 
-        self.msg_widget = MessageWidget(self)
 
-        # message writing + status bar widget
+        ## Create and setup UI
+        # List of dialogs on the left
+        self.chan_widget = ChanWidget(self)
+        self.print_title() # TODO: remove implicit dependency on chan_widget
+        # List of messages on the upper right
+        self.msg_widget = MessageWidget(self)
+        # Text area to write a message + status bar widget
         self.msg_send_widget = MessageSendWidget(self)
 
-        # Right pannel
+        # Right panel (list of messages + text area)
         self.right_side = urwid.Pile([self.msg_widget, (2, self.msg_send_widget)])
-
         vert_separator = urwid.AttrMap(urwid.Filler(urwid.Columns([])), 'status_bar')
 
         # Final arrangements
@@ -84,10 +99,15 @@ class Telegram_ui:
                                            (1, vert_separator),
                                            ('weight', 5, self.right_side)])
 
-        self.main_loop = urwid.MainLoop((self.main_columns), palette,
-                unhandled_input=self.unhandle_key, screen=urwid.raw_display.Screen())
+        # urwid's main loop, responsible for drawing on the screen
+        self.main_loop = urwid.MainLoop(self.main_columns, palette,
+                unhandled_input=self.unhandle_key)
         self.main_loop.screen.set_terminal_properties(colors=256)
+
+        # Allow tgclient to process updates, and to call the UI as it's now ready
         self.lock_receiver = False
+
+        # TODO: use start() + a with: block
         self.main_loop.run()
 
     def update_online_status(self, when, status, cmd):
@@ -131,7 +151,7 @@ class Telegram_ui:
                 try:
                     self.msg_buffer[cmd] = self.tg_client.history(print_name, 100)
                 except Exception as e:
-                    print("Warning ! Got exception", e)
+                    logger.warning("Got exception %s while filling msg buffer", e)
                     self.msg_buffer[cmd] = []
                 if self.INLINE_IMAGE:
                     for msg in self.msg_buffer[cmd]:
@@ -189,6 +209,9 @@ class Telegram_ui:
 
 
     def unhandle_key(self, key):
+        """
+        Function called whenever urwid did not handle a key
+        """
         if key == self.conf['keymap']['quit']:
             self.exit()
 
