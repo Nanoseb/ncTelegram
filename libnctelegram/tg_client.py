@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from time import sleep
+from threading import Thread
 from getpass import getpass
 import sys
 import logging
@@ -36,24 +37,33 @@ def get_print_name(entity):
         return entity.title
     raise NotImplementedError("Missing case for entity", str(entity))
 
-class TgClient(TelegramClient):
+# TODO: go in full async mode and get rid of the thread
+class TgClient(Thread):
+    """
+    Abstraction over a telethon TelegramClient.
+    Run in a separate thread for now
+    """
     def __init__(self, Telegram_ui):
+        super().__init__()
         self.Telegram_ui = Telegram_ui
         api_id = API_ID
         api_hash = API_HASH
 
         # TODO: put session in an appropriate folder
-        super().__init__("sessionfile", api_id, api_hash)
+        self.client = TelegramClient("sessionfile", api_id, api_hash)
         print('Connecting to Telegram servers...')
 
-        self.start()
+        self.client.start()
 
         print("Connected !")
-        self.add_event_handler(self.update_handler)
+        self.client.add_event_handler(self.update_handler)
+
+    def run(self):
+        self.client.run_until_disconnected()
 
     def dialog_list(self,*args, **kwargs):
         # Return a list of Dialogs
-        return self.get_dialogs(*args, **kwargs)
+        return self.client.get_dialogs(*args, **kwargs)
 
 
     def send_typing(self, *args, **kwargs):
@@ -61,24 +71,28 @@ class TgClient(TelegramClient):
         Send "XXX is typing" notification
         """
         # TODO: invoke() the right method
+        logger.error("send_typing is still undefined")
 
     def send_typing_abort(self, *args, **kwargs):
         """
         Stops "XXX is typing" notification
         """
         # TODO: invoke() the right method
+        logger.error("send_typing_abort is still undefined")
 
     def status_online(self, *args, **kwargs):
         """
         Sends a "XXX is online" notification
         """
         # TODO: invoke() the right method
+        logger.error("status_online is still undefined")
 
     def status_offline(self, *args, **kwargs):
         """
         Sends a "XXX is offline" notification
         """
         # TODO: invoke() the right method
+        logger.error("status_offline is still undefined")
 
     def mark_read(self, *args, **kwargs):
         """
@@ -93,17 +107,17 @@ class TgClient(TelegramClient):
         # TODO: invoke() the right method
 
     def history(self, entity, *args, **kwargs):
-        return self.get_messages(entity, *args, **kwargs)
+        return self.client.get_messages(entity, *args, **kwargs)
 
-    async def update_handler(self, update_object):
+    def update_handler(self, update_object):
         if self.Telegram_ui.lock_receiver:
             logger.warning("update_handler called, but receiver locked")
             return
 
-        current_cmd = self.Telegram_ui.current_chan[1].id
-        logger.debug("Got update %s", update_object)
+        current_cmd = self.Telegram_ui.current_chan.id
+        logger.info("Got update %s", update_object)
 
-        if isinstance(update_object, ttt.UpdateNewMessage):
+        if isinstance(update_object, ttt.UpdateShortMessage):
             # TODO: differenciate sender == me
             #msg_type = msg['receiver']['type']
             #if msg_type == 'user' and not msg['own']:
@@ -113,7 +127,7 @@ class TgClient(TelegramClient):
             msg = update_object.message
             msg_cmd = msg
 
-            if msg.date.timestamp() < self.Telegram_ui.boot_time:
+            if update_object.date.timestamp() < self.Telegram_ui.boot_time:
                 if not msg.media_unread: # TODO: rewrite this check
                     return
                 self.Telegram_ui.chan_widget.add_msg(msg_cmd, True)
@@ -121,7 +135,7 @@ class TgClient(TelegramClient):
                 self.Telegram_ui.main_loop.draw_screen()
                 return
 
-            msg_id = msg.id
+            msg_id = update_object.id
 
             # handling of unread count, message print, and buffer fill
             if msg_cmd == current_cmd:

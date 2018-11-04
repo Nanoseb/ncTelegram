@@ -161,7 +161,7 @@ class MessageSendWidget(urwid.Filler):
 
             # get possible username
             if type_chan == 'chat':
-                chat_info = self.Telegram_ui.tg_client.chat_info(print_name_chan)
+                chat_info = self.Telegram_ui.tg_client.client.chat_info(print_name_chan)
                 for user in chat_info['members']:
                     if 'username' in user and user['username'] != None:
                         self.username_list.append(user['username'])
@@ -171,7 +171,7 @@ class MessageSendWidget(urwid.Filler):
 
             elif type_chan == 'channel':
                 try:
-                    members = self.Telegram_ui.tg_client.channel_get_members(print_name_chan)
+                    members = self.Telegram_ui.tg_client.client.channel_get_members(print_name_chan)
                 except Exception as e:
                     logger.warning("Couldn't get members in channel",
                             exc_info=True)
@@ -204,7 +204,7 @@ class MessageSendWidget(urwid.Filler):
     def keypress(self, size, key):
         key = super(MessageSendWidget, self).keypress(size, key)
 
-        dst = get_print_name(self.Telegram_ui.current_chan.entity)
+        dst = self.Telegram_ui.current_chan.entity
 
 
 
@@ -235,13 +235,13 @@ class MessageSendWidget(urwid.Filler):
                 self.Telegram_ui.main_loop.draw_screen()
                 # try/expect needed when user lacks of priviledge on channels
                 try:
-                    self.Telegram_ui.tg_client.send_file(dst, msg[1:][:-1])
+                    self.Telegram_ui.tg_client.client.send_file(dst, msg[1:][:-1])
                 except Exception as e:
                     logger.warning("Couldn't send file", exc_info=True)
             else:
                 # try/expect needed when user lacks of priviledge on channels
                 try:
-                    self.Telegram_ui.tg_client.send_message(dst, msg, link_preview=True)
+                    self.Telegram_ui.tg_client.client.send_message(dst, msg, link_preview=True)
                 except Exception as e:
                     logger.warning("Couldn't send message", exc_info=True)
 

@@ -136,7 +136,7 @@ class MessageWidget(urwid.ListBox):
         sender_id = None
         sender = "<unknown>"
         if msg.from_id:
-            from_peer = self.Telegram_ui.tg_client.get_entity(msg.from_id)
+            from_peer = self.Telegram_ui.tg_client.client.get_entity(msg.from_id)
             sender = get_print_name(from_peer)
             sender_id = msg.from_id
         # TODO: see if it's still applicable
@@ -249,9 +249,9 @@ class MessageWidget(urwid.ListBox):
         if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan:
             # mark messages as read
             current_print_name = self.Telegram_ui.current_chan['print_name']
-            self.Telegram_ui.tg_client.mark_read(current_print_name)
-            self.Telegram_ui.tg_client.status_online()
-            self.Telegram_ui.tg_client.status_offline()
+            self.Telegram_ui.tg_client.client.mark_read(current_print_name)
+            self.Telegram_ui.tg_client.client.status_online()
+            self.Telegram_ui.tg_client.client.status_offline()
 
 
         self.separator_pos = self.pos
@@ -279,7 +279,7 @@ class MessageWidget(urwid.ListBox):
         user_color = self.Telegram_ui.conf['style']['user_color']
         users_color = self.Telegram_ui.conf['style']['users_color']
 
-        if id == self.Telegram_ui.tg_client.get_me().id:
+        if id == self.Telegram_ui.tg_client.client.get_me().id:
             return user_color
 
         user_color_list = map(lambda x : x.strip(), user_color.split(','))

@@ -41,6 +41,7 @@ class Telegram_ui:
 
         # Actual telegram client, interacting with telegram's servers
         self.tg_client = TgClient(self)
+        self.tg_client.start()
 
         # ???
         self.online_status = {}
@@ -77,7 +78,7 @@ class Telegram_ui:
 
         # Shortcut to retrieve the client's entity faster
         # TODO: might miss an update in profile ?
-        self.me = self.tg_client.get_me()
+        self.me = self.tg_client.client.get_me()
 
 
         ## Create and setup UI
@@ -111,12 +112,12 @@ class Telegram_ui:
 
     def update_online_status(self, when, status, cmd):
         self.online_status[cmd] = (when, status)
-        if cmd == self.current_chan[1].id:
+        if cmd == self.current_chan.id:
             self.msg_send_widget.update_status_bar()
 
     def update_read_status(self, cmd, bool):
         self.read_status[cmd] = bool
-        if cmd == self.current_chan['id']:
+        if cmd == self.current_chan.id:
             self.msg_send_widget.update_status_bar()
 
 
@@ -195,7 +196,7 @@ class Telegram_ui:
 
 
     def stop_Telegram(self):
-        self.tg_client.disconnect()
+        self.tg_client.client.disconnect()
 
 
     def exit(self):
