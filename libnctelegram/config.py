@@ -11,8 +11,8 @@ import os.path
 import configparser
 import logging
 
+logging.basicConfig(filename='logger.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
 
 # TODO handle comand line argument:
 # -c configfile

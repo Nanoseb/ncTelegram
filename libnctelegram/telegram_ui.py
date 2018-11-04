@@ -21,7 +21,6 @@ from .ui_msgwidget import MessageWidget
 from .ui_msgsendwidget import MessageSendWidget
 from .tg_client import TgClient
 
-logging.basicConfig(filename='logger.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 class Telegram_ui:

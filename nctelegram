@@ -3,8 +3,8 @@
 Main entry points. Loads the configuration, then the UI
 """
 
-from ncTelegram.config import load_config
-from ncTelegram.telegram_ui import Telegram_ui
+from libnctelegram.config import load_config
+from libnctelegram.telegram_ui import Telegram_ui
 
 
 # Load configuration

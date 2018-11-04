@@ -133,7 +133,8 @@ class MessageWidget(urwid.ListBox):
             #    if image != None:
             #        text = text + ['\n'] + image
 
-
+        sender_id = None
+        sender = "<unknown>"
         if msg.from_id:
             from_peer = self.Telegram_ui.tg_client.get_entity(msg.from_id)
             sender = get_print_name(from_peer)
@@ -147,7 +148,12 @@ class MessageWidget(urwid.ListBox):
         #    sender_id = msg['sender']['peer_id']
 
 
-        color = self.get_name_color(sender_id)
+        # TODO: this should not happen… check previous TODO
+        # Seems to happen with bots in channels
+        if sender_id:
+            color = self.get_name_color(sender_id)
+        else:
+            color = "white"
 
         # Is the message an answer to another message ?
         #if msg.reply_to_msg_id:
