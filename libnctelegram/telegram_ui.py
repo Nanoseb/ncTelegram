@@ -43,9 +43,9 @@ class Telegram_ui:
         self.tg_client = TgClient(self)
         self.tg_client.start()
 
-        # ???
+        # Dict per channel ([cmd]) telling if the user is online and since when is he offline
         self.online_status = {}
-        # ???
+        # Dict per channel ([cmd]) telling if the user has read the last message sent
         self.read_status = {}
 
         style = self.conf['style']
@@ -63,9 +63,11 @@ class Telegram_ui:
             Notify.init("ncTelegram")
             self.image = '/usr/share/ncTelegram/t_logo.png'
 
-        # ???
+        # cmd of the channel being currently displayed (the one selected)
         self.current_chan = {}
-        # ???
+
+        # Dict per channel ([cmd]) containing the path to the last media (file, photo etc.) being sent to that channel
+        # it is used with a shortcut to open the file using xdg-open (probably need to change, this is not a nice way of doing this)
         self.last_media = {}
 
         # message buffer init
