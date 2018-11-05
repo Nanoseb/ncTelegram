@@ -11,6 +11,8 @@ import logging
 from .tg_client import get_print_name
 
 from telethon.tl.functions.messages import GetMessagesRequest
+import telethon.tl.types as ttt
+from telethon.tl.patched import Message
 
 logger = logging.getLogger(__name__)
 
@@ -135,10 +137,17 @@ class MessageWidget(urwid.ListBox):
 
         sender_id = None
         sender = "<unknown>"
-        if msg.from_id:
+        if isinstance(msg, Message) and msg.from_id:
             from_peer = self.Telegram_ui.tg_client.client.get_entity(msg.from_id)
             sender = get_print_name(from_peer)
             sender_id = msg.from_id
+        elif isinstance(msg, ttt.UpdateShortMessage):
+            logger.info("Got a message from peer %s", msg.user_id)
+            from_peer = self.Telegram_ui.tg_client.client.get_entity(msg.user_id)
+            logger.info("Who's also called %s", from_peer)
+            sender = get_print_name(from_peer)
+            sender_id = msg.user_id
+
         # TODO: see if it's still applicable
         #else:
         #    if 'first_name' in msg['sender']:
@@ -248,7 +257,7 @@ class MessageWidget(urwid.ListBox):
 
         if not self.Telegram_ui.NINJA_MODE and current_cmd in self.Telegram_ui.chan_widget.msg_chan:
             # mark messages as read
-            current_print_name = self.Telegram_ui.current_chan['print_name']
+            current_print_name = self.Telegram_ui.current_chan.print_name
             self.Telegram_ui.tg_client.client.mark_read(current_print_name)
             self.Telegram_ui.tg_client.client.status_online()
             self.Telegram_ui.tg_client.client.status_offline()

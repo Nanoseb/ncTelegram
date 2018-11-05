@@ -125,7 +125,7 @@ class TgClient(Thread):
             #else:
             #    msg_cmd = msg['receiver']['id']
             msg = update_object.message
-            msg_cmd = msg
+            msg_cmd = update_object.user_id
 
             if update_object.date.timestamp() < self.Telegram_ui.boot_time:
                 if not msg.media_unread: # TODO: rewrite this check
@@ -139,7 +139,7 @@ class TgClient(Thread):
 
             # handling of unread count, message print, and buffer fill
             if msg_cmd == current_cmd:
-                self.Telegram_ui.msg_widget.print_msg(msg)
+                self.Telegram_ui.msg_widget.print_msg(update_object)
                 self.Telegram_ui.chan_widget.add_msg(msg_cmd, False)
 
             # TODO: handle this case
