@@ -3,7 +3,7 @@
 A ncurses Telegram client developed in Python with the urwid library.
 
 <p align="center">
-  <img src="http://pix.toile-libre.org/upload/original/1457204711.png" alt="screenshot of ncTelegram"/>
+  <img src="screenshot.png" alt="screenshot of ncTelegram"/>
 </p>
 
 >  :warning: I don't have time anymore to maintain this project, so you may experience unresolved bugs. Feel free to give [tg](https://github.com/paul-nameless/tg) a try as it seems like a good alternative. Though if anyone wants to contribute to ncTelegram I will be happy to review and merge PR.
